@@ -1,0 +1,29 @@
+DATA-SOURCES.md
+  s_10638ab73c2825::t_afff0447c3d116 7-19
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_e08d888c8abb70 246
+  s_10638ab73c2825::t_d3df90fcd8459a 17
+  s_10638ab73c2825::t_afedd5c4953913 261
+  s_10638ab73c2825::t_aff8186cc6b0f7 63-82
+  s_10638ab73c2825::t_b70a6b5493a4d2 133
+  s_10638ab73c2825::t_b50f2d4cdbb6c4 4
+  s_10638ab73c2825::t_8727d9fdf34a19 104-105
+.env.example
+  s_10638ab73c2825::t_d0e6008f1d7d14 33-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "49f33057722dc8bcc8e35b86f3e845a5ed77d48d",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
