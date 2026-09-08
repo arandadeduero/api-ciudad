@@ -247,7 +247,7 @@ La separación **Client → Adapter** (en vez de fusionarlos) es una capa extra 
 3. **Río (`/rio`)**: ¿tienes contacto/acceso a un endpoint real de la CHD/SAIH, o construimos el adapter en modo "fuente no disponible" hasta entonces?
 4. **Cortes de calles / Waze**: dado que el alta en Waze for Cities la debe tramitar el propio Ayuntamiento (no un desarrollador), ¿seguimos adelante solo con el adapter vacío (`WazeClient` que devuelve `NOT_AVAILABLE`), o prefieres que investigue fuentes alternativas (p. ej. avisos de obras publicados por el propio Ayuntamiento en HTML)?
 5. **Calidad del aire para Aranda**: dado que no hay estación en el municipio, ¿mostramos la estación operativa más cercana con su distancia real y un aviso explícito, o preferís no publicar `/ambiente` hasta tener una fuente local?
-6. **CORS**: ¿la API es de acceso público sin restricción de origen (como cabría esperar de una API de datos abiertos), o hay clientes concretos (apps propias) que justifiquen una lista blanca desde el principio?
+6. ~~**CORS**~~ — **Resuelto 2026-09-09**: acceso público sin restricción de origen (`CORS_ORIGIN=*`), coherente con una API de datos abiertos. Es el default ya implementado en la Fase 1 (`src/plugins/security.ts`), confirmado ahora como decisión definitiva de producción y no solo como valor de desarrollo.
 
 ---
 
