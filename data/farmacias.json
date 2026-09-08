@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "source": "Colegio Oficial de Farmacéuticos de Burgos",
+    "document": "Servicios de Urgencia Z.F. Aranda de Duero 2026",
+    "license": "No especificada por la fuente — uso informativo, verificar antes de redistribución comercial",
+    "geocodeProvider": "OpenStreetMap Nominatim (© OpenStreetMap contributors, ODbL 1.0, https://osm.org/copyright)",
+    "retrievedAt": "2026-09-09",
+    "note": "Catálogo de farmacias (datos fijos: nombre, dirección, teléfono). El calendario de guardias vive por separado en data/farmacias-guardia-2026.json."
+  },
+  "pharmacies": [
+    {
+      "id": 1,
+      "name": "JULIÁN LÁZARO",
+      "address": "Plaza Mayor, 11",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947500269",
+      "location": {
+        "latitude": 41.6701895,
+        "longitude": -3.6885626
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "11, Plaza Mayor, Aranda de Duero"
+      }
+    },
+    {
+      "id": 2,
+      "name": "BLANCA PORTELA",
+      "address": "Plaza Mayor, 13 bis",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947500151",
+      "location": {
+        "latitude": 41.6701412,
+        "longitude": -3.6882846
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "13, Plaza Mayor, Aranda de Duero (edificio Museo de Juegos Tradicionales)"
+      }
+    },
+    {
+      "id": 3,
+      "name": "ANA PRADA",
+      "address": "Calle Isilla, 30",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947500185",
+      "location": {
+        "latitude": 41.6713133,
+        "longitude": -3.6855273
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "30, Calle Isilla, Aranda de Duero"
+      }
+    },
+    {
+      "id": 4,
+      "name": "IGNACIO DE SANTIAGO",
+      "address": "Plaza Obispo Acosta, 4",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": "Santa Catalina",
+      "phone": "947501129",
+      "location": {
+        "latitude": 41.670947,
+        "longitude": -3.6777202
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "4, Plaza Obispo Acosta, Barrio Santa Catalina, Aranda de Duero"
+      }
+    },
+    {
+      "id": 5,
+      "name": "INÉS BRIME BERDUGO",
+      "address": "Avenida Castilla, 58",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947501237",
+      "location": {
+        "latitude": 41.6595191,
+        "longitude": -3.6921246
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "street",
+        "match": "Avenida Castilla, Aranda de Duero (sin número exacto en OSM)"
+      }
+    },
+    {
+      "id": 6,
+      "name": "ELSA ÁLVARO REYZÁBAL",
+      "address": "Calle Duero, s/n",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": "Polígono",
+      "phone": "947500039",
+      "location": {
+        "latitude": 41.6586919,
+        "longitude": -3.6934053
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "street",
+        "match": "Calle Duero, Aranda de Duero (s/n, sin número por definición)"
+      }
+    },
+    {
+      "id": 7,
+      "name": "ELENA DEL CURA",
+      "address": "Avenida Luis Mateos, 1",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": "Barrio de la Estación",
+      "phone": "947512666",
+      "location": {
+        "latitude": 41.6629721,
+        "longitude": -3.6946118
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "street",
+        "match": "Avenida Luis Mateos, Aranda de Duero (sin número exacto en OSM)"
+      }
+    },
+    {
+      "id": 8,
+      "name": "A. Mª GONZÁLEZ LAFONT",
+      "address": "Calle Burgo de Osma, 27",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947510504",
+      "location": {
+        "latitude": 41.6668135,
+        "longitude": -3.6881614
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "27, Calle Burgo de Osma, Aranda de Duero (POI ya mapeado como farmacia en OSM: 'Lda. Ana Mª Victorias Gonzalez Lafont')"
+      }
+    },
+    {
+      "id": 9,
+      "name": "A. SANZ HERNÁN",
+      "address": "Calle San Francisco, 31",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947513013",
+      "location": {
+        "latitude": 41.6744049,
+        "longitude": -3.6860289
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "31, Calle San Francisco, Aranda de Duero"
+      }
+    },
+    {
+      "id": 10,
+      "name": "F. BLANCO TERREROS",
+      "address": "Calle Pizarro, 6",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": "Santa Catalina",
+      "phone": "947511523",
+      "location": {
+        "latitude": 41.670712,
+        "longitude": -3.681085
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "6, Calle Pizarro, Barrio Santa Catalina, Aranda de Duero"
+      }
+    },
+    {
+      "id": 11,
+      "name": "CARLOS GÓMEZ",
+      "address": "Avenida el Ferial, 18",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": null,
+      "phone": "947500752",
+      "location": {
+        "latitude": 41.6738114,
+        "longitude": -3.6828554
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "18, Avenida el Ferial, Aranda de Duero (POI ya mapeado como farmacia en OSM: 'Ldo. Carlos Gómez Sáiz')"
+      }
+    },
+    {
+      "id": 12,
+      "name": "A. GARCÍA HERNANDO",
+      "address": "Avenida Castilla, 57",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "zone": "frente a Tamaca",
+      "phone": "947514837",
+      "location": {
+        "latitude": 41.6630893,
+        "longitude": -3.6909328
+      },
+      "geocode": {
+        "provider": "OpenStreetMap Nominatim",
+        "precision": "house",
+        "match": "57, Avenida Castilla, Aranda de Duero"
+      }
+    }
+  ]
+}

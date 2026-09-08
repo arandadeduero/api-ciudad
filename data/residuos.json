@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "source": "Ayuntamiento de Aranda de Duero — Concejalía de Medio Ambiente / Aseo Urbano",
+    "documents": [
+      "AAFF_DipticoAranda_V05.pdf (díptico informativo de separación de residuos)",
+      "AAFF_DocA5_Aranda_02.pdf (guía de depósito de residuos domésticos en contenedores)"
+    ],
+    "license": "No especificada por la fuente — documento informativo municipal, uso informativo",
+    "retrievedAt": "2026-09-09",
+    "note": "El horario de recogida de cartón comercial (contenedores.comercioCarton) procede de una fuente secundaria (nota de prensa local, revista360y5.es) que cita a la Concejalía, no de los dos PDF oficiales — no aparece en ningún documento oficial disponible. Verificar con el Ayuntamiento antes de tomarlo como definitivo."
+  },
+  "puntoLimpio": {
+    "operador": "Consorcio Provincial de Residuos Urbanos de Burgos",
+    "direccion": "Carretera de La Aguilera, km 2,4",
+    "usuarios": "Solo particulares",
+    "horario": {
+      "lunesAViernes": [
+        { "periodo": "mañana", "desde": "10:00", "hasta": "14:00" },
+        { "periodo": "tarde", "desde": "16:00", "hasta": "20:00" }
+      ],
+      "sabado": [{ "periodo": "mañana", "desde": "10:00", "hasta": "14:00" }],
+      "excepciones": "Cerrado festivos"
+    }
+  },
+  "contenedores": [
+    {
+      "tipo": "papel_carton",
+      "color": "azul",
+      "descripcion": "Libretas, folios, revistas, papel de regalo y de envolver, sobres (sin ventanilla), folletos de publicidad, cajas y piezas de cartón, envases de cartón (cereales, galletas, etc.)",
+      "instrucciones": "Las cajas grandes deben plegarse o trocearse antes de depositarse",
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "vidrio",
+      "color": "verde (iglú)",
+      "descripcion": "Botellas, tarros y frascos de vidrio (bebidas, alimentos, perfumes, cosméticos). No depositar con tapón",
+      "instrucciones": null,
+      "horarioDeposito": { "desde": "08:00", "hasta": "23:00" }
+    },
+    {
+      "tipo": "envases_ligeros",
+      "color": "amarillo",
+      "descripcion": "Envases de plástico (botellas de agua, refrescos, leche), latas (conservas, bebida), briks de leche/zumos/vinos/batidos/caldos/gazpacho",
+      "instrucciones": null,
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "organica",
+      "color": "marrón",
+      "descripcion": "Restos de preparación y sobras de comida, alimentos en mal estado, cáscaras de huevo y frutos secos, posos de café, bolsitas de infusión, papel de cocina y servilletas sucias, pequeñas ramas y restos de poda, hojas y flores, corchos de botella, virutas de madera y serrín",
+      "instrucciones": "Separado de su envase o embalaje",
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "resto",
+      "color": "gris / tapa verde",
+      "descripcion": "Pañuelos usados, juguetes, biberones, chupetes, utensilios de cocina, objetos cerámicos, arena para mascotas, pelo, polvo, colillas — todo lo que no se pueda depositar en el resto de contenedores ni sirva para compost",
+      "instrucciones": null,
+      "horarioDeposito": { "desde": "21:00", "hasta": "23:00" }
+    },
+    {
+      "tipo": "aceite_vegetal",
+      "color": null,
+      "descripcion": "Aceite de cocina usado de origen doméstico",
+      "instrucciones": "Guardado previamente en una botella de plástico cerrada",
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "ropa_usada",
+      "color": null,
+      "descripcion": "Ropa de vestir, calzado, complementos (bolsos, cinturones, bufandas), textil del hogar (sábanas, toallas, cortinas)",
+      "instrucciones": "Siempre en bolsas cerradas",
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "pilas",
+      "color": "verde (contenedor especial)",
+      "descripcion": "Residuos de pilas",
+      "instrucciones": "Contenedores ubicados en comercios, edificios municipales, etc.",
+      "horarioDeposito": null
+    },
+    {
+      "tipo": "medicamentos",
+      "color": "blanco (contenedor especial, SIGRE)",
+      "descripcion": "Residuos de medicamentos",
+      "instrucciones": "Contenedores ubicados en las farmacias",
+      "horarioDeposito": null
+    }
+  ],
+  "enseres": {
+    "descripcion": "Recogida de muebles y enseres voluminosos",
+    "metodo": "Previa solicitud telefónica",
+    "operador": "Valoriza Servicios Medioambientales, S.A.",
+    "telefono": "947506050"
+  },
+  "comercioCarton": {
+    "descripcion": "Recogida puerta a puerta de papel y cartón comercial para locales y establecimientos de hostelería con volumen significativo (los de poco volumen deben usar el contenedor azul normal)",
+    "horario": { "diasSemana": "lunes a viernes", "desde": "13:00", "hasta": "14:00" },
+    "instrucciones": "Cartón plegado y apilado junto a la isla de contenedores más cercana al establecimiento",
+    "sancionPorIncumplimiento": "Hasta 150 € por dejar residuos fuera de los contenedores sin cumplir estos requisitos",
+    "fuente": "secundaria — no confirmada en los PDF oficiales, ver meta.note"
+  },
+  "atencionCiudadana": {
+    "telefono": "947546353",
+    "horario": { "desde": "09:00", "hasta": "14:00" },
+    "sedeElectronica": "https://sede.arandadeduero.es",
+    "correo": "medioambiente@arandadeduero.es",
+    "oficinas": [
+      { "nombre": "Oficinas Medio Ambiente", "direccion": "Plaza Mayor, 13, 2ª planta" },
+      { "nombre": "Oficinas Valoriza SM, S.A.", "direccion": "Calle Santander, nº 2" }
+    ]
+  }
+}

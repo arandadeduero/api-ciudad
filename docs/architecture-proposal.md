@@ -1,7 +1,7 @@
 # Propuesta de arquitectura — API Ciudad de Aranda de Duero
 
-**Estado:** borrador para revisión — no implementar hasta aprobación explícita (ver §0 y §8).
-**Fecha:** 2026-09-08 (actualizado 2026-09-09: bus urbano resuelto, ver §0 y §2.1b)
+**Estado:** todas las preguntas de §6 resueltas (2026-09-09) — desbloqueado para implementación por fases (ver §7).
+**Fecha:** 2026-09-08 (actualizado 2026-09-09: bus urbano, río, ambiente, farmacias, residuos, eventos y CORS resueltos)
 
 ---
 
@@ -9,21 +9,22 @@
 
 Se ha hecho una investigación real (no asumida) de las fuentes de datos abiertas relevantes para Aranda de Duero, de referencias de arquitectura en otras ciudades españolas, y de los proveedores de datos externos mencionados en el prompt original. Los hallazgos **cambian varios supuestos** del prompt maestro. Antes de nada, lo importante:
 
-| Módulo | Supuesto del prompt | Realidad encontrada | Impacto |
+| Módulo | Supuesto del prompt | Realidad encontrada | Estado |
 |---|---|---|---|
-| Calidad del aire | JCyL tiene API con estaciones | ✅ Confirmado y probado en vivo (API REST JSON, sin auth) | Ninguno |
-| Calidad del aire — **Aranda concretamente** | Se puede mostrar `/ambiente` para Aranda | ❌ **No existe ninguna estación JCyL en Aranda de Duero** (consulta a la API real: 0 resultados) | Hay que decidir estrategia: mostrar la estación operativa más cercana (con distancia y aviso explícito de que no es local), o no ofrecer el endpoint todavía |
-| Eventos municipales | Existe JSON "raw" en la web del ayuntamiento | ❌ La web (`arandadeduero.es/servicio/eventos/`) es HTML server-rendered en WordPress, sin API ni RSS | Hay que decidir: scraping HTML propio (frágil, requiere mantenimiento) vs. omitir el módulo en la v1 |
-| Autobús urbano / GTFS | "GTFS disponible en GitHub que proporcionaré" | ✅ **Resuelto (2026-09-09):** el usuario aportó el repositorio real [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano) — feed GTFS completo (los 6 ficheros obligatorios + `calendar_dates.txt`, `shapes.txt`, `feed_info.txt`), 3 líneas (L1, L2, L3), operador Dávila Autocares, generado automáticamente por GitHub Actions y publicado como asset `latest.zip` en GitHub Releases. Ver detalle en §2.1b | Ya no bloquea la Fase 4. Sustituye a la interurbana del NAP como fuente principal de `/bus` |
-| Cortes de calles | Integrar Waze si hay acceso autorizado | ⚠️ Waze for Cities es gratuito pero **requiere solicitud y aprobación como organismo público** (no es una API de autoservicio), y el acuerdo prohíbe redistribuir los datos públicamente sin más | El adapter debe construirse, pero el módulo no puede activarse hasta que el Ayuntamiento (no un desarrollador externo) solicite el acceso |
-| Río | "Yo proporcionaré el API real" | La CHD/SAIH Duero (saihduero.es) **no expone API pública documentada**, solo un visor interactivo y descargas CSV manuales | Se construye el adapter (`RioClient`) desacoplado como pide el prompt, a la espera de que el usuario aporte el endpoint real o credenciales |
-| Farmacias | Dataset ficticio inicial | Confirmado: no hay API pública de farmacias de guardia; el Colegio Oficial de Farmacéuticos de Burgos publica calendarios mensuales descargables (PDF) por zona farmacéutica, incluida "Z.F. Aranda de Duero" | Viable como fuente real futura vía **ingesta programada de PDF**, no como API; v1 usa el fixture JSON pedido |
-| Parking / ORA | Zonas ORA reales | ✅ Confirmadas: distritos A, B y C con calles concretas, horario L–V 9–14h y 16–20h, máx. 4h | No hay API de ocupación en tiempo real para ORA ni para el parking Sol de las Moreras → se modela con `availabilityStatus: "NOT_AVAILABLE"` tal como pide el prompt |
-| Meteorología | Open-Meteo | ✅ Confirmado: sin API key, JSON, 10.000 llamadas/día gratis (uso no comercial) | Ninguno. AEMET se documenta como alternativa/complemento oficial (avisos meteorológicos) |
+| Calidad del aire | JCyL tiene API con estaciones | ✅ Confirmado y probado en vivo (API REST JSON, sin auth) | Resuelto |
+| Calidad del aire — **Aranda concretamente** | Se puede mostrar `/ambiente` para Aranda | ⚠️➡️✅ **Corrección de un error propio (2026-09-09):** la primera investigación afirmó "no hay estación en Aranda" — era **incorrecto**, filtré por el campo equivocado (`localizacion`, la dirección física, en vez de `estacion`, el nombre). Sí existe: **"Aranda de Duero 2"** (activa, C/ Sulidiza), confirmada además por un segundo dataset real de mediciones del día en curso que el usuario aportó. Ver §2.2 | Resuelto — dato real disponible, con corrección documentada |
+| Eventos municipales | Existe JSON "raw" en la web del ayuntamiento | ❌ La web es HTML server-rendered en WordPress, sin API ni RSS | **Resuelto (decisión del usuario, 2026-09-09): fuera de alcance de la v1.** No se construye ningún adapter ni endpoint de eventos |
+| Autobús urbano / GTFS | "GTFS disponible en GitHub que proporcionaré" | ✅ **Resuelto (2026-09-09):** repositorio real [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano) — feed GTFS completo, 3 líneas (L1, L2, L3), operador Dávila Autocares, releases automáticas vía GitHub Actions. Ver §2.1b | Resuelto |
+| Cortes de calles | Integrar Waze si hay acceso autorizado | ⚠️ Waze for Cities requiere alta institucional del Ayuntamiento, no es autoservicio | **Resuelto (decisión del usuario, 2026-09-09): no disponible por ahora.** Se documenta el adapter como no implementado, sin trámite en curso |
+| Río | "Yo proporcionaré el API real" | ✅ **Resuelto (2026-09-09):** el usuario aportó una API real (`saih-chd-api-9d034ff9d037.herokuapp.com`), probada en vivo — nivel y caudal por estación. Ver §2.2b | Resuelto |
+| Farmacias | Dataset ficticio inicial | ✅ **Resuelto (2026-09-09):** el usuario aportó el calendario real de guardias 2026 (extraído del PDF oficial del Colegio de Farmacéuticos de Burgos) y el catálogo de las 12 farmacias, geocodificadas vía Nominatim. Ver §2.1 | Resuelto — datos reales, no fixture |
+| Parking / ORA | Zonas ORA reales | ✅ Confirmadas: distritos A, B y C con calles concretas, horario L–V 9–14h y 16–20h, máx. 4h | Resuelto — dataset estático |
+| Meteorología | Open-Meteo | ✅ Confirmado: sin API key, JSON, 10.000 llamadas/día gratis (uso no comercial) | Resuelto |
+| Residuos | No contemplado en el prompt original | ✅ **Añadido (2026-09-09):** el usuario aportó 2 PDF oficiales del Ayuntamiento (díptico de separación + guía de contenedores) con horarios de depósito por tipo de contenedor, punto limpio, recogida de enseres y contacto de Valoriza. Ver §2.1c | Resuelto — dataset estático |
 
-**Conclusión operativa:** de los 8 módulos originales, **3 tienen fuente real inmediatamente utilizable con API** (weather, calidad del aire con matiz, farmacias como fixture), **2 dependen de que el usuario aporte una fuente** (bus/GTFS, río), **1 depende de un trámite institucional** (Waze/cortes de calles), y **1 no tiene fuente estructurada** (eventos, requeriría scraping o quedar fuera de la v1). Parking/ORA se puede modelar con datos estáticos verificados (calles, horarios, zonas) sin inventar disponibilidad.
+**Conclusión operativa:** de los módulos identificados, **todos tienen ya fuente real y decisión tomada**, salvo **Waze/cortes de calles**, que queda explícitamente fuera de alcance mientras no haya trámite institucional, y **eventos**, excluido deliberadamente de la v1. El resto (weather, ambiente, farmacias, parking/ORA, bus urbano+interurbano, río, residuos) puede implementarse ya sin ninguna decisión pendiente.
 
-Esto no invalida el proyecto: confirma que la arquitectura de **adapters desacoplados + degradación explícita (`NOT_AVAILABLE`, `stale`) + fixtures declarados** que pide el prompt es exactamente el patrón correcto para este caso real.
+Esto confirma que la arquitectura de **adapters desacoplados + degradación explícita (`NOT_AVAILABLE`, `stale`) + fuentes reales documentadas con su procedencia** que pide el prompt es el patrón correcto para este caso real — y que investigar antes de implementar (§0 del prompt) evitó dar por buena una conclusión propia que resultó ser errónea (la estación de Aranda).
 
 ---
 
@@ -47,18 +48,35 @@ Esto no invalida el proyecto: confirma que la arquitectura de **adapters desacop
 
 ### 2.1 Ayuntamiento de Aranda de Duero
 
-| Campo | Eventos | Farmacias de guardia | ORA / aparcamiento regulado | Parking Sol de las Moreras | Punto limpio / residuos |
-|---|---|---|---|---|---|
-| URL | arandadeduero.es/servicio/eventos/ | cofburgos.es (Colegio Of. Farmacéuticos Burgos, no el Ayto.) | arandadeduero.es/tema/aparcamiento-regulado/ | Calle Sol de las Moreras 30 (gestión municipal) | arandadeduero.es/horario-de-punto-limpio/ |
-| Tipo de API | Ninguna (HTML) | Ninguna (descarga PDF mensual) | Ninguna (página informativa) | Ninguna | Ninguna (página informativa) |
-| Formato | HTML | PDF | HTML | — | HTML |
-| Autenticación | — | — | — | — | — |
-| Frecuencia de actualización | Manual, según publicación | Mensual | Estática (ordenanza) | — | Estática |
-| Licencia | No especificada | No especificada | No especificada | — | No especificada |
-| Fiabilidad | Media (depende de mantenimiento web) | Alta (fuente oficial colegial) | Alta (ordenanza vigente) | Media | Media |
-| Datos disponibles | Título, fecha, texto libre por evento | Farmacia de guardia por día y zona farmacéutica | Calles y distritos A/B/C, horario L–V 9–14h y 16–20h, máx. 4h, exención movilidad reducida | 24h desde jul-2026, gestión de tickets, sin plazas libres en tiempo real | Horario Punto Limpio (Ctra. de la Aguilera), recogida de muebles bajo llamada (Urbaser) |
-| Limitaciones | Sin estructura de datos, cambia el HTML sin aviso → scraping frágil | El calendario es de ámbito de "zona farmacéutica" (Aranda), no solo del municipio; hay que verificar qué farmacias concretas cubre | No hay API de ocupación | No hay API de ocupación | No hay calendario de recogida por calle en formato abierto |
-| ¿Automatizable? | Sí, mediante scraping HTML propio (frágil, requiere tests de contrato) o quedar fuera de v1 | Sí, mediante descarga y parseo periódico del PDF mensual | Sí, como dataset estático versionado a mano (no cambia a menudo) | No hay nada que automatizar salvo datos estáticos | Como dataset estático |
+> **Eventos**: excluido de la v1 por decisión del usuario (2026-09-09) — la web (`arandadeduero.es/servicio/eventos/`) sigue sin API ni RSS (HTML server-rendered en WordPress), y no se construye ningún adapter ni endpoint para este módulo.
+
+| Campo | Farmacias de guardia | ORA / aparcamiento regulado | Parking Sol de las Moreras |
+|---|---|---|---|
+| URL | Fuente original: cofburgos.es. **Datos ya extraídos y en el repo**: `data/farmacias.json` (catálogo) + `data/farmacias-guardia-2026.json` (calendario) | arandadeduero.es/tema/aparcamiento-regulado/ | Calle Sol de las Moreras 30 (gestión municipal) |
+| Tipo de API | Ninguna — PDF oficial ya descargado y extraído por el usuario | Ninguna (página informativa) | Ninguna |
+| Formato | PDF de origen → JSON normalizado en el repo | HTML | — |
+| Autenticación | — | — | — |
+| Frecuencia de actualización | Anual (calendario 2026 completo, 365 días) | Estática (ordenanza) | — |
+| Licencia | No especificada por la fuente — uso informativo, verificar antes de redistribución comercial | No especificada | — |
+| Fiabilidad | Alta como fuente (Colegio Oficial de Farmacéuticos), **con matiz**: la extracción automática del PDF (día-de-mes verificado programáticamente 1..365 sin huecos; farmacia-del-día verificada solo por co-ubicación espacial en el PDF, no contrastada con una segunda fuente) — ver caveat en `data/farmacias-guardia-2026.json.meta.caveat` | Alta (ordenanza vigente) | Media |
+| Datos disponibles | 12 farmacias (nombre, dirección, teléfono, zona, geocodificadas con Nominatim — 9 con precisión de portal exacto, 3 a nivel de calle) + calendario de guardia día a día para todo 2026 | Calles y distritos A/B/C, horario L–V 9–14h y 16–20h, máx. 4h, exención movilidad reducida | 24h desde jul-2026, gestión de tickets, sin plazas libres en tiempo real |
+| Limitaciones | Ver caveat de extracción arriba; no hay forma de detectar cambios de última hora (bajas/vacaciones) sin re-consultar la fuente original | No hay API de ocupación | No hay API de ocupación |
+| ¿Automatizable? | Ya ingerido para 2026; para 2027 habrá que repetir la extracción del nuevo PDF anual (o negociar un feed con el Colegio) | Sí, como dataset estático versionado a mano (no cambia a menudo) | No hay nada que automatizar salvo datos estáticos |
+
+### 2.1c Residuos (añadido 2026-09-09, aportado por el usuario)
+
+| Campo | Detalle |
+|---|---|
+| Fuente | 2 PDF oficiales del Ayuntamiento (Concejalía de Medio Ambiente / Aseo Urbano): díptico de separación de residuos + guía de depósito en contenedores. Datos ya extraídos en `data/residuos.json` |
+| Tipo de API | Ninguna — documentos PDF, sin fuente digital estructurada |
+| Formato | PDF de origen → JSON normalizado en el repo |
+| Autenticación | — |
+| Frecuencia de actualización | Estática (documento institucional, sin fecha de próxima revisión conocida) |
+| Licencia | No especificada — documento informativo municipal |
+| Fiabilidad | Alta para punto limpio, contenedores y contactos (fuente oficial primaria). **Media** para el horario de recogida de cartón comercial (13:00-14:00h L-V): procede de una nota de prensa (revista360y5.es) que cita a la Concejalía, no de los PDF oficiales — no confirmado en fuente primaria |
+| Datos disponibles | Punto limpio (horario, dirección), 9 tipos de contenedor con instrucciones y horario de depósito donde aplica (vidrio 8-23h, resto 21-23h), recogida de enseres (**Valoriza Servicios Medioambientales, S.A., tel. 947 50 60 50** — corrige una mención anterior errónea a "Urbaser" en la investigación inicial), recogida puerta a puerta de cartón comercial, contacto de atención ciudadana |
+| Limitaciones | Sin calendario de recogida domiciliaria por calle/día (no estaba en los PDF aportados) |
+| ¿Automatizable? | No hace falta: es un dataset estático de baja frecuencia de cambio, se versiona a mano igual que ORA |
 
 ### 2.1b Bus urbano — GTFS real (aportado por el usuario, 2026-09-09)
 
@@ -80,20 +98,40 @@ Esto no invalida el proyecto: confirma que la arquitectura de **adapters desacop
 
 ---
 
-### 2.2 Junta de Castilla y León (JCyL)
+### 2.2 Junta de Castilla y León (JCyL) — calidad del aire
 
-| Campo | Estaciones de calidad del aire | Calidad del aire histórica/horaria | SAICA (calidad de aguas) / SAIH Duero |
-|---|---|---|---|
-| URL | `analisis.datosabiertos.jcyl.es` (dataset `estaciones-de-control-de-la-calidad-del-aire`) | `datosabiertos.jcyl.es` (`calidad-aire-historico-horario`), fichero >1 GB | `saihduero.es` (CHD, no JCyL) |
-| Tipo de API | **API REST Opendatasoft Explore v2.1** — **probada y funcionando** | Descarga de fichero completo (no hay API de consulta filtrada confirmada) | Ninguna API pública; solo visor web interactivo |
-| Formato | JSON, CSV, GeoJSON (estándar Opendatasoft) | CSV/fichero masivo | HTML interactivo, descarga CSV manual por estación |
-| Autenticación | No requerida para lectura | No requerida | No requerida (no hay API) |
-| Frecuencia de actualización | Baja (metadatos de estaciones) | Horaria (según nombre del dataset) | Tiempo casi real (ROEA/SAIH), pero sin API |
-| Licencia | Reutilización según condiciones del portal JCyL (a verificar antes de redistribuir) | Igual | No especificada para uso programático |
-| Fiabilidad | Alta (organismo oficial, API respondió con datos reales: 92 estaciones) | Alta como dato, baja usabilidad (fichero muy grande) | Media (datos "provisionales sujetos a revisión") |
-| Datos disponibles | `estacion`, `operativa`, `provincia`, `localizacion`, `lat`, `long`, `altitud`, `posicion` | Contaminantes por hora y estación (PM10, NO2, O3, SO2, CO donde aplique) | Nivel/caudal por estación de aforo |
-| Limitaciones clave | **Ninguna estación en Aranda de Duero** (verificado con `where=localizacion like "Aranda"` → 0 resultados). La estación operativa más próxima está en otra localidad de la provincia | Fichero completo demasiado grande para consultar en caliente; requiere ETL propio o buscar endpoint de consulta filtrada equivalente (pendiente de confirmar si existe un dataset "vivo" homólogo al de estaciones) | Sin API: cualquier integración requeriría scraping del visor o contacto directo con la CHD |
-| ¿Automatizable? | Sí, vía API REST directa | Parcialmente (requiere ETL batch, no polling) | No sin colaboración de la CHD; se deja como adapter a la espera del endpoint que aporte el usuario (tal como pide el prompt en §12) |
+> **Corrección de un error propio (2026-09-09):** la investigación inicial (2026-09-08) afirmó que "no existe ninguna estación JCyL en Aranda de Duero", basándose en `where=localizacion like "Aranda"` → 0 resultados sobre el dataset de estaciones. Eso fue un **error de mi parte**: `localizacion` es la dirección física (p. ej. "C/ Sulidiza"), no el nombre de la estación. Repitiendo la consulta sobre el campo correcto (`estacion`) aparecen **2 estaciones**: "Aranda de Duero" (inactiva) y **"Aranda de Duero 2"** (operativa, C/ Sulidiza, lat 41.66556, lon -3.68889). El usuario además aportó el dataset de mediciones reales que lo confirma de forma independiente.
+
+| Campo | Estaciones de calidad del aire (catálogo) | **Calidad del aire del día en curso (mediciones reales, aportado por el usuario)** |
+|---|---|---|
+| URL | `analisis.datosabiertos.jcyl.es`, dataset `estaciones-de-control-de-la-calidad-del-aire` | `analisis.datosabiertos.jcyl.es`, dataset `calidad-del-aire-del-dia-en-curso` — probado en vivo: `.../records?refine=nombreprovincia:"Burgos"&refine=nombreestacion:"Aranda de Duero 2"` |
+| Tipo de API | API REST Opendatasoft Explore v2.1 | Misma API (Opendatasoft Explore v2.1) |
+| Formato | JSON, CSV, GeoJSON | JSON, CSV, GeoJSON |
+| Autenticación | No requerida | No requerida |
+| Frecuencia de actualización | Baja (metadatos de estaciones) | Horaria, datos del día en curso (verificado: `dia` incluye el día de hoy con lecturas hasta la hora actual) |
+| Licencia | Reutilización según condiciones del portal JCyL (a verificar antes de redistribuir) | Igual |
+| Fiabilidad | Alta | Alta — dataset probado con datos reales de hoy |
+| Datos disponibles | `estacion`, `operativa`, `provincia`, `localizacion`, `lat`, `long`, `altitud`, `posicion` | Formato "largo" (una fila por contaminante y hora): `dia`, `hora`, `codprovincia`, `nombreprovincia`, `idestacion` (82 para Aranda de Duero 2), `nombreestacion`, `contaminantes` (nombre+unidad, p. ej. `"PM10 (ug/m3)"`), `valor`. **Contaminantes confirmados en Aranda de Duero 2**: NO, NO2, O3, PM10, PM25, SO2 (los que use §7 del prompt maestro: "usa todas las posibles métricas") |
+| Limitaciones clave | Ninguna estación de nombre exacto "Aranda de Duero" (la vigente es "Aranda de Duero 2") | Formato largo (no una fila por hora con todas las métricas, sino una fila por métrica-hora) — el adapter debe pivotar a un formato ancho para la respuesta pública. **Paginación**: `total_count` (126 registros para un día típico) supera el `limit` por defecto (20) — iterar con `offset` tal como indicó el usuario hasta cubrir `total_count` |
+| ¿Automatizable? | Sí, vía API REST directa | Sí, vía API REST directa con paginación por `offset` |
+
+### 2.2b Río — SAIH CHD (API real aportada por el usuario, 2026-09-09)
+
+| Campo | Detalle |
+|---|---|
+| Fuente | `https://saih-chd-api-9d034ff9d037.herokuapp.com` — servicio de terceros/comunitario (Heroku) que envuelve datos del SAIH de la Confederación Hidrográfica del Duero, **no es la API oficial de la CHD** (que sigue sin exponer una públicamente, ver saihduero.es) |
+| URL / patrón | `GET /station/aforo/{codigoEstacion}/{metrica}` — probado en vivo con `EA013` |
+| Tipo de API | REST JSON, sin discovery endpoint (`/`, `/stations`, `/station`, `/docs` devuelven 404) |
+| Formato | JSON: array de `{ "d": "dd/mm/aaaa HH:MM", "v": number, "@timestamp": ISO8601 }` |
+| Autenticación | Ninguna |
+| Métricas válidas | `nivel`, `caudal`, `temperatura`, `pluviometria` (confirmado por el mensaje de error 400 al pedir una inválida). **Para `EA013` (estación de aforo) solo `nivel` y `caudal` devuelven datos** — `temperatura`/`pluviometria` devuelven `[]` (probablemente son métricas de otro tipo de estación, meteorológica) |
+| Frecuencia de actualización | Datos hasta la hora actual menos ~2h (verificado: último registro a 2 horas del momento de la consulta) — prácticamente tiempo real |
+| Ventana de datos | Ventana móvil de ~3 meses (2066 registros horarios ≈ 86 días) — no parece ser un archivo histórico completo, sino los datos recientes |
+| Licencia | No especificada — servicio de terceros, sin términos de uso publicados. **Documentar la fuente real (CHD/SAIH) como origen del dato subyacente y este servicio como el medio técnico de acceso** |
+| Fiabilidad | Alta como dato en sí (consistente con "datos provisionales sujetos a revisión" del SAIH oficial); **media como servicio** — es una app de terceros en Heroku (plan gratuito de Heroku puede dormir o desaparecer), no infraestructura oficial del organismo de cuenca |
+| Datos disponibles | Nivel (m, sin confirmar unidad exacta en la respuesta) y caudal (m³/s, sin confirmar unidad exacta) por hora, estación EA013 |
+| Limitaciones | Sin endpoint de catálogo de estaciones — el código de estación (`EA013`) debe conocerse de antemano; un código inválido devuelve `200 []` en vez de 404, así que el adapter no puede distinguir "estación inexistente" de "sin datos" solo por el status code |
+| ¿Automatizable? | Sí, directamente. `RioClient` ya puede implementarse contra esta URL real en vez de quedar en modo stub |
 
 ### 2.3 Estatales / otros
 
@@ -117,11 +155,11 @@ Clasificados por fuente, disponibilidad real, coste, frecuencia de cambio, dific
 | # | Endpoint propuesto | Fuente | Disponibilidad | Coste | Frecuencia de actualización | Dificultad | Utilidad ciudadana |
 |---|---|---|---|---|---|---|---|
 | 1 | `GET /api/v1/weather/avisos` | AEMET OpenData | Real, API oficial | Gratis (API key) | Alta (avisos meteorológicos) | Baja | 5 — alertas de seguridad |
-| 2 | `GET /api/v1/ambiente/estacion-mas-cercana` | JCyL (adapter existente) | Real, con matiz (ninguna estación en Aranda) | Gratis | Media | Baja | 3 — transparente sobre la limitación |
-| 3 | `GET /api/v1/rio/nivel-embalses` (p.ej. embalse de la zona) | CHD/SAIH (pendiente de API real) | No disponible aún | — | — | Media (depende del adapter) | 3 |
-| 4 | `GET /api/v1/farmacia/zona-farmaceutica` | Colegio Of. Farmacéuticos Burgos (PDF) | Real, requiere ingesta | Gratis | Mensual | Media (parseo PDF) | 5 — uso diario alto |
-| 5 | `GET /api/v1/residuos/puntolimpio` | Ayuntamiento (dato estático) | Real, estático | Gratis | Baja (rara vez cambia) | Baja | 4 |
-| 6 | `GET /api/v1/residuos/muebles` (recogida de enseres bajo cita) | Ayuntamiento (dato estático: contacto Urbaser) | Real, estático | Gratis | Baja | Baja | 3 |
+| 2 | ~~`GET /api/v1/ambiente/estacion-mas-cercana`~~ → innecesario: la estación "Aranda de Duero 2" **es** la del municipio (§2.2) | JCyL, dataset `calidad-del-aire-del-dia-en-curso` | Real | Gratis | Horaria | Baja | 5 — dato local real, no aproximado |
+| 3 | `GET /api/v1/rio/nivel`, `GET /api/v1/rio/caudal` (ya cubiertos por el diseño original §12 del prompt, ahora con fuente real) | SAIH-CHD API (§2.2b) | Real | Gratis | Casi tiempo real | Baja (JSON simple) | 4 |
+| 4 | `GET /api/v1/farmacia/dashboard` — vista agregada para UI/kiosco: farmacia de hoy + próximos N días + si el día es festivo (nacional/CyL/local) | `data/farmacias.json` + `data/farmacias-guardia-2026.json` (ya en el repo) | Real | Gratis | Diaria | Baja | 5 — pensado para consumo visual directo, propuesto por el usuario (2026-09-09) |
+| 5 | `GET /api/v1/residuos/puntolimpio`, `GET /api/v1/residuos/contenedores`, `GET /api/v1/residuos/comercio-carton` | `data/residuos.json` (ya en el repo, ver §2.1c) | Real, estático | Gratis | Baja (rara vez cambia) | Baja | 4 |
+| 6 | `GET /api/v1/residuos/enseres` (recogida de enseres bajo cita) | `data/residuos.json` — contacto real: Valoriza Servicios Medioambientales, S.A., 947 50 60 50 | Real, estático | Gratis | Baja | Baja | 3 |
 | 7 | `GET /api/v1/turismo/poi` (puntos de interés: bodegas, monumentos, rutas) | OpenStreetMap (Overpass API) | Real, API pública | Gratis | Baja | Media | 4 — turismo, uso por asistentes IA |
 | 8 | `GET /api/v1/turismo/fuentes` (fuentes públicas de agua) | OpenStreetMap (Overpass) | Real | Gratis | Baja | Media | 3 |
 | 9 | `GET /api/v1/turismo/parques` | OpenStreetMap (Overpass) | Real | Gratis | Baja | Media | 3 |
@@ -240,28 +278,32 @@ La separación **Client → Adapter** (en vez de fusionarlos) es una capa extra 
 
 ---
 
-## 6. Preguntas abiertas para el usuario (bloquean el arranque de ciertos módulos, no del proyecto)
+## 6. Preguntas — todas resueltas (2026-09-09)
 
-1. **Eventos (`/eventos`)**: ¿autorizas hacer scraping HTML de `arandadeduero.es/servicio/eventos/` (frágil, con tests de contrato y aviso claro de `source: "scraping"` en la respuesta), o prefieres dejar el módulo fuera de la v1 hasta que exista una fuente estructurada?
-2. ~~**Bus urbano (`/bus`)**~~ — **Resuelto 2026-09-09**: el usuario aportó [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano), feed GTFS real (ver §2.1b). Queda una sub-pregunta menor: la licencia declarada es AGPL-3.0 sobre un repositorio de datos — ¿confirmamos con el mantenedor el alcance antes de publicar `/bus` en producción, o asumimos que cubre solo el código generador y publicamos citando la fuente?
-3. **Río (`/rio`)**: ¿tienes contacto/acceso a un endpoint real de la CHD/SAIH, o construimos el adapter en modo "fuente no disponible" hasta entonces?
-4. **Cortes de calles / Waze**: dado que el alta en Waze for Cities la debe tramitar el propio Ayuntamiento (no un desarrollador), ¿seguimos adelante solo con el adapter vacío (`WazeClient` que devuelve `NOT_AVAILABLE`), o prefieres que investigue fuentes alternativas (p. ej. avisos de obras publicados por el propio Ayuntamiento en HTML)?
-5. **Calidad del aire para Aranda**: dado que no hay estación en el municipio, ¿mostramos la estación operativa más cercana con su distancia real y un aviso explícito, o preferís no publicar `/ambiente` hasta tener una fuente local?
-6. ~~**CORS**~~ — **Resuelto 2026-09-09**: acceso público sin restricción de origen (`CORS_ORIGIN=*`), coherente con una API de datos abiertos. Es el default ya implementado en la Fase 1 (`src/plugins/security.ts`), confirmado ahora como decisión definitiva de producción y no solo como valor de desarrollo.
+1. ~~**Eventos**~~ — **Resuelto: fuera de alcance de la v1.** No se construye ningún adapter ni endpoint de eventos. Ver nota en §2.1.
+2. ~~**Bus urbano (`/bus`)**~~ — **Resuelto**: GTFS real aportado, [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano) (§2.1b). Sub-pregunta pendiente y de bajo riesgo: confirmar con el mantenedor el alcance de la licencia AGPL-3.0 antes de publicar `/bus` en producción — no bloquea el desarrollo, sí la salida a producción.
+3. ~~**Río (`/rio`)**~~ — **Resuelto**: API real aportada (§2.2b), `saih-chd-api-9d034ff9d037.herokuapp.com`, probada en vivo.
+4. ~~**Cortes de calles / Waze**~~ — **Resuelto: no disponible por ahora.** Se documenta `WazeClient` como no implementado; no hay trámite institucional en curso. Revisar si el Ayuntamiento decide solicitar el alta a Waze for Cities en el futuro.
+5. ~~**Calidad del aire para Aranda**~~ — **Resuelto**: sí hay estación real ("Aranda de Duero 2"), y el usuario aportó el dataset de mediciones del día en curso (§2.2). Corrige un error de la investigación inicial.
+6. ~~**CORS**~~ — **Resuelto**: acceso público sin restricción de origen (`CORS_ORIGIN=*`), ya implementado en la Fase 1.
+
+Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Colegio de Farmacéuticos aportados y ya en el repo) y **residuos** (§2.1c, PDFs oficiales del Ayuntamiento aportados y ya en el repo).
 
 ---
 
-## 7. Plan de fases (ajustado a la disponibilidad real de fuentes)
+## 7. Plan de fases (actualizado 2026-09-09 — todo desbloqueado salvo lo explícitamente excluido)
 
-| Fase | Contenido | Cambios respecto al prompt original |
+| Fase | Contenido | Estado |
 |---|---|---|
-| 1 | Core: Node, TS, Fastify, config, logging, errores, OpenAPI, health, Docker | Sin cambios |
-| 2 | Farmacia (fixture) + Weather (Open-Meteo, con AEMET como fuente secundaria de avisos) | Se añade AEMET avisos como parte de la fase, por ser API oficial ya confirmada |
-| 3 | Ambiente (JCyL, con resolución de estación más cercana) + Parking/ORA (datos estáticos verificados) | Eventos se aplaza a una fase 3b condicionada a la respuesta de la pregunta 1 (§6) |
-| 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`, descarga automática desde GitHub Releases) como fuente principal; GTFS interurbano del NAP como fuente secundaria (`/bus/interurbano`, endpoint §3.15) | Fase ya desbloqueada por completo (2026-09-09) — no depende de ninguna otra decisión pendiente |
-| 5 | Río (adapter a la espera) + Cortes de calles (adapter a la espera de alta institucional en Waze) | Ambos quedan como adapters "stub" documentados, no bloquean el resto |
-| 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | Se añaden los endpoints de transparencia propuestos en §3 |
+| 1 | Core: Node, TS, Fastify, config, logging, errores, OpenAPI, health, Docker | ✅ Completada |
+| 2 | Farmacia (datos reales: `data/farmacias.json` + `data/farmacias-guardia-2026.json`) + Weather (Open-Meteo, con AEMET como fuente secundaria de avisos) | Desbloqueada — siguiente a implementar |
+| 3 | Ambiente (JCyL, dataset `calidad-del-aire-del-dia-en-curso`, estación "Aranda de Duero 2") + Parking/ORA (datos estáticos verificados) + Residuos (`data/residuos.json`) | Desbloqueada por completo |
+| 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`) como fuente principal; GTFS interurbano del NAP como fuente secundaria | Desbloqueada por completo |
+| 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | Río desbloqueado; cortes de calles excluido de la v1 |
+| 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | Sin cambios |
 | 7 | E2E, smoke tests, CI/CD, hardening | Sin cambios |
+
+**Eventos y cortes de calles/Waze quedan explícitamente fuera de la v1** — no aparecen como módulos "pendientes", sino como decisión tomada de no implementarlos por ahora.
 
 ---
 
