@@ -1,7 +1,7 @@
 # Propuesta de arquitectura — API Ciudad de Aranda de Duero
 
 **Estado:** borrador para revisión — no implementar hasta aprobación explícita (ver §0 y §8).
-**Fecha:** 2026-09-08
+**Fecha:** 2026-09-08 (actualizado 2026-09-09: bus urbano resuelto, ver §0 y §2.1b)
 
 ---
 
@@ -14,7 +14,7 @@ Se ha hecho una investigación real (no asumida) de las fuentes de datos abierta
 | Calidad del aire | JCyL tiene API con estaciones | ✅ Confirmado y probado en vivo (API REST JSON, sin auth) | Ninguno |
 | Calidad del aire — **Aranda concretamente** | Se puede mostrar `/ambiente` para Aranda | ❌ **No existe ninguna estación JCyL en Aranda de Duero** (consulta a la API real: 0 resultados) | Hay que decidir estrategia: mostrar la estación operativa más cercana (con distancia y aviso explícito de que no es local), o no ofrecer el endpoint todavía |
 | Eventos municipales | Existe JSON "raw" en la web del ayuntamiento | ❌ La web (`arandadeduero.es/servicio/eventos/`) es HTML server-rendered en WordPress, sin API ni RSS | Hay que decidir: scraping HTML propio (frágil, requiere mantenimiento) vs. omitir el módulo en la v1 |
-| Autobús urbano / GTFS | "GTFS disponible en GitHub que proporcionaré" | ❌ No existe GTFS público del bus urbano de Aranda (busurbanoaranda.com es solo informativo, sin datos abiertos). Sí existe GTFS de la línea **interurbana** Madrid–Aranda de Duero–Burgo de Osma en el NAP estatal | El módulo `/bus` de la v1 debe construirse sobre el GTFS que el usuario aporte (como el prompt ya anticipaba); si no se aporta, no hay fuente real disponible para el bus urbano |
+| Autobús urbano / GTFS | "GTFS disponible en GitHub que proporcionaré" | ✅ **Resuelto (2026-09-09):** el usuario aportó el repositorio real [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano) — feed GTFS completo (los 6 ficheros obligatorios + `calendar_dates.txt`, `shapes.txt`, `feed_info.txt`), 3 líneas (L1, L2, L3), operador Dávila Autocares, generado automáticamente por GitHub Actions y publicado como asset `latest.zip` en GitHub Releases. Ver detalle en §2.1b | Ya no bloquea la Fase 4. Sustituye a la interurbana del NAP como fuente principal de `/bus` |
 | Cortes de calles | Integrar Waze si hay acceso autorizado | ⚠️ Waze for Cities es gratuito pero **requiere solicitud y aprobación como organismo público** (no es una API de autoservicio), y el acuerdo prohíbe redistribuir los datos públicamente sin más | El adapter debe construirse, pero el módulo no puede activarse hasta que el Ayuntamiento (no un desarrollador externo) solicite el acceso |
 | Río | "Yo proporcionaré el API real" | La CHD/SAIH Duero (saihduero.es) **no expone API pública documentada**, solo un visor interactivo y descargas CSV manuales | Se construye el adapter (`RioClient`) desacoplado como pide el prompt, a la espera de que el usuario aporte el endpoint real o credenciales |
 | Farmacias | Dataset ficticio inicial | Confirmado: no hay API pública de farmacias de guardia; el Colegio Oficial de Farmacéuticos de Burgos publica calendarios mensuales descargables (PDF) por zona farmacéutica, incluida "Z.F. Aranda de Duero" | Viable como fuente real futura vía **ingesta programada de PDF**, no como API; v1 usa el fixture JSON pedido |
@@ -60,6 +60,26 @@ Esto no invalida el proyecto: confirma que la arquitectura de **adapters desacop
 | Limitaciones | Sin estructura de datos, cambia el HTML sin aviso → scraping frágil | El calendario es de ámbito de "zona farmacéutica" (Aranda), no solo del municipio; hay que verificar qué farmacias concretas cubre | No hay API de ocupación | No hay API de ocupación | No hay calendario de recogida por calle en formato abierto |
 | ¿Automatizable? | Sí, mediante scraping HTML propio (frágil, requiere tests de contrato) o quedar fuera de v1 | Sí, mediante descarga y parseo periódico del PDF mensual | Sí, como dataset estático versionado a mano (no cambia a menudo) | No hay nada que automatizar salvo datos estáticos | Como dataset estático |
 
+### 2.1b Bus urbano — GTFS real (aportado por el usuario, 2026-09-09)
+
+| Campo | Detalle |
+|---|---|
+| Fuente | Repositorio [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano) en GitHub |
+| URL de descarga | `https://api.github.com/repos/arandadeduero/gtfs-busurbano/releases/latest` → asset `latest.zip` (verificado en vivo: release `v20260524-38`, asset `latest.zip`, 50.879 bytes) |
+| Tipo de API | No es una API en el sentido REST; es un fichero GTFS estático distribuido vía GitHub Releases. El feed se genera automáticamente por GitHub Actions (autor de cada release: `github-actions[bot]`) |
+| Formato | ZIP con los ficheros GTFS estándar: obligatorios (`agency.txt`, `stops.txt`, `routes.txt`, `trips.txt`, `stop_times.txt`, `calendar.txt`) + opcionales presentes (`calendar_dates.txt`, `shapes.txt`, `feed_info.txt`) |
+| Autenticación | Ninguna (repositorio y releases públicos) |
+| Frecuencia de actualización | Irregular: releases cada 1-4 semanas entre feb-may 2026 (`v20260223` … `v20260524-38`), pero **sin release nuevo desde el 24-may-2026** (~3,5 meses a la fecha de este documento) — el `feed_info.txt`/vigencia declarada cubre 1-dic-2025 a 31-dic-2026, así que no hay motivo aparente para que no se actualice hasta entonces |
+| Licencia | **AGPL-3.0**, declarada en el repositorio. Es una licencia de software copyleft aplicada aquí a un repositorio de datos generados — su alcance exacto sobre los ficheros GTFS (¿el código generador, o también los CSV de salida?) no es inequívoco. Dado que nuestra API es un servicio de red que expondría datos derivados de este feed, **conviene verificar con el mantenedor del repositorio** el alcance real de la licencia antes de publicar `/api/v1/bus` en producción, y en cualquier caso documentar la atribución («Fuente: Ayuntamiento de Aranda de Duero / Dávila Autocares, vía github.com/arandadeduero/gtfs-busurbano, AGPL-3.0») tal como exige el prompt maestro (§32) |
+| Fiabilidad | Alta como dato (3 líneas reales: L1, L2, L3; operador Dávila Autocares) — pendiente de confirmar cuánto tiempo seguirá manteniéndose el repositorio activo dado el parón de releases desde mayo |
+| Datos disponibles | Líneas L1, L2 (Polígono Industrial - Institutos), L3 (Sinovas - Urb. Costaján - Policía Nacional); paradas, horarios, calendario de servicio con excepciones de festivos (`calendar_dates.txt`), trazados GPS (`shapes.txt`) |
+| Limitaciones | No hay endpoint de "próxima release" con notificación push — hay que consultar `releases/latest` periódicamente (razonable: cachear el ZIP descargado con TTL de horas, no de segundos, ya que el feed es estático y de baja frecuencia de cambio) |
+| ¿Automatizable? | Sí, completamente: `GET releases/latest` (API de GitHub, sin auth para uso no intensivo) → descargar `latest.zip` → `GtfsRepository` parsea los ficheros tal como ya preveía el prompt maestro (§11) |
+
+**Impacto en la arquitectura:** este feed sustituye a la línea interurbana del NAP como fuente **principal** de `/api/v1/bus` (ver revisión de §3 y §7 más abajo). El GTFS interurbano Madrid–Aranda–Burgo de Osma sigue siendo útil como fuente secundaria/complementaria (endpoint propuesto en §3, ítem 15), pero ya no es necesario como sustituto de arranque.
+
+---
+
 ### 2.2 Junta de Castilla y León (JCyL)
 
 | Campo | Estaciones de calidad del aire | Calidad del aire histórica/horaria | SAICA (calidad de aguas) / SAIH Duero |
@@ -81,7 +101,8 @@ Esto no invalida el proyecto: confirma que la arquitectura de **adapters desacop
 |---|---|---|---|---|
 | **AEMET OpenData** | API REST oficial | JSON (vía URLs intermedias con TTL corto) | API key gratuita por email; **desde 15-oct-2026 las keys sin expiración dejan de funcionar** → usar API keys nuevas desde el diseño | Alternativa/complemento oficial a Open-Meteo: predicción por municipio (código INE de Aranda de Duero) y avisos meteorológicos oficiales |
 | **Open-Meteo** | API REST pública | JSON | Sin key (uso no comercial) | Fuente principal de `/weather`, tal como pide el prompt; límite 10k llamadas/día — hay que cachear agresivamente (TTL 10 min) |
-| **NAP Transportes (nap.transportes.gob.es)** | Punto de acceso nacional GTFS | GTFS (zip) | Registro para publicar; lectura pública | Contiene GTFS de la línea interurbana Madrid–Aranda de Duero–Burgo de Osma (AISA). **No contiene el bus urbano** |
+| **`arandadeduero/gtfs-busurbano`** (GitHub) | Feed GTFS estático, releases automáticas | GTFS (zip) | Sin auth | **Bus urbano real** (L1/L2/L3, operador Dávila Autocares) — fuente principal de `/bus`. Ver detalle completo en §2.1b |
+| **NAP Transportes (nap.transportes.gob.es)** | Punto de acceso nacional GTFS | GTFS (zip) | Registro para publicar; lectura pública | Contiene GTFS de la línea interurbana Madrid–Aranda de Duero–Burgo de Osma (AISA) — fuente secundaria/complementaria a la urbana |
 | **NAP DGT (nap.dgt.es)** | Punto de acceso nacional de tráfico | DATEX2 (XML), v3.6/3.7 | Registro | Incidencias de la red de carreteras del Estado (excluye País Vasco/Cataluña). Formato DATEX2 es complejo; cobertura de vías dentro del propio casco urbano de Aranda es previsiblemente nula o muy baja — más útil para incidencias en la AP-1/N-1 cercanas que para "cortes de calles" del municipio |
 | **Waze for Cities** | Programa de datos, no API abierta | GeoRSS / JSON vía acuerdo de partner | Requiere alta como organismo público, sin coste, sin uso comercial, prohibido republicar los datos abiertamente sin más | Es la fuente que el prompt pide para `/cortescalles`, pero el trámite de alta debe iniciarlo el Ayuntamiento, no un desarrollador; mientras tanto se construye el adapter en modo "fuente no disponible" |
 | **datos.gob.es** | Catálogo agregador nacional | Variable (redirige a portales origen) | — | No aporta datasets específicos y operativos de Aranda de Duero más allá de mapas geológicos/hidrogeológicos del IGME (no útiles para esta API) |
@@ -109,7 +130,7 @@ Clasificados por fuente, disponibilidad real, coste, frecuencia de cambio, dific
 | 12 | `GET /api/v1/eventos/fiestas` (agenda oficial de Fiestas Patronales, contenido más estable que la agenda genérica) | Ayuntamiento (HTML, sección específica) | Real, requiere scraping puntual | Gratis | Estacional | Media | 4 — pico de interés cada septiembre |
 | 13 | `GET /api/v1/instalaciones/deportivas` | Ayuntamiento (si publica listado) — a confirmar en investigación posterior | Por confirmar | Gratis | Baja | Media | 3 |
 | 14 | `GET /api/v1/instalaciones/bibliotecas` | Ayuntamiento — a confirmar | Por confirmar | Gratis | Baja | Media | 2 |
-| 15 | `GET /api/v1/bus/interurbano` (línea Madrid–Aranda–Burgo de Osma) | GTFS real en NAP (AISA) | **Real y disponible ya**, a diferencia del bus urbano | Gratis | Baja (GTFS estático, actualización esporádica) | Media (parseo GTFS ya previsto para `/bus`) | 4 — cubre un hueco real que sí tiene datos, mientras el GTFS urbano no llega |
+| 15 | `GET /api/v1/bus/interurbano` (línea Madrid–Aranda–Burgo de Osma) | GTFS real en NAP (AISA) | Real y disponible | Gratis | Baja (GTFS estático, actualización esporádica) | Media (mismo `GtfsRepository` que el urbano, con dos fuentes) | 4 — complementa el bus urbano (§2.1b), ya resuelto como fuente principal |
 | 16 | `GET /api/v1/parking/ora/zonas` | Ayuntamiento (ordenanza, dato estático verificado: distritos A/B/C) | Real, estático | Gratis | Muy baja | Baja | 4 |
 | 17 | `GET /api/v1/geo/callejero` (geocodificación básica de direcciones del municipio) | OpenStreetMap Nominatim | Real | Gratis (uso respetuoso, rate-limited por OSM) | Baja | Media | 3 — soporte transversal para otros módulos (parking, farmacias, eventos con dirección) |
 | 18 | `GET /api/v1/meta/fuentes` (metadatos de todas las fuentes: licencia, última actualización, estado) | Interno (agregación de metadatos de cada adapter) | Real, generado internamente | Gratis | En vivo | Baja | 5 — transparencia total, requisito explícito del prompt (§32) |
@@ -222,7 +243,7 @@ La separación **Client → Adapter** (en vez de fusionarlos) es una capa extra 
 ## 6. Preguntas abiertas para el usuario (bloquean el arranque de ciertos módulos, no del proyecto)
 
 1. **Eventos (`/eventos`)**: ¿autorizas hacer scraping HTML de `arandadeduero.es/servicio/eventos/` (frágil, con tests de contrato y aviso claro de `source: "scraping"` en la respuesta), o prefieres dejar el módulo fuera de la v1 hasta que exista una fuente estructurada?
-2. **Bus urbano (`/bus`)**: ¿tienes ya el fichero GTFS que ibas a aportar? Si no, propongo empezar por el GTFS **interurbano** real (Madrid–Aranda–Burgo de Osma, disponible en el NAP) como primer caso de uso de `GtfsRepository`, y dejar el urbano para cuando llegue el fichero.
+2. ~~**Bus urbano (`/bus`)**~~ — **Resuelto 2026-09-09**: el usuario aportó [`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano), feed GTFS real (ver §2.1b). Queda una sub-pregunta menor: la licencia declarada es AGPL-3.0 sobre un repositorio de datos — ¿confirmamos con el mantenedor el alcance antes de publicar `/bus` en producción, o asumimos que cubre solo el código generador y publicamos citando la fuente?
 3. **Río (`/rio`)**: ¿tienes contacto/acceso a un endpoint real de la CHD/SAIH, o construimos el adapter en modo "fuente no disponible" hasta entonces?
 4. **Cortes de calles / Waze**: dado que el alta en Waze for Cities la debe tramitar el propio Ayuntamiento (no un desarrollador), ¿seguimos adelante solo con el adapter vacío (`WazeClient` que devuelve `NOT_AVAILABLE`), o prefieres que investigue fuentes alternativas (p. ej. avisos de obras publicados por el propio Ayuntamiento en HTML)?
 5. **Calidad del aire para Aranda**: dado que no hay estación en el municipio, ¿mostramos la estación operativa más cercana con su distancia real y un aviso explícito, o preferís no publicar `/ambiente` hasta tener una fuente local?
@@ -237,7 +258,7 @@ La separación **Client → Adapter** (en vez de fusionarlos) es una capa extra 
 | 1 | Core: Node, TS, Fastify, config, logging, errores, OpenAPI, health, Docker | Sin cambios |
 | 2 | Farmacia (fixture) + Weather (Open-Meteo, con AEMET como fuente secundaria de avisos) | Se añade AEMET avisos como parte de la fase, por ser API oficial ya confirmada |
 | 3 | Ambiente (JCyL, con resolución de estación más cercana) + Parking/ORA (datos estáticos verificados) | Eventos se aplaza a una fase 3b condicionada a la respuesta de la pregunta 1 (§6) |
-| 4 | Bus: GTFS interurbano real (NAP) como primer caso de uso; GTFS urbano cuando el usuario lo aporte | Se reordena para no bloquear la fase en un fichero que aún no existe |
+| 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`, descarga automática desde GitHub Releases) como fuente principal; GTFS interurbano del NAP como fuente secundaria (`/bus/interurbano`, endpoint §3.15) | Fase ya desbloqueada por completo (2026-09-09) — no depende de ninguna otra decisión pendiente |
 | 5 | Río (adapter a la espera) + Cortes de calles (adapter a la espera de alta institucional en Waze) | Ambos quedan como adapters "stub" documentados, no bloquean el resto |
 | 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | Se añaden los endpoints de transparencia propuestos en §3 |
 | 7 | E2E, smoke tests, CI/CD, hardening | Sin cambios |
