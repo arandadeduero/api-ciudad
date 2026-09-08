@@ -1,0 +1,37 @@
+data/residuos.json
+  s_10638ab73c2825::t_0a51181839f942 1-113
+data/farmacias-guardia-2026.json
+  s_10638ab73c2825::t_ccacfa4afab77c 1-1475
+data/farmacias.json
+  s_10638ab73c2825::t_6d3e184ea92272 1-228
+DATA-SOURCES.md
+  s_10638ab73c2825::t_9387b1015241a0 7-19
+  s_10638ab73c2825::t_c24b89f632bf81 21
+.env.example
+  s_10638ab73c2825::t_72372befedfb9c 50-52,56-60
+  s_10638ab73c2825::t_185bcd28068444 32-35,37-39
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_1da429850b597a 12,14-23,25,27
+  s_10638ab73c2825::t_e125775bbf0a59 158-162
+  s_10638ab73c2825::t_5624e1c22185ea 281-288,290,294,296,298-303,306
+  s_10638ab73c2825::t_d4bf7a735da02e 51-79
+  s_10638ab73c2825::t_cfc52b95c1f075 3-4
+  s_10638ab73c2825::t_e84f71371277d7 101,103-134
+  s_10638ab73c2825::t_04ada82866f0fd 307
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "bcdf1007fd86fe08981f07228cc93cf6de163b1b",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
