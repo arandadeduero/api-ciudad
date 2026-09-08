@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Redis es opcional: solo hace falta cuando CACHE_DRIVER=redis (más de una
+  # instancia de la API). No se levanta con `docker compose up` por defecto;
+  # actívalo con `docker compose --profile redis up`.
+  redis:
+    image: redis:7-alpine
+    profiles: ['redis']
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
