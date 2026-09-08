@@ -1,0 +1,89 @@
+.gitignore
+  s_10638ab73c2825::t_8d13334855dcbd 8
+  s_10638ab73c2825::t_bc9ae5c8d289c0 5-7
+  s_10638ab73c2825::t_e6a9b47d360fdf 1-4
+API.md
+  s_10638ab73c2825::t_77bf76aa9d42fc 1-37
+DATA-SOURCES.md
+  s_10638ab73c2825::t_84a06719ba9b4c 1-21
+DEPLOYMENT.md
+  s_10638ab73c2825::t_75ecca5b447522 1-53
+package-lock.json
+  s_10638ab73c2825::t_6593d8e8e2f14b 1-4792
+src/app.ts
+  s_10638ab73c2825::t_47a5d0ccf34b85 1-50
+src/config/env.ts
+  s_10638ab73c2825::t_16e394ff4e3571 1-53
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_66032c0ab483fd 1-29
+.dockerignore
+  s_10638ab73c2825::t_8fd1b3ab14cc67 1-10
+.env.example
+  s_10638ab73c2825::t_4d41d459f174dc 1-48
+.github/workflows/ci.yml
+  s_10638ab73c2825::t_0f75e4b270e9ef 1-45
+.prettierignore
+  s_10638ab73c2825::t_c9c2230cda5267 1-4
+.prettierrc.json
+  s_10638ab73c2825::t_f9af1bb49598bf 1-7
+ARCHITECTURE.md
+  s_10638ab73c2825::t_d0c26f995d1adf 1-48
+DEVELOPMENT.md
+  s_10638ab73c2825::t_591619de3ff4ee 1-58
+Dockerfile
+  s_10638ab73c2825::t_049069ae5510b0 1-38
+README.md
+  s_10638ab73c2825::t_750cb7a6627683 1-77
+docker-compose.yml
+  s_10638ab73c2825::t_818de4a5f46bef 1-22
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_b87238ded63cb0 1-247
+eslint.config.js
+  s_10638ab73c2825::t_3f584fb596e612 1-33
+package.json
+  s_10638ab73c2825::t_f28355ab2af195 1-51
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_254ce597ca7b3d 1-97
+src/cache/CacheService.ts
+  s_10638ab73c2825::t_faad200d1e4536 1-24
+src/cache/InMemoryCache.ts
+  s_10638ab73c2825::t_0964ff2212276f 1-40
+src/cache/index.ts
+  s_10638ab73c2825::t_e489ba7be6cc69 1-22
+src/errors/AppError.ts
+  s_10638ab73c2825::t_f050f13c7807af 1-38
+src/errors/error-handler.ts
+  s_10638ab73c2825::t_70d205b102b107 1-59
+src/plugins/security.ts
+  s_10638ab73c2825::t_f2147f27b14028 1-27
+src/routes/health.ts
+  s_10638ab73c2825::t_8d52dee1f5f216 1-140
+src/server.ts
+  s_10638ab73c2825::t_7f2245537beb6e 1-33
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_179fde792a51de 1-62
+test/unit/in-memory-cache.test.ts
+  s_10638ab73c2825::t_e420f8c2ad8079 1-55
+tsconfig.build.json
+  s_10638ab73c2825::t_13599c02f03d18 1-8
+tsconfig.json
+  s_10638ab73c2825::t_302529dbbacef7 1-22
+vitest.config.ts
+  s_10638ab73c2825::t_400edb48cd8605 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "23bb0951d509c303e2852f555d59da57d3d17d16",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
