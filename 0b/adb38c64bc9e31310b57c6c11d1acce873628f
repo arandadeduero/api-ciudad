@@ -1,0 +1,21 @@
+.env.example
+  s_10638ab73c2825::t_95ad4728746285 7-9
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_232dace1c34d5c 250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "0badb38c64bc9e31310b57c6c11d1acce873628f",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
