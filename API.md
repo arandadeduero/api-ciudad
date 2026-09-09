@@ -4,7 +4,7 @@ Resumen de una línea por endpoint. **Para el detalle completo (parámetros,
 ejemplos de payload reales, todos los códigos de error)**, ver
 [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) — documento interno
 autoritativo, se actualiza en el mismo commit que cualquier cambio de API.
-`/docs` (Swagger UI) es la fuente ejecutable/interactiva generada desde el
+`/docs` (Scalar) es la fuente ejecutable/interactiva generada desde el
 código.
 
 ## Estado: Fase 6 (v1 completa salvo eventos/cortes de calles, excluidos por decisión; observabilidad añadida)
@@ -18,7 +18,7 @@ código.
 | GET    | `/health/ready` | Readiness probe (dependencias críticas — cache)                                                                      |
 | GET    | `/health/deep`  | Diagnóstico por módulo: `ok`/`degraded`/`error` para los módulos implementados, `excluded` para eventos/cortescalles |
 | GET    | `/metrics`      | Métricas Prometheus (Fase 6)                                                                                         |
-| GET    | `/docs`         | Swagger UI                                                                                                           |
+| GET    | `/docs`         | Scalar — referencia interactiva de la API                                                                            |
 | GET    | `/docs/json`    | Spec OpenAPI 3                                                                                                       |
 
 ### Farmacia (`/api/v1/farmacia`) — Fase 2

@@ -19,7 +19,7 @@ trusting an earlier investigation, including your own.
 
 Phases 1-6 complete (all planned data modules + observability), plus a
 robustness/documentation pass on top. Phase 7 (extra E2E, CI/CD hardening)
-is the only thing left. 162 tests passing. Full status/history:
+is the only thing left. 164 tests passing. Full status/history:
 [`docs/architecture-proposal.md`](../docs/architecture-proposal.md) §7,
 [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 
@@ -96,6 +96,16 @@ This isn't optional ceremony — it's caught real bugs every phase (see below).
    `residuos/atencion-ciudadana` from Phase 3 to the robustness pass. When
    auditing a module, check Service methods against Route registrations,
    not just Route registrations against docs.
+7. **`app.inject()` (used by every E2E test here) never executes JavaScript**,
+   so it can't catch a page that returns 200 but never renders in a real
+   browser. Swagger UI's init script was an inline `<script>`, silently
+   blocked by Helmet's default CSP (`script-src 'self'`, no
+   `'unsafe-inline'`/nonce) — only caught when a human loaded `/docs` for
+   real. Fixed by switching `/docs` to Scalar and scoping `script-src
+'unsafe-inline'` to that one path only in `src/plugins/security.ts`
+   (everything else keeps the strict default). If you touch anything that
+   renders HTML with inline `<script>`/`<style>`, check the CSP header with
+   curl — don't assume `app.inject()` returning 200 means it works.
 
 ## Documentation is part of the change, not a follow-up
 
@@ -105,7 +115,7 @@ change (new/modified/removed) updates it in the same commit**, per its own
 "Cómo mantener este documento" section. `API.md`, `ARCHITECTURE.md`,
 `DATA-SOURCES.md`, `README.md`, `.env.example` get the same treatment for
 changes that affect them. Every route also carries OpenAPI `summary`,
-`description`, and parameter `description` fields — `/docs` (Swagger UI)
+`description`, and parameter `description` fields — `/docs` (Scalar)
 should explain behavior, not just list types.
 
 ## Where things are

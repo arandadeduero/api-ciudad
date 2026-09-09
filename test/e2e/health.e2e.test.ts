@@ -80,6 +80,30 @@ describe('E2E /health', () => {
     expect(countParam.description).toBeTruthy();
   });
 
+  it('GET /docs/ sirve la UI de Scalar con el CSP relajado solo para script-src en esa ruta', async () => {
+    const res = await app.inject({ method: 'GET', url: '/docs/' });
+    expect(res.statusCode).toBe(200);
+    // Bug real detectado en vivo (2026-09-09): Scalar arranca con un
+    // <script> inline (Scalar.createApiReference(...)), que un
+    // script-src 'self' sin 'unsafe-inline' bloquea en el navegador —
+    // la página cargaba (200) pero no llegaba a renderizarse. `app.inject()`
+    // no ejecuta JS, así que esto solo se detecta inspeccionando la
+    // cabecera CSP y el HTML servido, no con una aserción de status code.
+    expect(res.headers['content-security-policy']).toContain("script-src 'self' 'unsafe-inline'");
+    expect(res.body).toContain('Scalar.createApiReference');
+    expect(res.body).toContain('<script src="js/scalar.js">');
+  });
+
+  it('el CSP relajado en /docs no se filtra a las rutas de datos', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/farmacia' });
+    const csp = res.headers['content-security-policy'] as string;
+    // style-src lleva 'unsafe-inline' en toda la API por defecto de helmet
+    // (no relacionado con este fix) — la comprobación real es que
+    // script-src específicamente se mantiene estricto fuera de /docs.
+    const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src '));
+    expect(scriptSrc).not.toContain('unsafe-inline');
+  });
+
   it('GET /ruta-inexistente devuelve 404 con el formato de error estándar', async () => {
     const res = await app.inject({ method: 'GET', url: '/ruta-inexistente' });
     expect(res.statusCode).toBe(404);

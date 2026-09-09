@@ -31,8 +31,8 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/config/env.ts` — validación de variables de entorno con Zod, fail-fast.
 - `src/errors/` — `AppError` tipado + error handler central (`{ error: { code, message, requestId } }`).
 - `src/cache/` — `CacheService` (interfaz) + `InMemoryCache` (implementación activa).
-- `src/plugins/security.ts` — Helmet, CORS, rate limiting.
-- `src/plugins/openapi.ts` — OpenAPI 3 + Swagger UI en `/docs`.
+- `src/plugins/security.ts` — Helmet, CORS, rate limiting. El CSP de Helmet relaja `script-src` a `'unsafe-inline'` solo para `/docs` (necesario para el script de arranque de Scalar, ver más abajo); el resto de la API mantiene `script-src 'self'` sin excepciones.
+- `src/plugins/openapi.ts` — OpenAPI 3 + Scalar (`@scalar/fastify-api-reference`) en `/docs`. Reemplazó a Swagger UI (2026-09-09): Swagger UI generaba un `<script>` de inicialización inline que el CSP por defecto bloqueaba en el navegador (comprobado en vivo — la página cargaba con 200 pero no se renderizaba). Scalar sirve su JS desde un fichero propio del mismo origen (`/docs/js/scalar.js`), pero también necesita un pequeño script inline para arrancar, de ahí el ajuste de CSP en `security.ts`.
 - `src/routes/schemas.ts` — piezas de JSON Schema compartidas (`responseSchema`, envoltorio `{data, meta}`).
 - `src/routes/health.ts` — `/health`, `/health/live`, `/health/ready`, `/health/deep`.
 - `src/app.ts` — fábrica de la instancia Fastify (testeable con `inject()`), cablea servicios y monta rutas bajo `/api/v1`.
@@ -110,10 +110,14 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 
 Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propio schema y su cobertura de test:
 
-- **`response` schema completo en todas las rutas.** `residuos/*` (las 5 rutas existentes), `parking/ora` y `bus/stop/:id/next` no declaraban ningún `response` — Swagger no mostraba shape de respuesta para ellas, y no había protección de la whitelist de serialización (Principio #5). Se añadió el schema completo a las 7, verificado campo a campo contra un servidor real levantado a propósito (no solo contra los tests) para no repetir el bug de Principio #5 una tercera vez.
+- **`response` schema completo en todas las rutas.** `residuos/*` (las 5 rutas existentes), `parking/ora` y `bus/stop/:id/next` no declaraban ningún `response` — la UI de /docs no mostraba shape de respuesta para ellas, y no había protección de la whitelist de serialización (Principio #5). Se añadió el schema completo a las 7, verificado campo a campo contra un servidor real levantado a propósito (no solo contra los tests) para no repetir el bug de Principio #5 una tercera vez.
 - **`GET /api/v1/residuos/atencion-ciudadana` (nueva ruta).** `ResiduosService.getAtencionCiudadana()` existía desde la Fase 3, con datos reales validados (`data/residuos.json → atencionCiudadana`), pero nunca se había conectado a ninguna ruta HTTP — dato real e inalcanzable hasta ahora.
-- **`description` en parámetros y operaciones** de prácticamente todas las rutas (formatos de fecha, rangos válidos, qué significa cada valor especial como `NOT_AVAILABLE` o un array vacío en domingo) — `/docs` (Swagger UI) pasa de mostrar solo tipos a explicar el comportamiento, verificado en `test/e2e/health.e2e.test.ts`.
+- **`description` en parámetros y operaciones** de prácticamente todas las rutas (formatos de fecha, rangos válidos, qué significa cada valor especial como `NOT_AVAILABLE` o un array vacío en domingo) — `/docs` pasa de mostrar solo tipos a explicar el comportamiento, verificado en `test/e2e/health.e2e.test.ts`.
 - **Batería de tests de robustez ampliada** (148 → 162): límites de todos los query params numéricos (`days`, `count`, `hours`) por encima y por debajo del rango válido, verificación de shape completa (no solo un campo) en las respuestas recién dotadas de `response` schema, insensibilidad a mayúsculas de `/parking/ora/:district`, y el caso `lowConfidence: true` de farmacia contra una fecha real documentada en el caveat.
+
+## Swagger UI → Scalar (2026-09-09)
+
+`/docs` pasó de Swagger UI a Scalar (`@scalar/fastify-api-reference`), a petición del usuario ("una API bonita"). Detalle en el principio #8 de abajo — el cambio no fue solo estético, corrigió un bug real de CSP que Swagger UI ya tenía.
 
 ## Principios que sigue el código
 
@@ -145,3 +149,18 @@ Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propi
    usa `z.enum(['true', 'false']).transform(...)` para los flags booleanos
    en su lugar — detectado antes de que llegara a ejecutarse, revisando el
    propio schema al añadir `MATOMO_ENABLED` en la Fase 6.
+8. **`app.inject()` no ejecuta JavaScript en el navegador.** Todos los tests
+   E2E de este proyecto usan `fastify.inject()`, que solo comprueba status
+   code/headers/body — nunca detecta que una página HTML no se renderiza
+   porque el navegador bloquea un script. Así pasó inadvertido que Swagger
+   UI generaba un `<script>` de inicialización inline, bloqueado por el CSP
+   por defecto de Helmet (`script-src 'self'`, sin `'unsafe-inline'` ni
+   nonce) — la ruta devolvía 200 pero la UI nunca llegaba a arrancar en un
+   navegador real. Detectado por el usuario probando `/docs` en vivo
+   (2026-09-09), no por los tests. Al migrar a Scalar (mismo problema: usa
+   un script inline para arrancar, aunque carga el bundle principal desde
+   un fichero propio del mismo origen), se relajó `script-src` a
+   `'unsafe-inline'` **solo para `/docs`** (`src/plugins/security.ts`), y se
+   añadió una comprobación explícita de la cabecera CSP y del HTML servido
+   en los tests — lo único que sí puede detectar esta clase de bug sin un
+   navegador real.

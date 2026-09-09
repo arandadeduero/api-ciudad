@@ -37,7 +37,7 @@ npm run dev
 La API queda disponible en:
 
 - `http://localhost:3000/health`
-- `http://localhost:3000/docs` (Swagger UI)
+- `http://localhost:3000/docs` (Scalar — referencia interactiva de la API)
 - `http://localhost:3000/docs/json` (spec OpenAPI)
 
 ## Docker

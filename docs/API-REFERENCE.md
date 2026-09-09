@@ -6,10 +6,10 @@ Regla de mantenimiento: **cualquier cambio a una ruta (nueva, modificada o elimi
 Relación con el resto de la documentación:
 
 - [`API.md`](../API.md) — resumen de una línea por endpoint, para lectura rápida en el README. Este fichero (`API-REFERENCE.md`) es el detalle completo: parámetros, ejemplos de payload reales, todos los códigos de error posibles.
-- `/docs` (Swagger UI, generado desde el código) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
+- `/docs` (Scalar, generado desde el código — reemplazó a Swagger UI el 2026-09-09) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (robustez y documentación: `response` schema completo en todas las rutas —incluidas `residuos/*`, `parking/ora` y `bus/stop/:id/next`, que antes no lo tenían—, `description` en parámetros y operaciones para que `/docs` sea autoexplicativo, endpoint `residuos/atencion-ciudadana` cerrado, y batería de tests de robustez ampliada — ver ARCHITECTURE.md).
+**Última actualización:** 2026-09-09 (robustez y documentación: `response` schema completo en todas las rutas —incluidas `residuos/*`, `parking/ora` y `bus/stop/:id/next`, que antes no lo tenían—, `description` en parámetros y operaciones para que `/docs` sea autoexplicativo, endpoint `residuos/atencion-ciudadana` cerrado, batería de tests de robustez ampliada, y migración de `/docs` de Swagger UI a Scalar corrigiendo un CSP que bloqueaba su renderizado en el navegador — ver ARCHITECTURE.md).
 
 ---
 
@@ -20,7 +20,7 @@ Relación con el resto de la documentación:
 - **Formato de error**: `{ "error": { "code", "message", "requestId" } }`. `code` es estable y apto para lógica de cliente; `message` es para humanos, en español, y puede cambiar de redacción.
 - **Zona horaria**: todas las fechas "de hoy" (`/hoy`, `/dashboard`) se calculan en `Europe/Madrid`, no en la zona horaria del servidor.
 - **Autenticación**: ninguna. La API es de acceso público sin restricción de origen (CORS `*`, decisión confirmada — ver `docs/architecture-proposal.md` §6).
-- **Swagger UI (`/docs`)**: todas las rutas declaran `response` schema (shape completa, no solo `summary`) y `description` en parámetros no triviales — es fuente ejecutable fiable, no solo un placeholder. Se verifica en `test/e2e/health.e2e.test.ts`.
+- **`/docs` (Scalar)**: todas las rutas declaran `response` schema (shape completa, no solo `summary`) y `description` en parámetros no triviales — es fuente ejecutable fiable, no solo un placeholder. Se verifica en `test/e2e/health.e2e.test.ts`, incluida la propia cabecera CSP que permite renderizar la página.
 
 ---
 

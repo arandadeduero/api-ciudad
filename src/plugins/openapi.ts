@@ -1,12 +1,18 @@
 import fp from 'fastify-plugin';
 import type { FastifyInstance } from 'fastify';
 import swagger from '@fastify/swagger';
-import swaggerUi from '@fastify/swagger-ui';
+import scalarApiReference from '@scalar/fastify-api-reference';
 
 /**
  * Documentación OpenAPI 3 generada desde los schemas de las rutas
  * (ver §23 del prompt maestro: la documentación nunca debe divergir del
  * código porque se genera a partir de él).
+ *
+ * La UI es Scalar, no Swagger UI: sirve su JS desde un fichero propio del
+ * mismo origen (`/docs/js/scalar.js`), no como <script> inline como hacía
+ * Swagger UI — así respeta el CSP por defecto de Helmet (`script-src 'self'`)
+ * sin tener que relajarlo. Swagger UI generaba un script de inicialización
+ * inline que el navegador bloqueaba (comprobado en vivo, 2026-09-09).
  */
 export default fp(async function openapiPlugin(app: FastifyInstance) {
   await app.register(swagger, {
@@ -34,7 +40,13 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
     },
   });
 
-  await app.register(swaggerUi, {
+  await app.register(scalarApiReference, {
     routePrefix: '/docs',
+    // Mantiene la URL histórica /docs/json (comprobada en tests y en
+    // scripts/smoke-test.mjs) en vez del /docs/openapi.json por defecto de Scalar.
+    openApiDocumentEndpoints: { json: '/json', yaml: '/yaml' },
+    configuration: {
+      pageTitle: 'API Ciudad de Aranda de Duero — Referencia',
+    },
   });
 });

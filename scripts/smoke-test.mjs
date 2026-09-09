@@ -114,6 +114,24 @@ async function checkMetrics() {
   return res.status === 200 && text.includes('http_requests_total');
 }
 
+/**
+ * Comprobación aparte: /docs sirve HTML, no JSON, y el fallo real que
+ * detectó este bug (2026-09-09) es una cabecera CSP que bloquea el script
+ * inline de arranque de Scalar en el navegador — un simple status 200 no lo
+ * detecta, hay que mirar la cabecera y el propio HTML.
+ */
+async function checkDocs() {
+  const res = await fetchWithTimeout(`${BASE_URL}/docs/`);
+  const html = await res.text();
+  const csp = res.headers.get('content-security-policy') ?? '';
+  const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src '));
+  return (
+    res.status === 200 &&
+    html.includes('Scalar.createApiReference') &&
+    Boolean(scriptSrc?.includes('unsafe-inline'))
+  );
+}
+
 async function fetchWithTimeout(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -179,7 +197,20 @@ async function runChecks() {
     failures.push('metrics');
   }
 
-  console.log(`\n${passed}/${CHECKS.length + 1} checks passed`);
+  try {
+    if (await checkDocs()) {
+      console.log('✓ docs (Scalar UI + CSP script-src permite su script de arranque)');
+      passed += 1;
+    } else {
+      console.log('✗ docs');
+      failures.push('docs');
+    }
+  } catch (err) {
+    console.log(`✗ docs (error: ${err instanceof Error ? err.message : err})`);
+    failures.push('docs');
+  }
+
+  console.log(`\n${passed}/${CHECKS.length + 2} checks passed`);
 
   if (failures.length > 0) {
     console.log(`Fallos: ${failures.join(', ')}`);
