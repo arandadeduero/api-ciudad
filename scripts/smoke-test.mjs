@@ -27,6 +27,30 @@ const CHECKS = [
     expectStatus: 200,
     validate: (body) => typeof body === 'object' && body !== null && 'openapi' in body,
   },
+  {
+    name: 'farmacia',
+    path: '/api/v1/farmacia',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.length === 12,
+  },
+  {
+    name: 'farmacia/hoy',
+    path: '/api/v1/farmacia/hoy',
+    expectStatus: 200,
+    validate: (body) => typeof body?.data?.pharmacy?.name === 'string',
+  },
+  {
+    name: 'farmacia/forday (fecha inválida -> 400)',
+    path: '/api/v1/farmacia/forday/2026-02-30',
+    expectStatus: 400,
+    validate: (body) => body?.error?.code === 'INVALID_DATE',
+  },
+  {
+    name: 'weather',
+    path: '/api/v1/weather',
+    expectStatus: 200,
+    validate: (body) => typeof body?.data?.current?.temperature === 'number',
+  },
 ];
 
 async function fetchWithTimeout(url) {

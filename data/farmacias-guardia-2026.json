@@ -6,9 +6,25 @@
     "license": "No especificada por la fuente — uso informativo, verificar antes de redistribución comercial",
     "retrievedAt": "2026-09-09",
     "extractionMethod": "Re-extraído de forma independiente el 2026-09-09 directamente sobre el PDF original (no sobre una derivación de terceros), anclando cada celda a su día de la semana real de 2026 y cruzando el resultado con dos lecturas independientes del documento (capa de texto e imagen renderizada), ambas coincidentes.",
-    "caveat": "La primera versión de este fichero (2026-09-08) tenía 33 fechas incorrectas respecto al PDF oficial, detectadas al re-verificar contra el documento original: parecía seguir una rotación continua de las 12 farmacias, pero el PDF real tiene bastantes intercambios puntuales de un solo día (habituales en rosters de guardia reales) que esa primera versión no reflejaba. Esta versión sustituye a la anterior con la lectura literal del documento. Quedan 7 fechas de baja confianza porque se apartan de forma sostenida (varios días seguidos) del patrón general, lo que podría ser una asignación especial deliberada (p. ej. semana de Navidad) o un problema de extracción que no se ha podido descartar del todo: 2026-07-24, 2026-07-25, 2026-08-22, 2026-08-23, 2026-08-30, 2026-08-31, y el bloque 2026-12-24 a 2026-12-31. Para esas fechas, antes de confiar en el dato para una urgencia real, contrastar con el Colegio Oficial de Farmacéuticos de Burgos (cofburgos.es).",
+    "caveat": "La primera versión de este fichero (2026-09-08) tenía 33 fechas incorrectas respecto al PDF oficial, detectadas al re-verificar contra el documento original: parecía seguir una rotación continua de las 12 farmacias, pero el PDF real tiene bastantes intercambios puntuales de un solo día (habituales en rosters de guardia reales) que esa primera versión no reflejaba. Esta versión sustituye a la anterior con la lectura literal del documento. Quedan 14 fechas de baja confianza, agrupadas en 4 bloques (ver meta.lowConfidenceDates), porque se apartan de forma sostenida (varios días seguidos) del patrón general: 24-25 jul, 22-23 ago, 30-31 ago, y 24-31 dic. Podría ser una asignación especial deliberada (p. ej. semana de Navidad) o un problema de lectura no descartable del todo. Para esas fechas, antes de confiar en el dato para una urgencia real, contrastar con el Colegio Oficial de Farmacéuticos de Burgos (cofburgos.es).",
     "totalDays": 365,
-    "pharmacyCatalog": "data/farmacias.json"
+    "pharmacyCatalog": "data/farmacias.json",
+    "lowConfidenceDates": [
+      "2026-07-24",
+      "2026-07-25",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-30",
+      "2026-08-31",
+      "2026-12-24",
+      "2026-12-25",
+      "2026-12-26",
+      "2026-12-27",
+      "2026-12-28",
+      "2026-12-29",
+      "2026-12-30",
+      "2026-12-31"
+    ]
   },
   "schedule": [
     {

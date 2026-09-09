@@ -5,10 +5,13 @@ Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
 de guardia, aparcamiento, transporte, eventos y más, expuestos como una
 única API REST versionada.
 
-> **Estado actual: Fase 1 (core) completada.** Los módulos de datos
-> (`/farmacia`, `/weather`, `/ambiente`, …) todavía no existen — antes de
-> implementarlos hay decisiones pendientes documentadas en
-> [`docs/architecture-proposal.md`](docs/architecture-proposal.md) (§6).
+> **Estado actual: Fase 2 completada.** `/api/v1/farmacia*` y
+> `/api/v1/weather*` funcionan con datos y APIs reales (ver
+> [`API.md`](API.md)). El resto de módulos (`/ambiente`, `/parking`,
+> `/bus`, `/rio`) están planificados y desbloqueados — ver el plan de
+> fases en [`docs/architecture-proposal.md`](docs/architecture-proposal.md)
+> §7. `/eventos` y cortes de calles quedan fuera de la v1 por decisión
+> explícita (§6).
 
 ## Requisitos
 

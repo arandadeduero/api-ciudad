@@ -8,7 +8,7 @@ descartadas, ver el documento canónico:
 ## Capas
 
 ```text
-Client (proveedor externo)
+Client / Repository (proveedor externo o dataset local)
    ↓
 Adapter (normaliza al modelo de dominio propio)
    ↓
@@ -16,33 +16,59 @@ Service (reglas de negocio, TTL, fallback)
    ↓
 Cache (CacheService — memoria por defecto, Redis cuando haga falta)
    ↓
-Controller / Route (validación con Zod/JSON Schema, mapeo HTTP)
+Route (validación JSON Schema, envoltorio {data, meta}, mapeo HTTP)
    ↓
 REST API /api/v1
 ```
 
-En la Fase 1 no existe todavía ningún `Client`/`Adapter`/`Service` real
-(no hay módulos de datos implementados) — lo que sí existe es la
-infraestructura común que todos ellos usarán:
+`Client` es para proveedores HTTP externos (p. ej. `OpenMeteoClient`);
+`Repository` es el equivalente para datasets locales estáticos (p. ej.
+`FarmaciaRepository`, que lee y valida los ficheros de `data/`) — mismo
+rol arquitectónico, nombre distinto porque no hay red de por medio.
+
+## Infraestructura común (Fase 1)
 
 - `src/config/env.ts` — validación de variables de entorno con Zod, fail-fast.
 - `src/errors/` — `AppError` tipado + error handler central (`{ error: { code, message, requestId } }`).
 - `src/cache/` — `CacheService` (interfaz) + `InMemoryCache` (implementación activa).
 - `src/plugins/security.ts` — Helmet, CORS, rate limiting.
 - `src/plugins/openapi.ts` — OpenAPI 3 + Swagger UI en `/docs`.
+- `src/routes/schemas.ts` — piezas de JSON Schema compartidas (`responseSchema`, envoltorio `{data, meta}`).
 - `src/routes/health.ts` — `/health`, `/health/live`, `/health/ready`, `/health/deep`.
-- `src/app.ts` — fábrica de la instancia Fastify (testeable con `inject()`).
+- `src/app.ts` — fábrica de la instancia Fastify (testeable con `inject()`), cablea servicios y monta rutas bajo `/api/v1`.
 - `src/server.ts` — entrypoint HTTP con cierre ordenado (SIGINT/SIGTERM).
+
+## Módulos de dominio (Fase 2)
+
+**Farmacia** (`data/farmacias.json` + `data/farmacias-guardia-2026.json`, reales):
+
+- `src/domain/farmacia.ts` — tipos (`Pharmacy`, `Holiday`, `GuardEntry`).
+- `src/repositories/FarmaciaRepository.ts` — carga y valida (Zod) los ficheros de `data/`, memoiza en proceso.
+- `src/services/FarmaciaService.ts` — validación de fecha/mes, resolución de festivo, `dashboard` (hoy + próximos N días).
+- `src/routes/farmacia.ts` — `/api/v1/farmacia*`.
+
+**Weather** (Open-Meteo, real):
+
+- `src/domain/weather.ts` — tipos (`CurrentWeather`, `HourlyForecastPoint`, `DailySummary`).
+- `src/clients/OpenMeteoClient.ts` — HTTP puro, expone la interfaz `WeatherProvider` (el Service depende de la interfaz, no de la clase concreta — permite testear con un doble sin red).
+- `src/adapters/openMeteoAdapter.ts` — valida (Zod) y traduce la respuesta nativa al modelo de dominio; lanza `UpstreamError` si el contrato de Open-Meteo cambia.
+- `src/services/WeatherService.ts` — cache 10 min, fallback a caché obsoleta si Open-Meteo falla (`meta.stale: true`), valida rango hoy..+7 días.
+- `src/routes/weather.ts` — `/api/v1/weather*`.
 
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe
    o no se ha decidido cómo tratarla, el módulo no se implementa (ver
-   `docs/architecture-proposal.md` §6) — no se sustituye por datos
-   ficticios salvo los fixtures explícitamente pedidos (`data/farmacias.json`,
-   pendiente de fase 2).
+   `docs/architecture-proposal.md` §6). Los datos reales (farmacias,
+   residuos) se documentan con su procedencia y limitaciones en el propio
+   fichero (`meta.caveat`), nunca se presentan como más fiables de lo que son.
 2. **Fail fast en configuración**, nunca en tiempo de request.
 3. **Errores tipados** (`AppError` y subclases) en toda la capa de servicio;
-   el controller nunca construye la respuesta de error a mano.
-4. **Cache y resiliencia son responsabilidad del Service**, nunca del
-   Controller ni del Client — el Client solo sabe hablar con el proveedor.
+   la ruta nunca construye la respuesta de error a mano.
+4. **Cache y resiliencia son responsabilidad del Service**, nunca de la
+   Route ni del Client/Repository.
+5. **El `response` schema de una ruta es una whitelist de serialización.**
+   Cualquier ruta que declare uno debe envolver su `data` con
+   `responseSchema()` (`src/routes/schemas.ts`) o Fastify descarta en
+   silencio el resto de propiedades, incluido `meta` — error real que se
+   coló y detectó un test E2E en la Fase 2.

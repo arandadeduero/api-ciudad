@@ -35,14 +35,17 @@ describe('E2E /health', () => {
     expect(res.json()).toMatchObject({ status: 'ok', checks: { cache: 'ok' } });
   });
 
-  it('GET /health/deep lista los módulos pendientes como not_implemented', async () => {
+  it('GET /health/deep comprueba farmacia y weather de verdad, y lista lo pendiente/excluido', async () => {
     const res = await app.inject({ method: 'GET', url: '/health/deep' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.checks.cache.status).toBe('ok');
-    expect(body.checks.weather.status).toBe('not_implemented');
+    expect(body.checks.farmacia.status).toBe('ok');
+    expect(['ok', 'degraded']).toContain(body.checks.weather.status); // depende de Open-Meteo real
     expect(body.checks.rio.status).toBe('not_implemented');
-  });
+    expect(body.checks.eventos.status).toBe('excluded');
+    expect(body.checks.cortescalles.status).toBe('excluded');
+  }, 15_000);
 
   it('GET /docs/json expone un documento OpenAPI válido', async () => {
     const res = await app.inject({ method: 'GET', url: '/docs/json' });

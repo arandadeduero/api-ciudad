@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 import type { CacheService } from '../cache/CacheService.js';
+import type { FarmaciaService } from '../services/FarmaciaService.js';
+import type { WeatherService } from '../services/WeatherService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -20,25 +22,17 @@ async function readVersion(): Promise<string> {
 }
 
 /**
- * Estado de cada fuente de datos que se comprobaría en /health/deep una vez
- * implementada. En esta fase ninguna está construida todavía (ver
- * docs/architecture-proposal.md) — se listan explícitamente como
- * "not_implemented" en vez de omitirlas u ocultar que faltan.
+ * Fuentes de datos aún sin construir (ver docs/architecture-proposal.md) —
+ * se listan explícitamente como "not_implemented" en vez de omitirlas u
+ * ocultar que faltan. Eventos y cortes de calles están excluidos de la v1
+ * por decisión del usuario, no "pendientes".
  */
-const PENDING_DEEP_CHECKS = [
-  'farmacia',
-  'weather',
-  'ambiente',
-  'eventos',
-  'parking',
-  'bus',
-  'rio',
-  'cortescalles',
-] as const;
+const PENDING_DEEP_CHECKS = ['ambiente', 'parking', 'bus', 'rio'] as const;
+const EXCLUDED_DEEP_CHECKS = ['eventos', 'cortescalles'] as const;
 
 export async function healthRoutes(
   app: FastifyInstance,
-  opts: { cache: CacheService },
+  opts: { cache: CacheService; farmacia: FarmaciaService; weather: WeatherService },
 ): Promise<void> {
   const version = await readVersion();
   const startedAt = Date.now();
@@ -127,10 +121,38 @@ export async function healthRoutes(
         checks.cache = { status: 'error', detail: (err as Error).message };
       }
 
+      try {
+        const pharmacies = await opts.farmacia.listPharmacies();
+        checks.farmacia = {
+          status: pharmacies.length > 0 ? 'ok' : 'error',
+          detail: `${pharmacies.length} farmacias en catálogo`,
+        };
+      } catch (err) {
+        checks.farmacia = { status: 'error', detail: (err as Error).message };
+      }
+
+      try {
+        const { stale } = await opts.weather.getCurrent();
+        checks.weather = {
+          status: stale ? 'degraded' : 'ok',
+          detail: stale ? 'sirviendo caché obsoleta (Open-Meteo no responde)' : 'ok',
+        };
+      } catch (err) {
+        checks.weather = { status: 'error', detail: (err as Error).message };
+      }
+
       for (const source of PENDING_DEEP_CHECKS) {
         checks[source] = {
           status: 'not_implemented',
           detail: 'Módulo pendiente — ver docs/architecture-proposal.md',
+        };
+      }
+
+      for (const source of EXCLUDED_DEEP_CHECKS) {
+        checks[source] = {
+          status: 'excluded',
+          detail:
+            'Fuera de alcance de la v1 (decisión del usuario) — ver docs/architecture-proposal.md §6',
         };
       }
 

@@ -19,7 +19,11 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
         version: '0.1.0',
       },
       servers: [{ url: '/api/v1', description: 'API v1' }],
-      tags: [{ name: 'health', description: 'Estado y diagnóstico del servicio' }],
+      tags: [
+        { name: 'health', description: 'Estado y diagnóstico del servicio' },
+        { name: 'farmacia', description: 'Farmacias de guardia de Aranda de Duero' },
+        { name: 'weather', description: 'Meteorología (Open-Meteo)' },
+      ],
     },
   });
 

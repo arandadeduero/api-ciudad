@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "year": 2026,
+    "source": "Decreto 9/2025, de 29 de mayo (BOCyL nº106, 2-jun-2025) — calendario laboral de Castilla y León para 2026",
+    "scope": "Festivos nacionales y autonómicos aplicables a Aranda de Duero (Burgos, Castilla y León)",
+    "retrievedAt": "2026-09-09",
+    "note": "No incluye festivos locales del municipio: las fechas exactas de los 2 días festivos locales de Aranda de Duero para 2026 no estaban confirmadas oficialmente en el momento de generar este fichero. Se conoce el periodo de las Fiestas Patronales (Virgen de las Viñas, 11-20 de septiembre) como referencia informativa, ver localFestivityWindows."
+  },
+  "holidays": [
+    { "date": "2026-01-01", "name": "Año Nuevo", "scope": "nacional" },
+    { "date": "2026-01-06", "name": "Epifanía del Señor", "scope": "nacional" },
+    { "date": "2026-04-02", "name": "Jueves Santo", "scope": "autonomico" },
+    { "date": "2026-04-03", "name": "Viernes Santo", "scope": "nacional" },
+    { "date": "2026-04-23", "name": "Día de Castilla y León", "scope": "autonomico" },
+    { "date": "2026-05-01", "name": "Fiesta del Trabajo", "scope": "nacional" },
+    { "date": "2026-08-15", "name": "Asunción de la Virgen", "scope": "nacional" },
+    { "date": "2026-10-12", "name": "Fiesta Nacional de España", "scope": "nacional" },
+    {
+      "date": "2026-11-02",
+      "name": "Todos los Santos (traslado, 1-nov cae domingo)",
+      "scope": "autonomico"
+    },
+    {
+      "date": "2026-12-07",
+      "name": "Día de la Constitución (traslado, 6-dic cae domingo)",
+      "scope": "autonomico"
+    },
+    { "date": "2026-12-08", "name": "Inmaculada Concepción", "scope": "nacional" },
+    { "date": "2026-12-25", "name": "Natividad del Señor", "scope": "nacional" }
+  ],
+  "localFestivityWindows": [
+    {
+      "name": "Fiestas Patronales — Virgen de las Viñas",
+      "start": "2026-09-11",
+      "end": "2026-09-20",
+      "note": "Periodo festivo informativo; no confirma qué días concretos son festivo laboral local no laborable"
+    }
+  ]
+}

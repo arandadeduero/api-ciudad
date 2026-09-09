@@ -25,6 +25,9 @@ RUN addgroup -S nodejs && adduser -S apiciudad -G nodejs
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY package.json ./
+# Datasets estáticos reales que leen los repositorios (ver ARCHITECTURE.md);
+# no son fixtures de desarrollo, la API los necesita en producción.
+COPY data ./data
 
 USER apiciudad
 

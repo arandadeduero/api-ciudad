@@ -296,7 +296,7 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 | Fase | Contenido | Estado |
 |---|---|---|
 | 1 | Core: Node, TS, Fastify, config, logging, errores, OpenAPI, health, Docker | ✅ Completada |
-| 2 | Farmacia (datos reales: `data/farmacias.json` + `data/farmacias-guardia-2026.json`) + Weather (Open-Meteo, con AEMET como fuente secundaria de avisos) | Desbloqueada — siguiente a implementar |
+| 2 | Farmacia (datos reales: `data/farmacias.json` + `data/farmacias-guardia-2026.json`) + Weather (Open-Meteo) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y API.md. AEMET (avisos) queda pendiente para cuando se necesite, no bloquea nada |
 | 3 | Ambiente (JCyL, dataset `calidad-del-aire-del-dia-en-curso`, estación "Aranda de Duero 2") + Parking/ORA (datos estáticos verificados) + Residuos (`data/residuos.json`) | Desbloqueada por completo |
 | 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`) como fuente principal; GTFS interurbano del NAP como fuente secundaria | Desbloqueada por completo |
 | 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | Río desbloqueado; cortes de calles excluido de la v1 |
