@@ -1,0 +1,21 @@
+DATA-SOURCES.md
+  s_10638ab73c2825::t_7ad013ad406cfd 7-19
+data/farmacias-guardia-2026.json
+  s_10638ab73c2825::t_1f4e5dd894259e 8-9,184,276,304,464,600,792,832,836,856,880,892,920,948,952,964,980,984,996,1044,1132,1152,1220,1236,1308,1380,1444,1448,1452,1456,1460,1464,1468,1472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b34236a47d834ce79b4d475d6c10bf37dcc13b42",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
