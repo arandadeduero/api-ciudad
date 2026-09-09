@@ -1,0 +1,102 @@
+data/parking.json
+  s_10638ab73c2825::t_94c89b5bd3ae03 1-132
+README.md
+  s_10638ab73c2825::t_47d5e7d3fbaa0a 8-14
+  s_10638ab73c2825::t_393236015763a3 81-82
+test/unit/jcylAirQualityAdapter.test.ts
+  s_10638ab73c2825::t_1dc1592dd01e2e 1-51,56-92,97-102
+  s_10638ab73c2825::t_f55473f692f2ec 52-55,93-96
+src/domain/parking.ts
+  s_10638ab73c2825::t_7e0340cfdf2076 1-24,26-44
+  s_10638ab73c2825::t_57692aada5317d 25
+src/clients/JcylClient.ts
+  s_10638ab73c2825::t_4bfe1fa2a54219 1-85
+src/routes/parking.ts
+  s_10638ab73c2825::t_02ff0760a55ed7 1-110
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_f55473f692f2ec 38,45-47,49
+src/domain/ambiente.ts
+  s_10638ab73c2825::t_fb88d6d3dce0b3 1-28
+ARCHITECTURE.md
+  s_10638ab73c2825::t_42feff77e10361 58-76
+src/adapters/jcylAirQualityAdapter.ts
+  s_10638ab73c2825::t_97d3cf6677daf7 1-40,47-96,102-146
+  s_10638ab73c2825::t_f55473f692f2ec 41-46,97-101
+.env.example
+  s_10638ab73c2825::t_19a430cfc51243 35,39-44,46-48,50,52
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_18acaffb0aa80b 7,9,29,33,39,43,50,54,65-68,70-73,88,92,107-111,116,120,125-130,137,142,145-149,152,156,160,164,174,178,183-192,195-203,211,214-217,220,222-228,230,241-245,248,250,254-259,263-269,274-278,281,286-291,293,295-304,314,318,321-336,339,343,347,351,355,357-369,379,381-395,399,403,407,409-416,418,422,424-432,434,441-453
+  s_10638ab73c2825::t_7181f1b7869464 1-6,8,10-28,30-32,34-38,40-42,44-49,51-53,55-64,69,74-87,89-91,93-106,112-115,117-119,121-124,131-136,138-141,143-144,150-151,153-155,157-159,161-163,165-173,175-177,179-182,193-194,204-210,212-213,218-219,221,229,231-240,246-247,249,251-253,260-262,270-273,279-280,282-285,292,294,305-313,315-317,319-320,337-338,340-342,344-346,348-350,352-354,356,370-378,380,396-398,400-402,404-406,408,417,419-421,423,433,435-440,454-464
+src/services/ResiduosService.ts
+  s_10638ab73c2825::t_e1b0af87fdbf4f 1-38
+src/domain/residuos.ts
+  s_10638ab73c2825::t_9529147476b76f 1-41
+src/routes/ambiente.ts
+  s_10638ab73c2825::t_7d9aea92ffc3ab 1-47,52-81,89-112
+  s_10638ab73c2825::t_f55473f692f2ec 48-51,82-88
+src/routes/residuos.ts
+  s_10638ab73c2825::t_f55473f692f2ec 29-34
+  s_10638ab73c2825::t_1c556fe5dfcb65 1-28,35-64
+src/app.ts
+  s_10638ab73c2825::t_f55473f692f2ec 92-99
+  s_10638ab73c2825::t_ae922f46c29409 11-13,19-24,60,62,71-88,106-108
+test/e2e/parking.e2e.test.ts
+  s_10638ab73c2825::t_1faf909c1f9cfe 1-50
+DATA-SOURCES.md
+  s_10638ab73c2825::t_18acaffb0aa80b 8-19
+  s_10638ab73c2825::t_ea4af5b2cbb682 5-6,21
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_606d5696d02838 26-28
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_83c460638b0ef2 54-77
+API.md
+  s_10638ab73c2825::t_e0ce2611043696 3-8,10,23,25,35,37,45-48,54-58,65-68,97,99-100
+  s_10638ab73c2825::t_18acaffb0aa80b 14-21,27-33,39-43,49-53,59-64,70-76
+  s_10638ab73c2825::t_dc48e50318f891 69
+test/integration/ResiduosService.test.ts
+  s_10638ab73c2825::t_849bb8881c2e38 1-37
+src/repositories/ParkingRepository.ts
+  s_10638ab73c2825::t_5882e73fbf6081 1-86
+test/integration/ParkingService.test.ts
+  s_10638ab73c2825::t_e17bb7abf2afa4 1-39
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_9626f2bdb3ec08 21
+  s_10638ab73c2825::t_bc1b3f8b55f4b0 55-57,59-62,64
+  s_10638ab73c2825::t_631be6947a4822 300
+test/unit/AmbienteService.test.ts
+  s_10638ab73c2825::t_97148803c74815 1-148,157-175
+  s_10638ab73c2825::t_f55473f692f2ec 149-156
+test/e2e/ambiente.e2e.test.ts
+  s_10638ab73c2825::t_f55473f692f2ec 18-25,27-33
+  s_10638ab73c2825::t_24330e1cd16894 1-17,26,34-45
+src/services/AmbienteService.ts
+  s_10638ab73c2825::t_142f14af2410c4 1-21,24-114
+  s_10638ab73c2825::t_f55473f692f2ec 22-23
+src/routes/health.ts
+  s_10638ab73c2825::t_dbf43ad2e2e5d2 8-10,33,38-45,154-183
+  s_10638ab73c2825::t_48ffe8ef40a5f4 184
+src/config/env.ts
+  s_10638ab73c2825::t_1e6a0d2a87268f 32-46
+src/services/ParkingService.ts
+  s_10638ab73c2825::t_964f80ca7f39d6 1-37
+test/e2e/residuos.e2e.test.ts
+  s_10638ab73c2825::t_877bbdb80f1461 1-51
+src/repositories/ResiduosRepository.ts
+  s_10638ab73c2825::t_cace26153d7880 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "78c306b9a6def34e6af754e7a72530b8bcd7beaa",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
