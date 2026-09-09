@@ -1,0 +1,114 @@
+src/config/env.ts
+  s_10638ab73c2825::t_39ddb39b8b28c7 47-51
+test/unit/gtfsCalendar.test.ts
+  s_10638ab73c2825::t_ae10e0770ae959 1-55
+package.json
+  s_10638ab73c2825::t_704a24b839e6f4 35
+.env.example
+  s_10638ab73c2825::t_29477878e1bc52 55-58,61
+test/unit/gtfsAdapter.test.ts
+  s_10638ab73c2825::t_92a4834190ac90 1-5,8-25,30-51
+  s_10638ab73c2825::t_ffde9ea8b7307e 6-7,26-29
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_feab2f4a27a605 301
+src/adapters/gtfsAdapter.ts
+  s_10638ab73c2825::t_d71dfdfb3440e3 1-58,67-124,131-177
+  s_10638ab73c2825::t_ffde9ea8b7307e 59-66,125-130
+src/domain/bus.ts
+  s_10638ab73c2825::t_76849668ce48e2 1-39
+test/unit/BusService.test.ts
+  s_10638ab73c2825::t_ffde9ea8b7307e 75-84
+  s_10638ab73c2825::t_745b84754bf2b5 1-74,85-95
+src/repositories/GtfsRepository.ts
+  s_10638ab73c2825::t_67f59d4b753a51 1-14,20-27,29-60,64-99
+  s_10638ab73c2825::t_a09c372ddf0386 15-19
+  s_10638ab73c2825::t_ffde9ea8b7307e 61-63
+  s_10638ab73c2825::t_d5443e814f2a24 28
+src/app.ts
+  s_10638ab73c2825::t_2914284f4cf002 14,26-28,93-95,117
+  s_10638ab73c2825::t_ffde9ea8b7307e 106
+ARCHITECTURE.md
+  s_10638ab73c2825::t_6c91f045a79a70 77-90
+  s_10638ab73c2825::t_35a45839c4d913 107-114
+src/utils/geo.ts
+  s_10638ab73c2825::t_ffde9ea8b7307e 17
+  s_10638ab73c2825::t_a242955e99d7db 1-16,18-21
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_5977c5a78d0d88 29
+src/services/BusService.ts
+  s_10638ab73c2825::t_393bda3f83d750 1
+  s_10638ab73c2825::t_3f532feca6f1b0 9,20,24,85,88-91,97-98,101,107,111
+  s_10638ab73c2825::t_ffde9ea8b7307e 2-8,75-77,136-139,144-147,157-168
+  s_10638ab73c2825::t_e03732e61050c0 10-19,21-23,25-40,42-74,78-84,86-87,92-96,99-100,102-106,108-110,112-135,140-143,148-156,169-172
+  s_10638ab73c2825::t_8cccad9ae5a66b 41
+API.md
+  s_10638ab73c2825::t_ffde9ea8b7307e 82-90
+  s_10638ab73c2825::t_cff9f8c843ac89 111,113
+  s_10638ab73c2825::t_b21953d4a47026 10
+  s_10638ab73c2825::t_27bdce61905440 78-81,91
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_6b8d69aecb11f1 12
+  s_10638ab73c2825::t_ffde9ea8b7307e 446,448,450-455,459,463,467,471,475,479,481-496,498,502,506,508-526,528
+  s_10638ab73c2825::t_a1c97bebd69fa8 439-445,447,449,456-458,460-462,464-466,468-470,472-474,476-478,480,497,499-501,503-505,507,527,529-534
+DATA-SOURCES.md
+  s_10638ab73c2825::t_ffde9ea8b7307e 8-19
+.dockerignore
+  s_10638ab73c2825::t_3e12cad3aea968 11
+src/clients/GtfsClient.ts
+  s_10638ab73c2825::t_699e61ac4f0635 1-109,114-129
+  s_10638ab73c2825::t_ffde9ea8b7307e 110-113
+src/utils/csv.ts
+  s_10638ab73c2825::t_f6c0fe6892a18d 1-10,12-84
+  s_10638ab73c2825::t_414e9e0a51a772 11
+src/utils/gtfsCalendar.ts
+  s_10638ab73c2825::t_f134648c9d431b 1-41
+.gitignore
+  s_10638ab73c2825::t_9ae4abf93b6389 9-11
+README.md
+  s_10638ab73c2825::t_165dcf8c8356b3 55
+  s_10638ab73c2825::t_dc15c98eeaa3e3 8-12
+src/routes/bus.ts
+  s_10638ab73c2825::t_ffde9ea8b7307e 41-44,64-67
+  s_10638ab73c2825::t_f4710b39ac5ddd 134-140
+  s_10638ab73c2825::t_d9615c8359744a 1-40,45-63,68-133,141-192
+test/e2e/bus.e2e.test.ts
+  s_10638ab73c2825::t_752c6ab80f20b1 1-17,54-59,73
+  s_10638ab73c2825::t_ffde9ea8b7307e 18-53,60-72
+test/unit/csv.test.ts
+  s_10638ab73c2825::t_40023514174c0a 1-36
+src/routes/health.ts
+  s_10638ab73c2825::t_a7fef427e8bfae 34
+  s_10638ab73c2825::t_18711d24b4b483 11
+  s_10638ab73c2825::t_346cf158958635 46
+  s_10638ab73c2825::t_42033d12a04ae1 187-200
+test/unit/geo.test.ts
+  s_10638ab73c2825::t_2b77f8343d8e1c 1-5,9-21
+  s_10638ab73c2825::t_ffde9ea8b7307e 6-8
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_fe2b48e53e51de 78-83
+src/utils/date.ts
+  s_10638ab73c2825::t_38e8983b861bb6 40-60,63-65
+  s_10638ab73c2825::t_ffde9ea8b7307e 61-62
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_6a382029c792c9 48,52
+Dockerfile
+  s_10638ab73c2825::t_0db4d099228871 30-32
+package-lock.json
+  s_10638ab73c2825::t_4d20c4162629c2 20,2800-2805
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "a2446c9c4d2f6a302f9f7424eec922f5405cc419",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
