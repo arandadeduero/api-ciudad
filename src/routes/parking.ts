@@ -27,9 +27,20 @@ const publicParkingSchemaDef = {
       properties: { latitude: { type: 'number' }, longitude: { type: 'number' } },
     },
     hours: { type: 'string' },
-    capacity: { type: 'number', nullable: true },
-    availableSpaces: { type: 'number', nullable: true },
-    availabilityStatus: { type: 'string' },
+    capacity: {
+      type: 'number',
+      nullable: true,
+      description: 'Siempre null: no hay API de ocupación en tiempo real para ningún aparcamiento.',
+    },
+    availableSpaces: {
+      type: 'number',
+      nullable: true,
+      description: 'Siempre null, mismo motivo que capacity.',
+    },
+    availabilityStatus: {
+      type: 'string',
+      description: 'Siempre "NOT_AVAILABLE" — nunca se inventa un dato de disponibilidad.',
+    },
     phone: { type: 'string', nullable: true },
   },
 } as const;
@@ -37,9 +48,79 @@ const publicParkingSchemaDef = {
 const oraDistrictSchemaDef = {
   type: 'object',
   properties: {
-    id: { type: 'string' },
+    id: { type: 'string', description: 'Letra del distrito, A-F.' },
     streets: { type: 'array', items: { type: 'string' } },
     note: { type: 'string', nullable: true },
+  },
+} as const;
+
+const oraScheduleBlockSchemaDef = {
+  type: 'object',
+  properties: {
+    from: { type: 'string', description: 'HH:MM' },
+    to: { type: 'string', description: 'HH:MM' },
+  },
+} as const;
+
+const oraInfoSchemaDef = {
+  type: 'object',
+  properties: {
+    schedule: {
+      type: 'object',
+      description: 'Horario real según la ordenanza (BOP Burgos 245/2021): L-V 10-14h y 16-20h.',
+      properties: {
+        mondayToFriday: { type: 'array', items: oraScheduleBlockSchemaDef },
+        saturday: { type: 'array', items: oraScheduleBlockSchemaDef },
+        sunday: {
+          type: 'array',
+          items: oraScheduleBlockSchemaDef,
+          description: 'Vacío: sin regulación en domingo.',
+        },
+        exception: {
+          type: 'object',
+          properties: {
+            location: { type: 'string' },
+            mondayToSaturday: { type: 'array', items: oraScheduleBlockSchemaDef },
+          },
+        },
+      },
+    },
+    exemptPeriods: {
+      type: 'array',
+      description:
+        'Periodos sin regulación ORA (Reyes, fiestas patronales, Nochebuena, Nochevieja).',
+      items: {
+        type: 'object',
+        properties: {
+          description: { type: 'string' },
+          dynamic: {
+            type: 'boolean',
+            description:
+              'true si la fecha varía cada año (p. ej. depende del calendario de fiestas patronales).',
+          },
+        },
+      },
+    },
+    duration: {
+      type: 'object',
+      properties: {
+        residents: { type: 'string' },
+        nonResidentsDefault: {
+          type: 'object',
+          properties: { zone: { type: 'string' }, maxMinutes: { type: 'number' } },
+        },
+        greenZone: {
+          type: 'object',
+          description: 'Excepción de duración en un pequeño grupo de calles de zona verde.',
+          properties: {
+            maxMinutes: { type: 'number' },
+            streets: { type: 'array', items: { type: 'string' } },
+          },
+        },
+      },
+    },
+    exemptVehicles: { type: 'array', items: { type: 'string' } },
+    districts: { type: 'array', items: oraDistrictSchemaDef },
   },
 } as const;
 
@@ -67,6 +148,9 @@ export async function parkingRoutes(
       schema: {
         tags: ['parking'],
         summary: 'Información completa del ORA: horario, duración, exenciones y distritos',
+        description:
+          'Fuente: texto legal de la ordenanza municipal (BOP Burgos 245/2021), no la página informativa del Ayuntamiento.',
+        response: responseSchema(oraInfoSchemaDef),
       },
     },
     async () => envelope(await service.getOraInfo()),
@@ -80,7 +164,13 @@ export async function parkingRoutes(
         summary: 'Detalle de un distrito ORA (A-F): calles incluidas',
         params: {
           type: 'object',
-          properties: { district: { type: 'string' } },
+          properties: {
+            district: {
+              type: 'string',
+              description:
+                'Letra de distrito A-F. No distingue mayúsculas/minúsculas ("a" == "A").',
+            },
+          },
           required: ['district'],
         },
         response: responseSchema(oraDistrictSchemaDef),
@@ -98,7 +188,13 @@ export async function parkingRoutes(
       schema: {
         tags: ['parking'],
         summary: 'Detalle de un aparcamiento público por id',
-        params: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Id del aparcamiento (ver GET /parking).' },
+          },
+          required: ['id'],
+        },
         response: responseSchema(publicParkingSchemaDef),
       },
     },

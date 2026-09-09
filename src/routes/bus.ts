@@ -34,7 +34,24 @@ const stopSchemaDef = {
       type: 'object',
       properties: { latitude: { type: 'number' }, longitude: { type: 'number' } },
     },
-    wheelchairAccessible: { type: 'boolean', nullable: true },
+    wheelchairAccessible: {
+      type: 'boolean',
+      nullable: true,
+      description: 'null si el feed GTFS no declara accesibilidad para esta parada.',
+    },
+  },
+} as const;
+
+const nextBusEntrySchemaDef = {
+  type: 'object',
+  properties: {
+    line: { type: 'string', description: 'Nombre corto de la línea (L1/L2/L3).' },
+    destination: { type: 'string' },
+    scheduledTime: { type: 'string', description: 'HH:MM, hora programada de paso.' },
+    minutesUntil: {
+      type: 'number',
+      description: 'Minutos desde ahora (Europe/Madrid) hasta scheduledTime.',
+    },
   },
 } as const;
 
@@ -89,7 +106,17 @@ export async function busRoutes(
       schema: {
         tags: ['bus'],
         summary: 'Detalle de una línea',
-        params: { type: 'object', properties: { line: { type: 'string' } }, required: ['line'] },
+        params: {
+          type: 'object',
+          properties: {
+            line: {
+              type: 'string',
+              description:
+                'route_id del feed GTFS ("1", "2" o "3") — no el nombre corto "L1"/"L2"/"L3".',
+            },
+          },
+          required: ['line'],
+        },
         response: responseSchema(lineSchemaDef),
       },
     },
@@ -121,9 +148,20 @@ export async function busRoutes(
       schema: {
         tags: ['bus'],
         summary: 'Parada más cercana a unas coordenadas',
+        description:
+          'Distancia calculada con la fórmula de Haversine. Ambos parámetros son obligatorios.',
         querystring: {
           type: 'object',
-          properties: { lat: { type: 'string' }, lon: { type: 'string' } },
+          properties: {
+            lat: {
+              type: 'string',
+              description: 'Latitud en grados decimales, p. ej. "41.6701895".',
+            },
+            lon: {
+              type: 'string',
+              description: 'Longitud en grados decimales, p. ej. "-3.6885626".',
+            },
+          },
           required: ['lat', 'lon'],
         },
         response: responseSchema({
@@ -158,7 +196,13 @@ export async function busRoutes(
       schema: {
         tags: ['bus'],
         summary: 'Detalle de una parada',
-        params: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'stop_id del feed GTFS (ver GET /bus/stops).' },
+          },
+          required: ['id'],
+        },
         response: responseSchema(stopSchemaDef),
       },
     },
@@ -175,11 +219,34 @@ export async function busRoutes(
       schema: {
         tags: ['bus'],
         summary: 'Próximos autobuses en una parada (por defecto, los 2 siguientes)',
-        params: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+        description:
+          'Calculado en tiempo real contra el calendario GTFS (día de la semana + excepciones), zona horaria Europe/Madrid. Puede devolver menos de "count" elementos si no quedan más servicios activos hoy — un array vacío es normal, por ejemplo en domingo, cuando no hay servicio.',
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'stop_id del feed GTFS (ver GET /bus/stops).' },
+          },
+          required: ['id'],
+        },
         querystring: {
           type: 'object',
-          properties: { count: { type: 'integer', minimum: 1, maximum: 10, default: 2 } },
+          properties: {
+            count: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 10,
+              default: 2,
+              description: 'Número de próximos autobuses a devolver (1-10).',
+            },
+          },
         },
+        response: responseSchema({
+          type: 'object',
+          properties: {
+            stop: stopSchemaDef,
+            nextBuses: { type: 'array', items: nextBusEntrySchemaDef },
+          },
+        }),
       },
     },
     async (request) => {

@@ -41,8 +41,25 @@ describe('E2E /api/v1/rio', () => {
     expect(res.json().data.unit).toBe('m³/s');
   }, 15_000);
 
-  it('GET /api/v1/rio/nivel rechaza un hours fuera de rango', async () => {
+  it('GET /api/v1/rio/nivel rechaza un hours fuera de rango (por debajo)', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/v1/rio/nivel?hours=0' });
     expect(res.statusCode).toBe(400);
   });
+
+  it('GET /api/v1/rio/caudal rechaza un hours fuera de rango (por encima de 720)', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/rio/caudal?hours=721' });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('GET /api/v1/rio devuelve el shape completo (nivel y caudal con unit/latest/trend)', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/rio' });
+    expect(res.statusCode).toBe(200);
+    const { data } = res.json();
+    for (const metric of [data.nivel, data.caudal]) {
+      expect(metric).toHaveProperty('unit');
+      expect(metric.latest).toHaveProperty('timestamp');
+      expect(metric.latest).toHaveProperty('value');
+      expect(metric).toHaveProperty('trend');
+    }
+  }, 15_000);
 });

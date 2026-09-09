@@ -57,17 +57,70 @@ describe('E2E /api/v1/bus', () => {
     expect(res.statusCode).toBe(400);
   });
 
-  it('GET /api/v1/bus/stop/:id/next devuelve como mucho 2 próximos autobuses por defecto', async () => {
+  it('GET /api/v1/bus/stop/:id/next devuelve como mucho 2 próximos autobuses por defecto, con shape completa', async () => {
     const stopsRes = await app.inject({ method: 'GET', url: '/api/v1/bus/stops' });
     const firstStopId = stopsRes.json().data[0].id;
 
     const res = await app.inject({ method: 'GET', url: `/api/v1/bus/stop/${firstStopId}/next` });
     expect(res.statusCode).toBe(200);
-    expect(res.json().data.nextBuses.length).toBeLessThanOrEqual(2);
+    const { data } = res.json();
+    expect(data.nextBuses.length).toBeLessThanOrEqual(2);
+    expect(data.stop.id).toBe(firstStopId);
+    // Shape completa: el response schema es una whitelist de serialización
+    // (ver ARCHITECTURE.md, Principio #5) — se coló dos veces ya en este
+    // proyecto (Fase 2 y Fase 4), así que se verifica explícitamente aquí.
+    for (const bus of data.nextBuses) {
+      expect(bus).toHaveProperty('line');
+      expect(bus).toHaveProperty('destination');
+      expect(bus).toHaveProperty('scheduledTime');
+      expect(bus).toHaveProperty('minutesUntil');
+    }
+  }, 20_000);
+
+  it('GET /api/v1/bus/stop/:id/next respeta el parámetro count', async () => {
+    const stopsRes = await app.inject({ method: 'GET', url: '/api/v1/bus/stops' });
+    const firstStopId = stopsRes.json().data[0].id;
+
+    const res = await app.inject({
+      method: 'GET',
+      url: `/api/v1/bus/stop/${firstStopId}/next?count=1`,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.nextBuses.length).toBeLessThanOrEqual(1);
+  }, 20_000);
+
+  it('GET /api/v1/bus/stop/:id/next rechaza count fuera de rango [1,10]', async () => {
+    const stopsRes = await app.inject({ method: 'GET', url: '/api/v1/bus/stops' });
+    const firstStopId = stopsRes.json().data[0].id;
+
+    const tooLow = await app.inject({
+      method: 'GET',
+      url: `/api/v1/bus/stop/${firstStopId}/next?count=0`,
+    });
+    expect(tooLow.statusCode).toBe(400);
+
+    const tooHigh = await app.inject({
+      method: 'GET',
+      url: `/api/v1/bus/stop/${firstStopId}/next?count=11`,
+    });
+    expect(tooHigh.statusCode).toBe(400);
+  }, 20_000);
+
+  it('GET /api/v1/bus/stop/:id/next con parada inexistente devuelve 404', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/bus/stop/no-existe/next' });
+    expect(res.statusCode).toBe(404);
   }, 20_000);
 
   it('GET /api/v1/bus/stops/:id con id inexistente devuelve 404', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/v1/bus/stops/no-existe' });
     expect(res.statusCode).toBe(404);
+  }, 20_000);
+
+  it('GET /api/v1/bus/nearest con lat/lon no numéricos devuelve 400', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/v1/bus/nearest?lat=notanumber&lon=-3.6885626',
+    });
+    expect(res.statusCode).toBe(400);
   }, 20_000);
 });

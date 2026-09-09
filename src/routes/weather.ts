@@ -99,7 +99,13 @@ export async function weatherRoutes(
         summary: 'Previsión horaria para un día futuro (máx. 7 días vista), YYYY-MM-DD',
         params: {
           type: 'object',
-          properties: { date: { type: 'string' } },
+          properties: {
+            date: {
+              type: 'string',
+              description:
+                'Fecha en formato YYYY-MM-DD, entre hoy y hoy+7 días (límite de cobertura de calidad de Open-Meteo).',
+            },
+          },
           required: ['date'],
         },
         response: responseSchema({

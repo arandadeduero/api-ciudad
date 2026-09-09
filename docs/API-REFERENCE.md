@@ -9,7 +9,7 @@ Relación con el resto de la documentación:
 - `/docs` (Swagger UI, generado desde el código) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (Fase 6: observabilidad — Prometheus, Matomo y endpoints de transparencia, ver docs/architecture-proposal.md §7).
+**Última actualización:** 2026-09-09 (robustez y documentación: `response` schema completo en todas las rutas —incluidas `residuos/*`, `parking/ora` y `bus/stop/:id/next`, que antes no lo tenían—, `description` en parámetros y operaciones para que `/docs` sea autoexplicativo, endpoint `residuos/atencion-ciudadana` cerrado, y batería de tests de robustez ampliada — ver ARCHITECTURE.md).
 
 ---
 
@@ -20,6 +20,7 @@ Relación con el resto de la documentación:
 - **Formato de error**: `{ "error": { "code", "message", "requestId" } }`. `code` es estable y apto para lógica de cliente; `message` es para humanos, en español, y puede cambiar de redacción.
 - **Zona horaria**: todas las fechas "de hoy" (`/hoy`, `/dashboard`) se calculan en `Europe/Madrid`, no en la zona horaria del servidor.
 - **Autenticación**: ninguna. La API es de acceso público sin restricción de origen (CORS `*`, decisión confirmada — ver `docs/architecture-proposal.md` §6).
+- **Swagger UI (`/docs`)**: todas las rutas declaran `response` schema (shape completa, no solo `summary`) y `description` en parámetros no triviales — es fuente ejecutable fiable, no solo un placeholder. Se verifica en `test/e2e/health.e2e.test.ts`.
 
 ---
 
@@ -430,6 +431,25 @@ Corrige una investigación previa que citaba erróneamente "Urbaser" como operad
 ```
 
 **Único dato de todo el proyecto marcado explícitamente como fuente secundaria** (nota de prensa, no el PDF oficial) — verificar antes de tomarlo como definitivo.
+
+### `GET /api/v1/residuos/atencion-ciudadana`
+
+```json
+{
+  "data": {
+    "telefono": "947546353",
+    "horario": { "desde": "09:00", "hasta": "14:00" },
+    "sedeElectronica": "https://sede.arandadeduero.es",
+    "correo": "medioambiente@arandadeduero.es",
+    "oficinas": [
+      { "nombre": "Oficinas Medio Ambiente", "direccion": "Plaza Mayor, 13, 2ª planta" },
+      { "nombre": "Oficinas Valoriza SM, S.A.", "direccion": "Calle Santander, nº 2" }
+    ]
+  }
+}
+```
+
+Dato real (`data/residuos.json → atencionCiudadana`) que ya tenía método de `Service` desde la Fase 3 pero no tenía ruta HTTP — cerrado como parte del trabajo de robustez/documentación (2026-09-09).
 
 ---
 

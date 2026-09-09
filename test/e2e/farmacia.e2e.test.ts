@@ -67,4 +67,43 @@ describe('E2E /api/v1/farmacia', () => {
     expect(body.data.today.pharmacy).toBeDefined();
     expect(body.data.upcoming.length).toBeGreaterThan(0);
   });
+
+  it('GET /api/v1/farmacia/dashboard sin query usa el valor por defecto (days=5)', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/farmacia/dashboard' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.upcoming.length).toBeLessThanOrEqual(5);
+  });
+
+  it('GET /api/v1/farmacia/dashboard rechaza days fuera de rango [1,14]', async () => {
+    const tooLow = await app.inject({ method: 'GET', url: '/api/v1/farmacia/dashboard?days=0' });
+    expect(tooLow.statusCode).toBe(400);
+
+    const tooHigh = await app.inject({ method: 'GET', url: '/api/v1/farmacia/dashboard?days=15' });
+    expect(tooHigh.statusCode).toBe(400);
+  });
+
+  it('GET /api/v1/farmacia/forday/:date marca lowConfidence en las fechas documentadas como de confianza baja', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/farmacia/forday/2026-12-24' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.lowConfidence).toBe(true);
+  });
+
+  it('GET /api/v1/farmacia/forday/:date no marca lowConfidence en una fecha normal', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/farmacia/forday/2026-03-15' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.lowConfidence).toBe(false);
+  });
+
+  it('GET /api/v1/farmacia catálogo: cada farmacia tiene shape completa (incluida location)', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/farmacia' });
+    expect(res.statusCode).toBe(200);
+    for (const pharmacy of res.json().data) {
+      expect(pharmacy).toHaveProperty('id');
+      expect(pharmacy).toHaveProperty('name');
+      expect(pharmacy).toHaveProperty('address');
+      expect(pharmacy).toHaveProperty('phone');
+      expect(pharmacy.location).toHaveProperty('latitude');
+      expect(pharmacy.location).toHaveProperty('longitude');
+    }
+  });
 });

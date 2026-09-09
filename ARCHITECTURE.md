@@ -106,6 +106,15 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/diagnostics/sourceChecks.ts` — lógica de comprobación en vivo de cada fuente, extraída de `/health/deep` para que `GET /api/v1/meta/estado` (de cara al consumidor externo) la reutilice sin duplicar el `try/catch` por módulo.
 - `src/telemetry/sources.ts` + `src/routes/meta.ts` — `GET /api/v1/meta/fuentes` (catálogo estático: procedencia, licencia, fiabilidad) y `GET /api/v1/meta/estado` (el mismo agregado que `/health/deep`, bajo `/api/v1`) — endpoints de transparencia (§3 ítems 18-19 de `docs/architecture-proposal.md`, requisito explícito del prompt maestro §32).
 
+## Robustez y documentación (2026-09-09 — no añade fase nueva)
+
+Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propio schema y su cobertura de test:
+
+- **`response` schema completo en todas las rutas.** `residuos/*` (las 5 rutas existentes), `parking/ora` y `bus/stop/:id/next` no declaraban ningún `response` — Swagger no mostraba shape de respuesta para ellas, y no había protección de la whitelist de serialización (Principio #5). Se añadió el schema completo a las 7, verificado campo a campo contra un servidor real levantado a propósito (no solo contra los tests) para no repetir el bug de Principio #5 una tercera vez.
+- **`GET /api/v1/residuos/atencion-ciudadana` (nueva ruta).** `ResiduosService.getAtencionCiudadana()` existía desde la Fase 3, con datos reales validados (`data/residuos.json → atencionCiudadana`), pero nunca se había conectado a ninguna ruta HTTP — dato real e inalcanzable hasta ahora.
+- **`description` en parámetros y operaciones** de prácticamente todas las rutas (formatos de fecha, rangos válidos, qué significa cada valor especial como `NOT_AVAILABLE` o un array vacío en domingo) — `/docs` (Swagger UI) pasa de mostrar solo tipos a explicar el comportamiento, verificado en `test/e2e/health.e2e.test.ts`.
+- **Batería de tests de robustez ampliada** (148 → 162): límites de todos los query params numéricos (`days`, `count`, `hours`) por encima y por debajo del rango válido, verificación de shape completa (no solo un campo) en las respuestas recién dotadas de `response` schema, insensibilidad a mayúsculas de `/parking/ora/:district`, y el caso `lowConfidence: true` de farmacia contra una fecha real documentada en el caveat.
+
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe

@@ -76,6 +76,12 @@ const CHECKS = [
     validate: (body) => typeof body?.data?.direccion === 'string',
   },
   {
+    name: 'residuos/atencion-ciudadana',
+    path: '/api/v1/residuos/atencion-ciudadana',
+    expectStatus: 200,
+    validate: (body) => typeof body?.data?.telefono === 'string',
+  },
+  {
     name: 'bus/lines',
     path: '/api/v1/bus/lines',
     expectStatus: 200,

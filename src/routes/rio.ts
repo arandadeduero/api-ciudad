@@ -75,7 +75,16 @@ export async function rioRoutes(
         summary: 'Serie de nivel del río (m), últimas N horas (por defecto 24)',
         querystring: {
           type: 'object',
-          properties: { hours: { type: 'integer', minimum: 1, maximum: 720, default: 24 } },
+          properties: {
+            hours: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 720,
+              default: 24,
+              description:
+                'Ventana de horas hacia atrás a devolver en "series" (1-720 ≈ 30 días). "latest" y "trend" se calculan siempre sobre toda la serie de la fuente, no sobre esta ventana.',
+            },
+          },
         },
         response: responseSchema(metricSchemaDef),
       },
@@ -95,7 +104,16 @@ export async function rioRoutes(
         summary: 'Serie de caudal del río (m³/s), últimas N horas (por defecto 24)',
         querystring: {
           type: 'object',
-          properties: { hours: { type: 'integer', minimum: 1, maximum: 720, default: 24 } },
+          properties: {
+            hours: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 720,
+              default: 24,
+              description:
+                'Ventana de horas hacia atrás a devolver en "series" (1-720 ≈ 30 días). "latest" y "trend" se calculan siempre sobre toda la serie de la fuente, no sobre esta ventana.',
+            },
+          },
         },
         response: responseSchema(metricSchemaDef),
       },

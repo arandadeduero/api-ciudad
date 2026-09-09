@@ -68,13 +68,14 @@ Fuente: Ordenanza ORA (BOP Burgos 245/2021, texto legal oficial).
 
 Fuente: 2 PDF oficiales del Ayuntamiento (Medio Ambiente / Aseo Urbano).
 
-| Método | Ruta                                  | Descripción                          |
-| ------ | ------------------------------------- | ------------------------------------ |
-| GET    | `/api/v1/residuos/puntolimpio`        | Horario y ubicación del Punto Limpio |
-| GET    | `/api/v1/residuos/contenedores`       | Los 9 tipos de contenedor            |
-| GET    | `/api/v1/residuos/contenedores/:tipo` | Detalle de un tipo                   |
-| GET    | `/api/v1/residuos/enseres`            | Recogida de muebles (Valoriza)       |
-| GET    | `/api/v1/residuos/comercio-carton`    | Recogida de cartón comercial         |
+| Método | Ruta                                  | Descripción                              |
+| ------ | ------------------------------------- | ---------------------------------------- |
+| GET    | `/api/v1/residuos/puntolimpio`        | Horario y ubicación del Punto Limpio     |
+| GET    | `/api/v1/residuos/contenedores`       | Los 9 tipos de contenedor                |
+| GET    | `/api/v1/residuos/contenedores/:tipo` | Detalle de un tipo                       |
+| GET    | `/api/v1/residuos/enseres`            | Recogida de muebles (Valoriza)           |
+| GET    | `/api/v1/residuos/comercio-carton`    | Recogida de cartón comercial             |
+| GET    | `/api/v1/residuos/atencion-ciudadana` | Teléfono, horario y oficinas de contacto |
 
 ### Bus (`/api/v1/bus`) — Fase 4
 

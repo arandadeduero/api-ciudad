@@ -99,7 +99,17 @@ export async function ambienteRoutes(
         tags: ['ambiente'],
         summary:
           'Calidad del aire para una fecha (YYYY-MM-DD). Hoy usa el dataset horario; fechas pasadas, el histórico diario validado (menor resolución, con retraso de publicación)',
-        params: { type: 'object', properties: { date: { type: 'string' } }, required: ['date'] },
+        params: {
+          type: 'object',
+          properties: {
+            date: {
+              type: 'string',
+              description:
+                'Fecha en formato YYYY-MM-DD, no futura. Fechas pasadas muy recientes pueden no tener aún dato histórico publicado (404 HISTORICAL_DATA_NOT_AVAILABLE).',
+            },
+          },
+          required: ['date'],
+        },
         response: responseSchema(snapshotSchemaDef),
       },
     },

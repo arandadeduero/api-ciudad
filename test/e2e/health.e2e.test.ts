@@ -51,12 +51,33 @@ describe('E2E /health', () => {
     expect(body.checks.cortescalles.status).toBe('excluded');
   }, 20_000);
 
-  it('GET /docs/json expone un documento OpenAPI válido', async () => {
+  it('GET /docs/json expone un documento OpenAPI válido con todos los módulos documentados', async () => {
     const res = await app.inject({ method: 'GET', url: '/docs/json' });
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.openapi).toBe('3.0.3');
     expect(body.info.title).toBe('API Ciudad de Aranda de Duero');
+
+    const paths = Object.keys(body.paths);
+    // Endpoints que en algún momento no tuvieron `response` schema (y por
+    // tanto no aparecían con shape en Swagger) — se comprueba explícitamente
+    // que siguen documentados tras la Fase de robustez/documentación.
+    for (const path of [
+      '/residuos/puntolimpio',
+      '/residuos/atencion-ciudadana',
+      '/parking/ora',
+      '/bus/stop/{id}/next',
+    ]) {
+      expect(paths).toContain(path);
+      const responses = body.paths[path].get.responses;
+      expect(responses['200'].content['application/json'].schema.properties.data).toBeDefined();
+    }
+
+    // Parámetros documentados con `description`, no solo tipo — comprobación
+    // puntual de que el trabajo de documentación es real y no solo cosmético.
+    const nextParams = body.paths['/bus/stop/{id}/next'].get.parameters;
+    const countParam = nextParams.find((p: { name: string }) => p.name === 'count');
+    expect(countParam.description).toBeTruthy();
   });
 
   it('GET /ruta-inexistente devuelve 404 con el formato de error estándar', async () => {

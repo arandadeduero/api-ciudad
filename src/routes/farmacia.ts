@@ -28,13 +28,18 @@ const guardEntrySchemaDef = {
     holiday: {
       type: 'object',
       nullable: true,
+      description: 'null si el día no es festivo. Fuente: data/festivos-2026.json (BOCyL).',
       properties: {
         date: { type: 'string' },
         name: { type: 'string' },
-        scope: { type: 'string' },
+        scope: { type: 'string', description: '"nacional" o "autonomico".' },
       },
     },
-    lowConfidence: { type: 'boolean' },
+    lowConfidence: {
+      type: 'boolean',
+      description:
+        'true si la fecha está en el pequeño grupo de fechas de confianza más baja documentadas al re-verificar el PDF oficial (ver meta.caveat en data/farmacias-guardia-2026.json).',
+    },
   },
 } as const;
 
@@ -102,7 +107,16 @@ export async function farmaciaRoutes(
         summary: 'Vista agregada: guardia de hoy + próximos días (pensada para UI/kiosco)',
         querystring: {
           type: 'object',
-          properties: { days: { type: 'integer', minimum: 1, maximum: 14, default: 5 } },
+          properties: {
+            days: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 14,
+              default: 5,
+              description:
+                'Número de días futuros a incluir en "upcoming" (1-14). "upcoming" puede tener menos elementos si el calendario disponible (año 2026) se acaba antes.',
+            },
+          },
         },
         response: responseSchema({
           type: 'object',
@@ -131,7 +145,12 @@ export async function farmaciaRoutes(
         summary: 'Farmacia de guardia para una fecha concreta (YYYY-MM-DD)',
         params: {
           type: 'object',
-          properties: { date: { type: 'string' } },
+          properties: {
+            date: {
+              type: 'string',
+              description: 'Fecha en formato YYYY-MM-DD. Solo hay calendario para 2026.',
+            },
+          },
           required: ['date'],
         },
         response: responseSchema(guardEntrySchemaDef),
@@ -152,7 +171,9 @@ export async function farmaciaRoutes(
         summary: 'Farmacias de guardia de un mes completo (YYYY-MM)',
         params: {
           type: 'object',
-          properties: { month: { type: 'string' } },
+          properties: {
+            month: { type: 'string', description: 'Mes en formato YYYY-MM, p. ej. "2026-01".' },
+          },
           required: ['month'],
         },
         response: responseSchema({ type: 'array', items: guardEntrySchemaDef }),
