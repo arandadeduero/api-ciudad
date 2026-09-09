@@ -1,0 +1,108 @@
+src/config/env.ts
+  s_10638ab73c2825::t_434ba13a0d2cb4 24-31
+data/farmacias-guardia-2026.json
+  s_10638ab73c2825::t_d256eff2e21d48 11-27
+  s_10638ab73c2825::t_d6d61dd479060e 9
+.env.example
+  s_10638ab73c2825::t_ee31276148c623 21-23,25,27-31
+src/services/FarmaciaService.ts
+  s_10638ab73c2825::t_4d23d1ec834e29 1-3,11-105
+  s_10638ab73c2825::t_b03439341de151 4-10
+src/app.ts
+  s_10638ab73c2825::t_dd2b4238c808a5 59-62
+  s_10638ab73c2825::t_29fcd49b7fedec 74
+  s_10638ab73c2825::t_90eb057b6326ae 9-10,12-15,51-58,67-73
+  s_10638ab73c2825::t_6baaa68581c483 64
+src/domain/farmacia.ts
+  s_10638ab73c2825::t_ca22bc404c0572 1-29
+test/unit/WeatherService.test.ts
+  s_10638ab73c2825::t_6baaa68581c483 4-7,104-109,115-120,127-132
+  s_10638ab73c2825::t_2c37f55bf41d26 69-73,75-76,78-84,86-91
+  s_10638ab73c2825::t_f2918eead7bbdc 1-3,8-68,74,77,85,92-103,110-114,121-126,133-137
+README.md
+  s_10638ab73c2825::t_38f3d0f7a3cce3 8-14
+src/repositories/FarmaciaRepository.ts
+  s_10638ab73c2825::t_db3abcf8963ae0 1-96
+test/e2e/farmacia.e2e.test.ts
+  s_10638ab73c2825::t_ad08cd2d140cc8 1-70
+src/domain/weather.ts
+  s_10638ab73c2825::t_4ea880c637dd87 1-34
+test/e2e/weather.e2e.test.ts
+  s_10638ab73c2825::t_18b1320aaf9276 1-20,29,35,42-55
+  s_10638ab73c2825::t_6baaa68581c483 21-28,30-34,36-41
+src/adapters/openMeteoAdapter.ts
+  s_10638ab73c2825::t_e42dd6d07e4deb 1-79
+src/routes/schemas.ts
+  s_10638ab73c2825::t_3031308017b7db 1-20
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_95e55130175dc6 30-53
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_261864451ebffe 22-26
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_4589d30b934142 299
+src/routes/farmacia.ts
+  s_10638ab73c2825::t_d65d4d6d0b18cb 4
+  s_10638ab73c2825::t_f1288de2c00839 73
+  s_10638ab73c2825::t_9eceebaa3d5713 107-113
+  s_10638ab73c2825::t_75fe19ccdd1e66 1-3,5-72,74-87,89-106,114-136,138-157,159-167
+  s_10638ab73c2825::t_b25e92714b3b86 137
+  s_10638ab73c2825::t_20f0f9726590e6 88
+  s_10638ab73c2825::t_cd1689359576c1 158
+src/routes/weather.ts
+  s_10638ab73c2825::t_b2e647cb3a77a3 3,17-45,54-59,64-66,75-80,85-87,105-120
+  s_10638ab73c2825::t_6baaa68581c483 60-63,81-84
+  s_10638ab73c2825::t_4a860470d96782 1-2,4-16,46-53,67-74,88-104,121-129
+src/utils/date.ts
+  s_10638ab73c2825::t_78cd29d5246e8b 1-8,10-39
+  s_10638ab73c2825::t_6baaa68581c483 9
+ARCHITECTURE.md
+  s_10638ab73c2825::t_c878e1c1a32e03 11,19,24-29,36,38,41-57,62-64,67-74
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_6baaa68581c483 38,43-44,46-48
+src/clients/OpenMeteoClient.ts
+  s_10638ab73c2825::t_7d338a1176a954 46
+  s_10638ab73c2825::t_5b9ea32f768fc2 1-8,18-45,47-84
+  s_10638ab73c2825::t_1234c006b4fc5c 9-17
+src/routes/health.ts
+  s_10638ab73c2825::t_219b6b74971889 6-7
+  s_10638ab73c2825::t_54fd03d224fe3b 25-28,30-31,35
+  s_10638ab73c2825::t_4d492e6a7d2336 158
+  s_10638ab73c2825::t_6baaa68581c483 136-139,154-156
+  s_10638ab73c2825::t_d9bc16fcec8513 124-135,140-143,151-153,157
+test/unit/openMeteoAdapter.test.ts
+  s_10638ab73c2825::t_b292d518ab8707 1-44,49-55
+  s_10638ab73c2825::t_6baaa68581c483 45-48
+test/unit/date.test.ts
+  s_10638ab73c2825::t_e6a40dde6e1690 1-55
+API.md
+  s_10638ab73c2825::t_97c0b63fbb6750 11-18,25-31,42-46
+  s_10638ab73c2825::t_e2392d4c7ce14c 7,9,19-24,32-41,56-57,66-71
+data/festivos-2026.json
+  s_10638ab73c2825::t_4640c054541860 1-17,28-39
+  s_10638ab73c2825::t_6baaa68581c483 18-27
+src/services/WeatherService.ts
+  s_10638ab73c2825::t_6baaa68581c483 51-54,75-77
+  s_10638ab73c2825::t_c8c16330dbebbf 2-20,22-50,55-74,78-105
+  s_10638ab73c2825::t_aaea6d222d6c8a 1
+  s_10638ab73c2825::t_3b59f1a3020d18 21
+Dockerfile
+  s_10638ab73c2825::t_616cc6209d9e58 28-30
+test/integration/FarmaciaService.test.ts
+  s_10638ab73c2825::t_37da64bafa70a3 1-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "07d54d4d7a309fdf6f35d0b0cbaf13c501823091",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
