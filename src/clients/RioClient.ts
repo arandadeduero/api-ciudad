@@ -1,4 +1,7 @@
 import { UpstreamError } from '../errors/AppError.js';
+import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+
+const METRIC_SOURCE = 'rio-saih';
 
 export type RioMetricName = 'nivel' | 'caudal';
 
@@ -28,6 +31,13 @@ export class RioClient implements RioProvider {
   ) {}
 
   async fetchSeries(stationCode: string, metric: RioMetricName): Promise<RioRawReading[]> {
+    return withExternalRequestMetrics(METRIC_SOURCE, () => this.doFetchSeries(stationCode, metric));
+  }
+
+  private async doFetchSeries(
+    stationCode: string,
+    metric: RioMetricName,
+  ): Promise<RioRawReading[]> {
     const url = `${this.baseUrl}/station/aforo/${encodeURIComponent(stationCode)}/${metric}`;
 
     const controller = new AbortController();

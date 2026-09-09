@@ -55,6 +55,18 @@ const envSchema = z.object({
   RIVER_STATION_CODE: z.string().default('EA013'),
   RIVER_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
   RIVER_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
+
+  // Matomo (Fase 6 — tracking best-effort, ver src/services/MatomoService.ts)
+  // NOTA: no se usa z.coerce.boolean() a propósito — Boolean("false") es
+  // `true` en JS, así que ese coercer trataría cualquier string no vacío
+  // (incluido literalmente "false") como activado.
+  MATOMO_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
+  MATOMO_URL: z.string().default(''),
+  MATOMO_SITE_ID: z.string().default(''),
+  MATOMO_TOKEN: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

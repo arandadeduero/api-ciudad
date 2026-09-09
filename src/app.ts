@@ -5,6 +5,8 @@ import { env } from './config/env.js';
 import { registerErrorHandler } from './errors/error-handler.js';
 import securityPlugin from './plugins/security.js';
 import openapiPlugin from './plugins/openapi.js';
+import metricsPlugin from './plugins/metrics.js';
+import matomoPlugin from './plugins/matomo.js';
 import { healthRoutes } from './routes/health.js';
 import { farmaciaRoutes } from './routes/farmacia.js';
 import { weatherRoutes } from './routes/weather.js';
@@ -13,6 +15,8 @@ import { parkingRoutes } from './routes/parking.js';
 import { residuosRoutes } from './routes/residuos.js';
 import { busRoutes } from './routes/bus.js';
 import { rioRoutes } from './routes/rio.js';
+import { metaRoutes } from './routes/meta.js';
+import { MatomoService } from './services/MatomoService.js';
 import { createCacheService, type CacheService } from './cache/index.js';
 import { FarmaciaRepository } from './repositories/FarmaciaRepository.js';
 import { FarmaciaService } from './services/FarmaciaService.js';
@@ -63,6 +67,15 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(sensible);
   await app.register(securityPlugin);
   await app.register(openapiPlugin);
+  await app.register(metricsPlugin);
+
+  const matomoService = new MatomoService({
+    enabled: env.MATOMO_ENABLED,
+    url: env.MATOMO_URL,
+    siteId: env.MATOMO_SITE_ID,
+    token: env.MATOMO_TOKEN,
+  });
+  await app.register(matomoPlugin, { matomo: matomoService });
 
   // Servicios de dominio, cableados aquí una única vez.
   const farmaciaService = new FarmaciaService(new FarmaciaRepository());
@@ -128,6 +141,16 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await residuosRoutes(instance, { service: residuosService });
       await busRoutes(instance, { service: busService });
       await rioRoutes(instance, { service: rioService });
+      await metaRoutes(instance, {
+        cache,
+        farmacia: farmaciaService,
+        weather: weatherService,
+        ambiente: ambienteService,
+        parking: parkingService,
+        residuos: residuosService,
+        bus: busService,
+        rio: rioService,
+      });
     },
     { prefix: '/api/v1' },
   );

@@ -1,4 +1,5 @@
 import type { CacheService } from './CacheService.js';
+import { cacheHitsTotal, cacheMissesTotal, cacheDomainFromKey } from '../telemetry/metrics.js';
 
 interface CacheEntry<T> {
   value: T;
@@ -15,9 +16,13 @@ export class InMemoryCache implements CacheService {
   private readonly store = new Map<string, CacheEntry<unknown>>();
 
   async get<T>(key: string): Promise<T | undefined> {
+    const domain = cacheDomainFromKey(key);
     const entry = this.store.get(key);
-    if (!entry) return undefined;
-    if (entry.expiresAt < Date.now()) return undefined;
+    if (!entry || entry.expiresAt < Date.now()) {
+      cacheMissesTotal.inc({ domain });
+      return undefined;
+    }
+    cacheHitsTotal.inc({ domain });
     return entry.value as T;
   }
 

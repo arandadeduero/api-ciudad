@@ -5,15 +5,17 @@ Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
 de guardia, aparcamiento, transporte, río y más, expuestos como una única
 API REST versionada.
 
-> **Estado actual: v1 completa (Fases 1-5).** `/api/v1/farmacia*`,
+> **Estado actual: v1 completa (Fases 1-6).** `/api/v1/farmacia*`,
 > `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*`,
 > `/api/v1/residuos*`, `/api/v1/bus*` y `/api/v1/rio*` funcionan con datos
 > y APIs reales — ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md)
 > para el detalle completo de cada endpoint. `/eventos` y cortes de calles
 > quedan fuera de la v1 por decisión explícita (ver
 > [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §6).
-> Solo queda pendiente la Fase 6 (observabilidad: Matomo + Prometheus +
-> endpoints de transparencia), que no añade módulos de dominio nuevos.
+> Observabilidad (Fase 6) añadida: métricas Prometheus en `GET /metrics`,
+> tracking best-effort con Matomo, y endpoints de transparencia
+> `GET /api/v1/meta/fuentes` / `GET /api/v1/meta/estado`. Solo queda
+> pendiente la Fase 7 (E2E adicional, CI/CD, hardening).
 
 ## Requisitos
 

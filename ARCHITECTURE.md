@@ -97,6 +97,15 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/services/RioService.ts` — calcula la tendencia (tramo de ±3h, umbral 2%) y recorta la serie a "últimas N horas" en nuestro lado, ya que la fuente no lo hace. Cache 10 min, fallback a caché obsoleta.
 - `src/routes/rio.ts` — `/api/v1/rio*`. Sin `/rio/volumen`: la fuente no ofrece esa métrica para la estación de aforo (`nivel`/`caudal` solamente) — no se inventa el endpoint.
 
+## Observabilidad (Fase 6 — no añade módulos de dominio nuevos)
+
+- `src/telemetry/metrics.ts` — registro Prometheus (`prom-client`), contadores/histogramas propios (`http_requests_total`, `http_request_duration_seconds`, `external_requests_total`, `external_request_duration_seconds`, `cache_hits_total`, `cache_misses_total`, `api_errors_total`) más las métricas de proceso por defecto (`collectDefaultMetrics`). `withExternalRequestMetrics()` envuelve cada llamada de los 4 `Client` (Open-Meteo, JCyL, GitHub/GTFS, río) sin tocar su lógica de negocio.
+- `src/plugins/metrics.ts` — hook `onResponse` que etiqueta por `request.routeOptions.url` (la **plantilla** de ruta, no la URL literal — evita que un parámetro como `:date` dispare la cardinalidad de las series) y `GET /metrics` en formato texto Prometheus. Vive en la raíz, fuera de `/api/v1`, igual que `/health`.
+- `src/cache/InMemoryCache.ts` y `src/errors/error-handler.ts` — instrumentados con `cache_hits_total`/`cache_misses_total` y `api_errors_total` respectivamente, sin cambiar su contrato público.
+- `src/services/MatomoService.ts` + `src/plugins/matomo.ts` — tracking **best-effort**: `track()` no es `async`, nunca lanza, y no hace ninguna llamada de red si `MATOMO_ENABLED=false` (por defecto). Un Matomo caído o lento no puede afectar nunca a la disponibilidad de la API.
+- `src/diagnostics/sourceChecks.ts` — lógica de comprobación en vivo de cada fuente, extraída de `/health/deep` para que `GET /api/v1/meta/estado` (de cara al consumidor externo) la reutilice sin duplicar el `try/catch` por módulo.
+- `src/telemetry/sources.ts` + `src/routes/meta.ts` — `GET /api/v1/meta/fuentes` (catálogo estático: procedencia, licencia, fiabilidad) y `GET /api/v1/meta/estado` (el mismo agregado que `/health/deep`, bajo `/api/v1`) — endpoints de transparencia (§3 ítems 18-19 de `docs/architecture-proposal.md`, requisito explícito del prompt maestro §32).
+
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe
@@ -121,3 +130,9 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
    directorio con `--chown` al usuario no root — si no, falla en silencio
    dentro del contenedor aunque funcione en local. Detectado verificando
    el contenedor real, no solo el build.
+7. **`z.coerce.boolean()` no sirve para variables de entorno tipo flag.**
+   `Boolean("false")` es `true` en JS, así que ese coercer trataría
+   `MATOMO_ENABLED=false` (string no vacío) como activado. `src/config/env.ts`
+   usa `z.enum(['true', 'false']).transform(...)` para los flags booleanos
+   en su lugar — detectado antes de que llegara a ejecutarse, revisando el
+   propio schema al añadir `MATOMO_ENABLED` en la Fase 6.

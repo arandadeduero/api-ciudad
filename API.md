@@ -7,9 +7,9 @@ autoritativo, se actualiza en el mismo commit que cualquier cambio de API.
 `/docs` (Swagger UI) es la fuente ejecutable/interactiva generada desde el
 código.
 
-## Estado: Fase 5 (v1 completa salvo eventos/cortes de calles, excluidos por decisión)
+## Estado: Fase 6 (v1 completa salvo eventos/cortes de calles, excluidos por decisión; observabilidad añadida)
 
-### Infraestructura (Fase 1)
+### Infraestructura (Fase 1 y Fase 6)
 
 | Método | Ruta            | Descripción                                                                                                          |
 | ------ | --------------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -17,6 +17,7 @@ código.
 | GET    | `/health/live`  | Liveness probe                                                                                                       |
 | GET    | `/health/ready` | Readiness probe (dependencias críticas — cache)                                                                      |
 | GET    | `/health/deep`  | Diagnóstico por módulo: `ok`/`degraded`/`error` para los módulos implementados, `excluded` para eventos/cortescalles |
+| GET    | `/metrics`      | Métricas Prometheus (Fase 6)                                                                                         |
 | GET    | `/docs`         | Swagger UI                                                                                                           |
 | GET    | `/docs/json`    | Spec OpenAPI 3                                                                                                       |
 
@@ -99,6 +100,15 @@ Fuente: API de terceros sobre datos SAIH-CHD (no es la API oficial de la CHD).
 | GET    | `/api/v1/rio/nivel?hours=`  | Serie de nivel (m), últimas N horas (1-720, por defecto 24) |
 | GET    | `/api/v1/rio/caudal?hours=` | Serie de caudal (m³/s), últimas N horas                     |
 
+### Meta (`/api/v1/meta`) — Fase 6
+
+Endpoints de transparencia, no de dominio: metadatos sobre la propia API.
+
+| Método | Ruta                   | Descripción                                                           |
+| ------ | ---------------------- | --------------------------------------------------------------------- |
+| GET    | `/api/v1/meta/fuentes` | Catálogo de todas las fuentes: procedencia, licencia, fiabilidad      |
+| GET    | `/api/v1/meta/estado`  | Estado en vivo agregado de cada fuente (equivalente a `/health/deep`) |
+
 ## Formato de respuesta
 
 Éxito:
@@ -120,7 +130,7 @@ convención estándar de health checks; sí siguen el formato de error común.)
 
 ## Pendiente
 
-Fase 6 (Matomo + Prometheus + endpoints de transparencia) — ver plan de
-fases en `docs/architecture-proposal.md` §7. `eventos` y `cortescalles`
-quedan excluidos de la v1 por decisión del usuario; no hay más módulos de
-dominio pendientes.
+Fase 7 (E2E adicional, CI/CD, hardening) — ver plan de fases en
+`docs/architecture-proposal.md` §7. `eventos` y `cortescalles` quedan
+excluidos de la v1 por decisión del usuario; no hay más módulos de dominio
+pendientes.

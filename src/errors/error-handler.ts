@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyError } from 'fastify';
 import { AppError } from './AppError.js';
+import { apiErrorsTotal } from '../telemetry/metrics.js';
 
 /**
  * Handler de errores centralizado. Traduce cualquier excepción —tipada o
@@ -14,6 +15,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
     const requestId = request.id;
 
     if (error instanceof AppError) {
+      apiErrorsTotal.inc({ code: error.code, status_code: String(error.statusCode) });
       reply.status(error.statusCode).send({
         error: { code: error.code, message: error.message, requestId },
       });
@@ -23,6 +25,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
     // Errores de validación de esquema de Fastify (querystring/params/body)
     if ('validation' in error && error.validation) {
       request.log.warn({ err: error }, 'Request validation failed');
+      apiErrorsTotal.inc({ code: 'VALIDATION_ERROR', status_code: '400' });
       reply.status(400).send({
         error: {
           code: 'VALIDATION_ERROR',
@@ -37,8 +40,10 @@ export function registerErrorHandler(app: FastifyInstance): void {
 
     const statusCode =
       'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : 500;
+    const finalStatusCode = statusCode >= 400 && statusCode < 600 ? statusCode : 500;
 
-    reply.status(statusCode >= 400 && statusCode < 600 ? statusCode : 500).send({
+    apiErrorsTotal.inc({ code: 'INTERNAL_ERROR', status_code: String(finalStatusCode) });
+    reply.status(finalStatusCode).send({
       error: {
         code: 'INTERNAL_ERROR',
         message: 'Ha ocurrido un error inesperado.',
@@ -48,6 +53,7 @@ export function registerErrorHandler(app: FastifyInstance): void {
   });
 
   app.setNotFoundHandler((request, reply) => {
+    apiErrorsTotal.inc({ code: 'ROUTE_NOT_FOUND', status_code: '404' });
     reply.status(404).send({
       error: {
         code: 'ROUTE_NOT_FOUND',

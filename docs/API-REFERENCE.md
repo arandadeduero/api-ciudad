@@ -9,7 +9,7 @@ Relación con el resto de la documentación:
 - `/docs` (Swagger UI, generado desde el código) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (Fase 5: río — última fase de la v1, ver docs/architecture-proposal.md §7).
+**Última actualización:** 2026-09-09 (Fase 6: observabilidad — Prometheus, Matomo y endpoints de transparencia, ver docs/architecture-proposal.md §7).
 
 ---
 
@@ -583,6 +583,89 @@ Serie horaria de la métrica, filtrada a las últimas `hours` (1-720, por defect
     "latest": { "timestamp": "2026-09-09T08:00:00.000Z", "value": 7.05 },
     "trend": "bajando",
     "series": [{ "timestamp": "...", "value": 7.3 }]
+  }
+}
+```
+
+---
+
+## Métricas y transparencia
+
+### `GET /metrics` (raíz, fuera de `/api/v1`)
+
+Métricas en formato texto Prometheus (`prom-client`, ver `src/telemetry/metrics.ts`). Vive fuera de `/api/v1` como `/health`: es infraestructura del proceso, no un dato de dominio versionado. Sin autenticación en la v1 — a proteger con red interna / IP allowlist si se expone fuera del clúster.
+
+Contadores/histogramas propios (además de los `process_*`/`nodejs_*` por defecto de `prom-client`):
+
+| Métrica                                   | Tipo      | Labels                           | Qué mide                                                                                                                                |
+| ----------------------------------------- | --------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `http_requests_total`                     | Counter   | `method`, `route`, `status_code` | Peticiones HTTP recibidas. `route` es la plantilla (`/api/v1/rio/:x`), no la URL literal — evita cardinalidad sin límite por parámetros |
+| `http_request_duration_seconds`           | Histogram | `method`, `route`, `status_code` | Duración de las peticiones HTTP                                                                                                         |
+| `external_requests_total`                 | Counter   | `source`, `outcome`              | Llamadas a fuentes externas (`open-meteo`, `jcyl`, `github-gtfs`, `rio-saih`), éxito/error                                              |
+| `external_request_duration_seconds`       | Histogram | `source`                         | Duración de las llamadas a fuentes externas                                                                                             |
+| `cache_hits_total` / `cache_misses_total` | Counter   | `domain`                         | Aciertos/fallos de caché, agrupados por el prefijo de la clave (`weather`, `ambiente`, `rio`, `diagnostics`, ...)                       |
+| `api_errors_total`                        | Counter   | `code`, `status_code`            | Errores devueltos por la API (mismo `error.code` que en la respuesta JSON)                                                              |
+
+**Ejemplo real (fragmento):**
+
+```text
+http_requests_total{method="GET",route="/api/v1/rio/nivel",status_code="200"} 1
+external_requests_total{source="rio-saih",outcome="success"} 2
+cache_hits_total{domain="rio"} 1
+api_errors_total{code="ROUTE_NOT_FOUND",status_code="404"} 1
+```
+
+### `GET /api/v1/meta/fuentes`
+
+Catálogo de todas las fuentes de datos que consume la API: procedencia, licencia, frecuencia de actualización y fiabilidad (§3 ítem 18 de `docs/architecture-proposal.md` — transparencia total, requisito explícito del prompt maestro §32). Datos estáticos, definidos en `src/telemetry/sources.ts` — cualquier cambio a una fuente debe reflejarse ahí en el mismo commit (misma regla que este documento).
+
+**Respuesta 200 (ejemplo real, un elemento del array):**
+
+```json
+{
+  "data": [
+    {
+      "id": "rio",
+      "module": "Río (nivel y caudal)",
+      "provider": "API de terceros sobre datos SAIH — Confederación Hidrográfica del Duero",
+      "sourceUrl": "https://saih-chd-api-9d034ff9d037.herokuapp.com",
+      "license": "No especificada — no es la API oficial de la CHD",
+      "updateFrequency": "Casi tiempo real (ventana móvil de ~3 meses de histórico horario)",
+      "reliability": "Media — servicio de terceros, sin SLA conocido",
+      "status": "implemented",
+      "notes": "Estación de aforo EA013. Solo nivel y caudal disponibles, no volumen."
+    }
+  ]
+}
+```
+
+`status` es `"implemented"` o `"excluded"` (eventos, cortes de calles) — nunca "planned": todo lo que aparece en este catálogo o ya está implementado o es una decisión tomada de no implementarlo (ver `docs/architecture-proposal.md` §0).
+
+### `GET /api/v1/meta/estado`
+
+Equivalente de `/health/deep` de cara al consumidor externo (§3 ítem 19): mismos checks en vivo (comparten `src/diagnostics/sourceChecks.ts`), pero bajo `/api/v1` y con un `status` agregado (`"ok"` si todo ok, `"degraded"` si algo sirve caché obsoleta, `"down"` si algo falla del todo).
+
+**Respuesta 200 (ejemplo real):**
+
+```json
+{
+  "data": {
+    "status": "ok",
+    "sources": {
+      "cache": { "status": "ok" },
+      "farmacia": { "status": "ok", "detail": "12 farmacias en catálogo" },
+      "weather": { "status": "ok", "detail": "ok" },
+      "ambiente": { "status": "ok", "detail": "ok" },
+      "parking": { "status": "ok", "detail": "1 aparcamientos, 6 distritos ORA" },
+      "residuos": { "status": "ok", "detail": "9 tipos de contenedor" },
+      "bus": { "status": "ok", "detail": "3 líneas, 44 paradas" },
+      "rio": { "status": "ok", "detail": "ok" },
+      "eventos": {
+        "status": "excluded",
+        "detail": "Fuera de alcance de la v1 (decisión del usuario) — ver docs/architecture-proposal.md §6"
+      },
+      "cortescalles": { "status": "excluded", "detail": "..." }
+    }
   }
 }
 ```

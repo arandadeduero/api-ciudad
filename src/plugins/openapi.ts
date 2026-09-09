@@ -28,6 +28,8 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
         { name: 'residuos', description: 'Punto limpio, contenedores y recogida de residuos' },
         { name: 'bus', description: 'Bus urbano (GTFS real, L1/L2/L3)' },
         { name: 'rio', description: 'Nivel y caudal del río (SAIH-CHD, vía API de terceros)' },
+        { name: 'meta', description: 'Transparencia: catálogo de fuentes y estado en vivo' },
+        { name: 'metrics', description: 'Métricas Prometheus' },
       ],
     },
   });

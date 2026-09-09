@@ -32,17 +32,27 @@ faltan o son inválidas):
 | `RATE_LIMIT_WINDOW` | `1 minute`    | Ventana de rate limit                                 |
 | `CACHE_DRIVER`      | `memory`      | `memory` (único driver implementado hoy)              |
 
-Las variables de fuentes externas (`OPEN_METEO_BASE_URL`, `AEMET_API_KEY`,
-`JCYL_OPENDATA_BASE_URL`, `GTFS_*`, `WAZE_*`, `RIVER_API_BASE_URL`,
-`MATOMO_*`) están documentadas en `.env.example` pero **no se usan
-todavía** — se activarán en las fases 2-6 (ver
-`docs/architecture-proposal.md` §7).
+El resto de variables de fuentes externas están documentadas en
+`.env.example` con sus valores por defecto reales (`OPEN_METEO_BASE_URL`,
+`JCYL_OPENDATA_BASE_URL`, `GTFS_URBANO_REPO`, `RIVER_API_BASE_URL`, etc.) y
+ya se usan en producción desde sus fases respectivas (2-5, ver
+`docs/architecture-proposal.md` §7). Dos excepciones siguen sin consumirse
+por decisión explícita, no por estar pendientes:
+
+- `AEMET_API_KEY` / `AEMET_BASE_URL` — Open-Meteo cubre `/weather`; AEMET
+  queda como alternativa no activada.
+- `WAZE_*` — el módulo de cortes de calles está fuera de la v1 (§6).
+
+`MATOMO_*` (Fase 6) sí se lee al arrancar, pero es opcional de verdad:
+con `MATOMO_ENABLED=false` (el default) el `MatomoService` no hace ninguna
+llamada de red — la API funciona igual con o sin Matomo configurado.
 
 ## Verificar el despliegue
 
 ```bash
 curl http://<host>:3000/health
 curl http://<host>:3000/health/ready
+curl http://<host>:3000/metrics
 BASE_URL=http://<host>:3000 npm run smoke-test
 ```
 

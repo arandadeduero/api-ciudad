@@ -87,7 +87,26 @@ const CHECKS = [
     expectStatus: 200,
     validate: (body) => body?.data?.stationCode === 'EA013',
   },
+  {
+    name: 'meta/fuentes',
+    path: '/api/v1/meta/fuentes',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.some((s) => s.id === 'rio'),
+  },
+  {
+    name: 'meta/estado',
+    path: '/api/v1/meta/estado',
+    expectStatus: 200,
+    validate: (body) => ['ok', 'degraded', 'down'].includes(body?.data?.status),
+  },
 ];
+
+/** Comprobación aparte: /metrics no devuelve JSON, así que no encaja en CHECKS. */
+async function checkMetrics() {
+  const res = await fetchWithTimeout(`${BASE_URL}/metrics`);
+  const text = await res.text();
+  return res.status === 200 && text.includes('http_requests_total');
+}
 
 async function fetchWithTimeout(url) {
   const controller = new AbortController();
@@ -141,7 +160,20 @@ async function runChecks() {
     }
   }
 
-  console.log(`\n${passed}/${CHECKS.length} checks passed`);
+  try {
+    if (await checkMetrics()) {
+      console.log('✓ metrics');
+      passed += 1;
+    } else {
+      console.log('✗ metrics');
+      failures.push('metrics');
+    }
+  } catch (err) {
+    console.log(`✗ metrics (error: ${err instanceof Error ? err.message : err})`);
+    failures.push('metrics');
+  }
+
+  console.log(`\n${passed}/${CHECKS.length + 1} checks passed`);
 
   if (failures.length > 0) {
     console.log(`Fallos: ${failures.join(', ')}`);

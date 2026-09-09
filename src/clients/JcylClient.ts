@@ -1,4 +1,7 @@
 import { UpstreamError } from '../errors/AppError.js';
+import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+
+const METRIC_SOURCE = 'jcyl';
 
 export interface JcylProvider {
   fetchAllRecords(dataset: string, refine: Record<string, string>): Promise<unknown[]>;
@@ -42,6 +45,16 @@ export class JcylClient implements JcylProvider {
   }
 
   private async fetchPage(
+    dataset: string,
+    refine: Record<string, string>,
+    offset: number,
+  ): Promise<OpendatasoftRecordsResponse> {
+    return withExternalRequestMetrics(METRIC_SOURCE, () =>
+      this.doFetchPage(dataset, refine, offset),
+    );
+  }
+
+  private async doFetchPage(
     dataset: string,
     refine: Record<string, string>,
     offset: number,
