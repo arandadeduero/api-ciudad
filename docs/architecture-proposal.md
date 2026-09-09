@@ -291,7 +291,7 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 
 ---
 
-## 7. Plan de fases (actualizado 2026-09-09 — Fases 1-5 completadas, v1 de módulos de datos cerrada)
+## 7. Plan de fases (actualizado 2026-09-09 — Fases 1-7 completadas)
 
 | Fase | Contenido | Estado |
 |---|---|---|
@@ -301,11 +301,12 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 | 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. El GTFS interurbano del NAP queda descartado del alcance actual (no aporta valor adicional suficiente sobre el urbano real) |
 | 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. Sin `/rio/volumen`: la fuente solo soporta nivel y caudal para la estación de aforo |
 | 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. `GET /metrics` (Prometheus, `prom-client`), `MatomoService` best-effort (no-op salvo `MATOMO_ENABLED=true`), y los dos endpoints de transparencia bajo `/api/v1/meta` reutilizando la lógica de `/health/deep` (extraída a `src/diagnostics/sourceChecks.ts`) |
-| 7 | E2E, smoke tests, CI/CD, hardening | Sin cambios |
+| 7 | Expansión de fuentes tras una sesión de investigación dedicada ("qué otra información pública podría tener un API de ciudad"): embalse (`/rio/embalse`), educación (`/educacion/*`), bibliotecas (`/bibliotecas`), avisos meteorológicos de AEMET (`/weather/avisos`) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. Cada fuente se verificó contra la fuente real antes de implementar (curl, HTML, CAP-XML). Corrigió también un gotcha de infraestructura: `.env` nunca se cargaba de verdad |
+| 8 | E2E adicional, CI/CD, hardening | Sin cambios |
 
 **Eventos y cortes de calles/Waze quedan explícitamente fuera de la v1** — no aparecen como módulos "pendientes", sino como decisión tomada de no implementarlos por ahora.
 
-**Con las Fases 1-6 completadas, todos los módulos de datos previstos para la v1 están implementados, más la capa de observabilidad completa.** La Fase 7 (E2E/CI/CD/hardening) ya viene cubierta en gran medida por la práctica seguida en cada fase (tests E2E reales, `docker build && docker run && smoke-test` antes de cada commit, CI en `.github/workflows/ci.yml`).
+**Con las Fases 1-7 completadas, todos los módulos de datos previstos y los identificados en la ampliación posterior están implementados, más la capa de observabilidad completa.** La Fase 8 (E2E/CI/CD/hardening) ya viene cubierta en gran medida por la práctica seguida en cada fase (tests E2E reales, `docker build && docker run && smoke-test` antes de cada commit, CI en `.github/workflows/ci.yml`).
 
 ---
 

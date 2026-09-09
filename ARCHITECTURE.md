@@ -106,6 +106,36 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/diagnostics/sourceChecks.ts` — lógica de comprobación en vivo de cada fuente, extraída de `/health/deep` para que `GET /api/v1/meta/estado` (de cara al consumidor externo) la reutilice sin duplicar el `try/catch` por módulo.
 - `src/telemetry/sources.ts` + `src/routes/meta.ts` — `GET /api/v1/meta/fuentes` (catálogo estático: procedencia, licencia, fiabilidad) y `GET /api/v1/meta/estado` (el mismo agregado que `/health/deep`, bajo `/api/v1`) — endpoints de transparencia (§3 ítems 18-19 de `docs/architecture-proposal.md`, requisito explícito del prompt maestro §32).
 
+## Módulos de dominio (Fase 7 — expansión de fuentes, a petición del usuario tras un pase de "qué otra información pública podría tener un API de ciudad")
+
+Los cuatro módulos de esta fase se investigaron primero contra la fuente en vivo (no se implementó nada hasta confirmar cada dato con curl/HTML/CAP-XML real) — ver el hilo de investigación previo a esta fase para el detalle completo.
+
+**Embalse** (extensión de `/rio`, no un módulo nuevo de dominio):
+
+- `src/domain/embalse.ts` — tipo `EmbalseSnapshot`.
+- `src/clients/SaihDueroEmbalseClient.ts` — a diferencia de `RioClient`, no hay API JSON para el % de volumen embalsado: se scrapea la ficha HTML pública de `saihduero.es` con `node-html-parser` (parser real, no regex — el HTML de un tercero puede cambiar de forma que una regex no cubre con fiabilidad, a diferencia de un CSV o CAP-XML bien definidos). La API de terceros que ya usa `RioClient` sí responde para este código de estación (`EM511`) pero solo con la cota en metros — comprobado en vivo que coincide con el valor de la ficha HTML, cruzando ambas fuentes antes de confiar en el scraping.
+- `src/services/EmbalseService.ts` — mismo patrón caché + stale-fallback que `RioService`.
+- `src/routes/rio.ts` — añade `GET /api/v1/rio/embalse`. El embalse (Linares del Arroyo) está en Maderuelo, Segovia — no en el municipio de Aranda; se documenta así, sin dar a entender que es un dato hiperlocal.
+
+**Educación** (JCyL, mismo proveedor Opendatasoft que Ambiente):
+
+- `src/domain/educacion.ts`, `src/adapters/educacionAdapter.ts` — reutiliza `JcylClient` sin cambios. El adapter aplica un radio de sanidad (`distanceMeters`, ya existente en `src/utils/geo.ts`) sobre la coordenada de cada centro: un registro real del dataset trae una coordenada a ~67km de distancia (error de geocodificación del propio JCyL, no algo que "corregir" inventando una coordenada) — se declara `location: null` en vez de propagar un dato que se sabe erróneo.
+- `src/services/EducacionService.ts`, `src/routes/educacion.ts` — `/api/v1/educacion/centros*`. TTL de caché largo (24h): el directorio se publica por curso académico.
+
+**Bibliotecas** (JCyL, mismo proveedor):
+
+- `src/domain/bibliotecas.ts`, `src/adapters/bibliotecasAdapter.ts`, `src/services/BibliotecasService.ts`, `src/routes/bibliotecas.ts` — `/api/v1/bibliotecas`. El dataset no trae horario de apertura, solo localización y contacto — no se ha añadido inventando un horario ni scrapeando una página de contenido dinámico poco fiable.
+
+**Avisos meteorológicos** (AEMET OpenData, endpoint distinto de la predicción):
+
+- `src/utils/tar.ts` — lector TAR mínimo, formato POSIX/ustar, sin dependencia nueva (mismo criterio que el parser CSV propio: formato bien especificado y acotado). Necesario porque el paquete que devuelve AEMET para `/avisos_cap` es un TAR sin comprimir pese a que la cabecera `Content-Disposition` lo llama `.tar.gz` — comprobado con `file` sobre un fichero real antes de decidir que `fflate` (ya usado para GTFS) no serviría aquí.
+- `src/adapters/avisosAdapter.ts` — usa `fast-xml-parser` (sí como dependencia nueva: a diferencia del TAR, el CAP-XML tiene estructura anidada repetida — `<info>`/`<area>`/`<geocode>` — que una regex no cubre con la misma fiabilidad). Normaliza objeto-vs-array de `fast-xml-parser` (`toArray()`) para no romperse si una comunidad autónoma solo tuviera una zona.
+- `src/clients/AemetAvisosClient.ts` — patrón AEMET en dos pasos (la llamada con `api_key` devuelve una URL, no los datos). Degradación explícita: sin `AEMET_API_KEY` configurada lanza `AVISOS_NOT_CONFIGURED` sin hacer ninguna llamada de red, en vez de impedir que arranque el resto de la API (mismo principio que `MatomoService`).
+- **Zona AEMET determinada por point-in-polygon, no asumida**: se descargó el CAP-XML real de un fenómeno para Castilla y León y se comprobó contra las coordenadas de Aranda de Duero en qué polígono de zona caía — resultado: "Meseta de Burgos" (código `670904`). Ver `AEMET_AVISOS_ZONA_CODIGO`.
+- `src/services/AvisosService.ts`, `src/routes/weather.ts` (`GET /weather/avisos`) — mismo patrón caché + stale-fallback que el resto de servicios.
+
+**Gotcha de infraestructura descubierto en esta fase**: `.env` nunca se cargaba realmente — ni `npm run dev` (`tsx watch`) ni `npm start`/`npm test` (`node`) lo leían, así que cualquier secreto puesto ahí (como una futura `AEMET_API_KEY`) habría sido ignorado en silencio. Pasó desapercibido hasta ahora porque ninguna fuente anterior necesitaba una key real. Corregido con el flag nativo de Node `--env-file-if-exists=.env` (soportado desde Node 20.12, no hace falta la dependencia `dotenv`) en `dev`, `start`, `test` y variantes — sin archivo `.env` (como en Docker/CI) el flag no hace nada, así que no afecta a producción.
+
 ## Robustez y documentación (2026-09-09 — no añade fase nueva)
 
 Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propio schema y su cobertura de test:
@@ -164,3 +194,13 @@ Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propi
    añadió una comprobación explícita de la cabecera CSP y del HTML servido
    en los tests — lo único que sí puede detectar esta clase de bug sin un
    navegador real.
+9. **`node`/`tsx` no cargan `.env` automáticamente.** Ningún script del
+   proyecto lo hacía hasta la Fase 7 — pasó desapercibido porque ninguna
+   fuente anterior necesitaba un secreto real (Open-Meteo, JCyL, GTFS y río
+   no requieren API key). Al añadir `AEMET_API_KEY`, cualquier valor puesto
+   en `.env` se ignoraba en silencio y la app arrancaba igual, solo que con
+   ese endpoint siempre en modo "no configurado". Corregido con el flag
+   nativo `--env-file-if-exists=.env` de Node (≥20.12, sin depender de
+   `dotenv`) en `dev`/`start`/`test` — no falla si el fichero no existe, así
+   que no afecta a Docker/CI, donde los secretos llegan por variables de
+   entorno reales, no por fichero.

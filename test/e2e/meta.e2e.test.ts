@@ -28,6 +28,12 @@ describe('E2E /api/v1/meta', () => {
 
     const eventos = body.data.find((s: { id: string }) => s.id === 'eventos');
     expect(eventos).toMatchObject({ status: 'excluded' });
+
+    for (const id of ['embalse', 'educacion', 'bibliotecas', 'avisos']) {
+      expect(body.data.find((s: { id: string }) => s.id === id)).toMatchObject({
+        status: 'implemented',
+      });
+    }
   });
 
   it('GET /api/v1/meta/estado agrega el estado en vivo de cada fuente', async () => {
@@ -39,5 +45,10 @@ describe('E2E /api/v1/meta', () => {
     expect(body.data.sources.farmacia.status).toBe('ok');
     expect(body.data.sources.eventos.status).toBe('excluded');
     expect(body.data.sources.cortescalles.status).toBe('excluded');
+    expect(['ok', 'degraded']).toContain(body.data.sources.embalse.status);
+    expect(body.data.sources.educacion.status).toBe('ok');
+    expect(body.data.sources.bibliotecas.status).toBe('ok');
+    // "degraded" cubre tanto una AEMET real caída como AVISOS_NOT_CONFIGURED sin key.
+    expect(['ok', 'degraded']).toContain(body.data.sources.avisos.status);
   }, 20_000);
 });

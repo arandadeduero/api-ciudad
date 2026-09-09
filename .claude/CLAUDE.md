@@ -17,16 +17,24 @@ trusting an earlier investigation, including your own.
 
 ## Current state (2026-09-09)
 
-Phases 1-6 complete (all planned data modules + observability), plus a
-robustness/documentation pass on top. Phase 7 (extra E2E, CI/CD hardening)
-is the only thing left. 164 tests passing. Full status/history:
+Phases 1-7 complete (all planned data modules + observability + a source
+expansion from a dedicated research pass), plus a robustness/documentation
+pass. Phase 8 (extra E2E, CI/CD hardening) is the only thing left. ~205
+tests passing. Full status/history:
 [`docs/architecture-proposal.md`](../docs/architecture-proposal.md) §7,
 [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 
-Modules live: `/farmacia`, `/weather`, `/ambiente`, `/parking`, `/residuos`,
-`/bus`, `/rio`, `/meta/{fuentes,estado}`, plus `/health*` and `/metrics` at
-root. `eventos` and `cortescalles` (Waze) are **excluded from v1 by decision**
-— do not treat them as missing work.
+Modules live: `/farmacia`, `/weather` (+ `/weather/avisos`, AEMET),
+`/ambiente`, `/parking`, `/residuos`, `/bus`, `/rio` (+ `/rio/embalse`),
+`/educacion`, `/bibliotecas`, `/meta/{fuentes,estado}`, plus `/health*` and
+`/metrics` at root. `eventos` and `cortescalles` (Waze) are **excluded from
+v1 by decision** — do not treat them as missing work.
+
+`weather/avisos` needs a real `AEMET_API_KEY` (free, requested by email) to
+return live data — without one it degrades to a clear `AVISOS_NOT_CONFIGURED`
+error rather than breaking anything else. `/health/deep` and `/meta/estado`
+report it as `"degraded"` (not `"error"`) when unconfigured — that is an
+intentional distinction, not a bug in the check.
 
 ## Stack
 
@@ -106,6 +114,22 @@ This isn't optional ceremony — it's caught real bugs every phase (see below).
    (everything else keeps the strict default). If you touch anything that
    renders HTML with inline `<script>`/`<style>`, check the CSP header with
    curl — don't assume `app.inject()` returning 200 means it works.
+8. **`node`/`tsx` don't load `.env` on their own.** No script in this repo
+   did until Phase 7 — invisible until a real secret (`AEMET_API_KEY`) was
+   needed, since every earlier source was keyless. Fixed with Node's native
+   `--env-file-if-exists=.env` flag (≥20.12, no `dotenv` dependency) in
+   `dev`/`start`/`test`/`test:watch`/`test:e2e`/`test:coverage` — it's a
+   no-op without a `.env` file, so Docker/CI (real env vars, no file) are
+   unaffected. If a locally-set env var seems to have no effect, check
+   whether the script you're running actually loads `.env` before assuming
+   the code is broken.
+9. **When scraping HTML for a value an API doesn't expose, cross-check
+   against the API first if one partially covers the same data.** The
+   embalse's water-level API (already used for the river) and the HTML
+   ficha it was scraped from agreed on the exact same number live — that
+   agreement is what justified trusting the scrape for the fields the API
+   doesn't have (`%` filled), rather than a hand-wave "the page looked
+   right."
 
 ## Documentation is part of the change, not a follow-up
 

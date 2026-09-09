@@ -62,4 +62,20 @@ describe('E2E /api/v1/rio', () => {
       expect(metric).toHaveProperty('trend');
     }
   }, 15_000);
+
+  // Golpea la red real de saihduero.es (HTML, no API — ver docs/API-REFERENCE.md).
+  it('GET /api/v1/rio/embalse devuelve el estado real del embalse de Linares del Arroyo', async () => {
+    const res = await app.inject({ method: 'GET', url: '/api/v1/rio/embalse' });
+    expect(res.statusCode).toBe(200);
+    const { data } = res.json();
+    expect(data.stationCode).toBe('EM511');
+    expect(data.nombre).toContain('Linares del Arroyo');
+    expect(data.cauce).toBe('Riaza');
+    expect(data.municipio).toBe('Maderuelo');
+    expect(typeof data.nivelMsnm).toBe('number');
+    expect(typeof data.porcentajeLlenado).toBe('number');
+    expect(data.porcentajeLlenado).toBeGreaterThan(0);
+    expect(data.porcentajeLlenado).toBeLessThanOrEqual(100);
+    expect(typeof data.capacidadMaximaHm3).toBe('number');
+  }, 15_000);
 });

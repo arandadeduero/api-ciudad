@@ -94,6 +94,24 @@ const CHECKS = [
     validate: (body) => body?.data?.stationCode === 'EA013',
   },
   {
+    name: 'rio/embalse',
+    path: '/api/v1/rio/embalse',
+    expectStatus: 200,
+    validate: (body) => body?.data?.stationCode === 'EM511',
+  },
+  {
+    name: 'educacion/centros',
+    path: '/api/v1/educacion/centros',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.length === 27,
+  },
+  {
+    name: 'bibliotecas',
+    path: '/api/v1/bibliotecas',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.length >= 1,
+  },
+  {
     name: 'meta/fuentes',
     path: '/api/v1/meta/fuentes',
     expectStatus: 200,
@@ -112,6 +130,19 @@ async function checkMetrics() {
   const res = await fetchWithTimeout(`${BASE_URL}/metrics`);
   const text = await res.text();
   return res.status === 200 && text.includes('http_requests_total');
+}
+
+/**
+ * Comprobación aparte: /weather/avisos necesita AEMET_API_KEY, que puede o
+ * no estar configurada en el entorno donde se ejecuta este smoke test (no
+ * es una key pública como el resto de fuentes) — se acepta tanto el 200 con
+ * datos reales como el 502 AVISOS_NOT_CONFIGURED, nunca un 500.
+ */
+async function checkAvisos() {
+  const res = await fetchWithTimeout(`${BASE_URL}/api/v1/weather/avisos`);
+  const body = await res.json().catch(() => undefined);
+  if (res.status === 200) return Array.isArray(body?.data?.avisos) && body.data.avisos.length === 9;
+  return res.status === 502 && body?.error?.code === 'AVISOS_NOT_CONFIGURED';
 }
 
 /**
@@ -210,7 +241,20 @@ async function runChecks() {
     failures.push('docs');
   }
 
-  console.log(`\n${passed}/${CHECKS.length + 2} checks passed`);
+  try {
+    if (await checkAvisos()) {
+      console.log('✓ weather/avisos (200 con datos reales, o 502 AVISOS_NOT_CONFIGURED sin key)');
+      passed += 1;
+    } else {
+      console.log('✗ weather/avisos');
+      failures.push('weather/avisos');
+    }
+  } catch (err) {
+    console.log(`✗ weather/avisos (error: ${err instanceof Error ? err.message : err})`);
+    failures.push('weather/avisos');
+  }
+
+  console.log(`\n${passed}/${CHECKS.length + 3} checks passed`);
 
   if (failures.length > 0) {
     console.log(`Fallos: ${failures.join(', ')}`);

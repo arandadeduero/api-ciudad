@@ -47,6 +47,10 @@ describe('E2E /health', () => {
     expect(body.checks.residuos.status).toBe('ok');
     expect(['ok', 'degraded']).toContain(body.checks.bus.status); // depende del GTFS real
     expect(['ok', 'degraded']).toContain(body.checks.rio.status); // depende de la API del río real
+    expect(['ok', 'degraded']).toContain(body.checks.embalse.status); // depende del SAIH Duero real
+    expect(body.checks.educacion.status).toBe('ok');
+    expect(body.checks.bibliotecas.status).toBe('ok');
+    expect(['ok', 'degraded']).toContain(body.checks.avisos.status); // depende de AEMET real (o AVISOS_NOT_CONFIGURED sin key)
     expect(body.checks.eventos.status).toBe('excluded');
     expect(body.checks.cortescalles.status).toBe('excluded');
   }, 20_000);

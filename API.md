@@ -7,7 +7,7 @@ autoritativo, se actualiza en el mismo commit que cualquier cambio de API.
 `/docs` (Scalar) es la fuente ejecutable/interactiva generada desde el
 código.
 
-## Estado: Fase 6 (v1 completa salvo eventos/cortes de calles, excluidos por decisión; observabilidad añadida)
+## Estado: Fase 7 (v1 completa salvo eventos/cortes de calles, excluidos por decisión; observabilidad + expansión de fuentes)
 
 ### Infraestructura (Fase 1 y Fase 6)
 
@@ -35,13 +35,14 @@ Datos reales del Colegio Oficial de Farmacéuticos de Burgos.
 
 ### Weather (`/api/v1/weather`) — Fase 2
 
-Fuente: Open-Meteo (sin API key).
+Fuente: Open-Meteo (sin API key). `avisos` es AEMET (Fase 7), fuente distinta.
 
-| Método | Ruta                           | Descripción                                              |
-| ------ | ------------------------------ | -------------------------------------------------------- |
-| GET    | `/api/v1/weather`              | Tiempo actual + previsión horaria de hoy                 |
-| GET    | `/api/v1/weather/hoy`          | Alias de `/weather`                                      |
-| GET    | `/api/v1/weather/forday/:date` | Previsión horaria para un día futuro (máx. 7 días vista) |
+| Método | Ruta                           | Descripción                                               |
+| ------ | ------------------------------ | --------------------------------------------------------- |
+| GET    | `/api/v1/weather`              | Tiempo actual + previsión horaria de hoy                  |
+| GET    | `/api/v1/weather/hoy`          | Alias de `/weather`                                       |
+| GET    | `/api/v1/weather/forday/:date` | Previsión horaria para un día futuro (máx. 7 días vista)  |
+| GET    | `/api/v1/weather/avisos`       | Avisos meteorológicos activos de AEMET (requiere API key) |
 
 ### Ambiente (`/api/v1/ambiente`) — Fase 3
 
@@ -100,6 +101,24 @@ Fuente: API de terceros sobre datos SAIH-CHD (no es la API oficial de la CHD).
 | GET    | `/api/v1/rio`               | Resumen: último nivel y caudal, con tendencia               |
 | GET    | `/api/v1/rio/nivel?hours=`  | Serie de nivel (m), últimas N horas (1-720, por defecto 24) |
 | GET    | `/api/v1/rio/caudal?hours=` | Serie de caudal (m³/s), últimas N horas                     |
+| GET    | `/api/v1/rio/embalse`       | Embalse de Linares del Arroyo (SAIH del Duero) — Fase 7     |
+
+### Educación (`/api/v1/educacion`) — Fase 7
+
+Fuente: JCyL — directorio de centros docentes.
+
+| Método | Ruta                                | Descripción                                |
+| ------ | ----------------------------------- | ------------------------------------------ |
+| GET    | `/api/v1/educacion/centros`         | Los 27 centros educativos reales de Aranda |
+| GET    | `/api/v1/educacion/centros/:codigo` | Detalle de un centro                       |
+
+### Bibliotecas (`/api/v1/bibliotecas`) — Fase 7
+
+Fuente: JCyL — directorio geolocalizado de bibliotecas.
+
+| Método | Ruta                  | Descripción                                                 |
+| ------ | --------------------- | ----------------------------------------------------------- |
+| GET    | `/api/v1/bibliotecas` | La Biblioteca Pública Municipal (localización, sin horario) |
 
 ### Meta (`/api/v1/meta`) — Fase 6
 
@@ -131,7 +150,7 @@ convención estándar de health checks; sí siguen el formato de error común.)
 
 ## Pendiente
 
-Fase 7 (E2E adicional, CI/CD, hardening) — ver plan de fases en
+Fase 8 (E2E adicional, CI/CD, hardening) — ver plan de fases en
 `docs/architecture-proposal.md` §7. `eventos` y `cortescalles` quedan
 excluidos de la v1 por decisión del usuario; no hay más módulos de dominio
 pendientes.

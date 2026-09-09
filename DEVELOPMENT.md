@@ -8,7 +8,10 @@ cp .env.example .env
 npm run dev
 ```
 
-`npm run dev` usa `tsx watch` — recompila y reinicia en cada cambio.
+`npm run dev` usa `tsx watch` — recompila y reinicia en cada cambio. Carga
+`.env` automáticamente si existe (`--env-file-if-exists`, nativo de Node
+≥20.12) — necesario para probar `GET /api/v1/weather/avisos` en local con
+una `AEMET_API_KEY` real; sin `.env`, el flag simplemente no hace nada.
 
 ## Calidad de código
 

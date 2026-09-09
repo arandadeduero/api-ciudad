@@ -33,6 +33,14 @@ import { GtfsRepository } from './repositories/GtfsRepository.js';
 import { BusService } from './services/BusService.js';
 import { RioClient } from './clients/RioClient.js';
 import { RioService } from './services/RioService.js';
+import { SaihDueroEmbalseClient } from './clients/SaihDueroEmbalseClient.js';
+import { EmbalseService } from './services/EmbalseService.js';
+import { EducacionService } from './services/EducacionService.js';
+import { educacionRoutes } from './routes/educacion.js';
+import { BibliotecasService } from './services/BibliotecasService.js';
+import { bibliotecasRoutes } from './routes/bibliotecas.js';
+import { AemetAvisosClient } from './clients/AemetAvisosClient.js';
+import { AvisosService } from './services/AvisosService.js';
 
 export interface BuildAppOptions {
   cache?: CacheService;
@@ -117,6 +125,47 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     env.RIVER_CACHE_TTL_SECONDS,
   );
 
+  const embalseClient = new SaihDueroEmbalseClient(env.SAIH_DUERO_BASE_URL, env.EMBALSE_TIMEOUT_MS);
+  const embalseService = new EmbalseService(
+    embalseClient,
+    cache,
+    env.EMBALSE_STATION_CODE,
+    env.EMBALSE_CACHE_TTL_SECONDS,
+  );
+
+  const educacionService = new EducacionService(
+    jcylClient,
+    cache,
+    env.EDUCACION_DATASET,
+    env.EDUCACION_MUNICIPIO,
+    { latitude: env.ARANDA_LATITUDE, longitude: env.ARANDA_LONGITUDE },
+    env.EDUCACION_CACHE_TTL_SECONDS,
+  );
+
+  const bibliotecasService = new BibliotecasService(
+    jcylClient,
+    cache,
+    env.BIBLIOTECAS_DATASET,
+    env.BIBLIOTECAS_LOCALIDAD,
+    env.BIBLIOTECAS_CACHE_TTL_SECONDS,
+  );
+
+  const aemetAvisosClient = new AemetAvisosClient(
+    env.AEMET_BASE_URL,
+    env.AEMET_API_KEY,
+    env.AEMET_TIMEOUT_MS,
+  );
+  const avisosService = new AvisosService(
+    aemetAvisosClient,
+    cache,
+    {
+      area: env.AEMET_AVISOS_AREA,
+      zonaCodigo: env.AEMET_AVISOS_ZONA_CODIGO,
+      zonaNombre: env.AEMET_AVISOS_ZONA_NOMBRE,
+    },
+    env.AEMET_AVISOS_CACHE_TTL_SECONDS,
+  );
+
   // /health vive en la raíz (fuera de /api/v1): es infraestructura del
   // proceso, no un dato de dominio versionado.
   await app.register(async (instance) => {
@@ -129,18 +178,24 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       residuos: residuosService,
       bus: busService,
       rio: rioService,
+      embalse: embalseService,
+      educacion: educacionService,
+      bibliotecas: bibliotecasService,
+      avisos: avisosService,
     });
   }, {});
 
   await app.register(
     async (instance) => {
       await farmaciaRoutes(instance, { service: farmaciaService });
-      await weatherRoutes(instance, { service: weatherService });
+      await weatherRoutes(instance, { service: weatherService, avisos: avisosService });
       await ambienteRoutes(instance, { service: ambienteService });
       await parkingRoutes(instance, { service: parkingService });
       await residuosRoutes(instance, { service: residuosService });
       await busRoutes(instance, { service: busService });
-      await rioRoutes(instance, { service: rioService });
+      await rioRoutes(instance, { service: rioService, embalse: embalseService });
+      await educacionRoutes(instance, { service: educacionService });
+      await bibliotecasRoutes(instance, { service: bibliotecasService });
       await metaRoutes(instance, {
         cache,
         farmacia: farmaciaService,
@@ -150,6 +205,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
         residuos: residuosService,
         bus: busService,
         rio: rioService,
+        embalse: embalseService,
+        educacion: educacionService,
+        bibliotecas: bibliotecasService,
+        avisos: avisosService,
       });
     },
     { prefix: '/api/v1' },

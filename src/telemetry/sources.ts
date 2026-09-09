@@ -108,6 +108,57 @@ export const SOURCE_CATALOG: SourceMetadata[] = [
     notes: 'Estación de aforo EA013. Solo nivel y caudal disponibles, no volumen.',
   },
   {
+    id: 'embalse',
+    module: 'Embalse (Linares del Arroyo)',
+    provider: 'SAIH del Duero — Confederación Hidrográfica del Duero (ficha HTML pública)',
+    sourceUrl: 'https://www.saihduero.es/ficha-risr?r=EM511',
+    license: 'No especificada — no es una API oficial, es scraping de una ficha pública',
+    updateFrequency: 'Casi tiempo real',
+    reliability:
+      'Media — sin API JSON estructurada; parser HTML real (no regex) sobre una página de un tercero',
+    status: 'implemented',
+    notes:
+      'Estación EM511, en Maderuelo (Segovia), no en el municipio de Aranda — incluida por relevancia de cuenca del Duero.',
+  },
+  {
+    id: 'educacion',
+    module: 'Educación (centros docentes)',
+    provider: 'Junta de Castilla y León — portal de datos abiertos (Opendatasoft)',
+    sourceUrl:
+      'https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/directorio-de-centros-docentes',
+    license: 'Reutilización libre (aviso legal de datos abiertos del sector público de JCyL)',
+    updateFrequency: 'Por curso académico',
+    reliability:
+      'Alta — un registro con coordenada errónea del propio dataset, declarada como no disponible',
+    status: 'implemented',
+    notes: '27 centros reales confirmados en Aranda de Duero (públicos y privados).',
+  },
+  {
+    id: 'bibliotecas',
+    module: 'Bibliotecas',
+    provider: 'Junta de Castilla y León — portal de datos abiertos (Opendatasoft)',
+    sourceUrl:
+      'https://analisis.datosabiertos.jcyl.es/api/explore/v2.1/catalog/datasets/bibliotecas-bibliobuses-y-puntos-de-servicio-movil-geolocalizados',
+    license: 'Reutilización libre (aviso legal de datos abiertos del sector público de JCyL)',
+    updateFrequency: 'Baja',
+    reliability: 'Alta',
+    status: 'implemented',
+    notes: '1 registro real (Biblioteca Pública Municipal). No incluye horario de apertura.',
+  },
+  {
+    id: 'avisos',
+    module: 'Avisos meteorológicos',
+    provider: 'AEMET — Agencia Estatal de Meteorología',
+    sourceUrl: 'https://opendata.aemet.es',
+    license: 'Aviso legal de AEMET OpenData — reutilización con atribución',
+    updateFrequency: 'Tiempo real (según elaboración de AEMET)',
+    reliability:
+      'Alta — requiere API key gratuita; sin ella, el endpoint se degrada explícitamente',
+    status: 'implemented',
+    notes:
+      'Zona "Meseta de Burgos" (670904), determinada por point-in-polygon contra el CAP-XML real, no asumida.',
+  },
+  {
     id: 'eventos',
     module: 'Eventos municipales',
     provider: 'Ayuntamiento de Aranda de Duero',

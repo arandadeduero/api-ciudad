@@ -9,7 +9,7 @@ Relación con el resto de la documentación:
 - `/docs` (Scalar, generado desde el código — reemplazó a Swagger UI el 2026-09-09) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (robustez y documentación: `response` schema completo en todas las rutas —incluidas `residuos/*`, `parking/ora` y `bus/stop/:id/next`, que antes no lo tenían—, `description` en parámetros y operaciones para que `/docs` sea autoexplicativo, endpoint `residuos/atencion-ciudadana` cerrado, batería de tests de robustez ampliada, y migración de `/docs` de Swagger UI a Scalar corrigiendo un CSP que bloqueaba su renderizado en el navegador — ver ARCHITECTURE.md).
+**Última actualización:** 2026-09-09 (Fase 7: `GET /api/v1/rio/embalse`, `GET /api/v1/educacion/*`, `GET /api/v1/bibliotecas`, `GET /api/v1/weather/avisos` — ver ARCHITECTURE.md para el detalle de investigación y decisiones de cada fuente).
 
 ---
 
@@ -65,6 +65,10 @@ Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — e
     "residuos": { "status": "ok", "detail": "9 tipos de contenedor" },
     "bus": { "status": "ok", "detail": "3 líneas, 44 paradas" },
     "rio": { "status": "ok", "detail": "ok" },
+    "embalse": { "status": "ok", "detail": "ok" },
+    "educacion": { "status": "ok", "detail": "27 centros" },
+    "bibliotecas": { "status": "ok", "detail": "1 bibliotecas" },
+    "avisos": { "status": "ok", "detail": "ok" },
     "eventos": {
       "status": "excluded",
       "detail": "Fuera de alcance de la v1 (decisión del usuario) — ver docs/architecture-proposal.md §6"
@@ -73,6 +77,8 @@ Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — e
   }
 }
 ```
+
+`avisos` puede aparecer como `"degraded"` en vez de `"ok"` sin `AEMET_API_KEY` configurada (`AVISOS_NOT_CONFIGURED` se trata como estado operativo válido, no como fuente caída).
 
 **Importante:** `/health/deep` hace una llamada real a cada fuente externa en cada invocación (Open-Meteo, JCyL, GitHub Releases, API del río) — no usa solo la caché. No lo pongas en un monitor de alta frecuencia.
 
@@ -227,6 +233,40 @@ Tiempo actual + previsión horaria de hoy.
 ```
 
 `daily` es `null` si Open-Meteo no devuelve resumen diario para esa fecha (no debería pasar dentro del rango soportado).
+
+### `GET /api/v1/weather/avisos`
+
+Avisos meteorológicos activos de AEMET OpenData — endpoint distinto de la predicción, con fuente distinta (AEMET, no Open-Meteo). Requiere `AEMET_API_KEY` (gratuita, por email en https://opendata.aemet.es); sin key configurada devuelve 502 `AVISOS_NOT_CONFIGURED` — el resto de la API sigue funcionando igual.
+
+**Zona AEMET: "Meseta de Burgos" (código `670904`).** Determinada calculando en qué polígono cae Aranda de Duero (point-in-polygon) contra el propio CAP-XML real de AEMET para Castilla y León, no asumida de una tabla de referencia — ver `AEMET_AVISOS_ZONA_CODIGO`.
+
+**Formato de origen:** AEMET sigue un patrón en dos pasos (la llamada con `api_key` devuelve una URL, no los datos) y el segundo `GET` responde un **TAR sin comprimir** (pese a que la cabecera `Content-Disposition` lo llama `.tar.gz`) con un fichero CAP-XML por fenómeno. Se lee con un parser TAR propio (`src/utils/tar.ts`, formato bien especificado, sin dependencia nueva) y `fast-xml-parser` para el CAP-XML.
+
+**Respuesta 200 (ejemplo real, 2026-09-09 — día sin avisos activos):**
+
+```json
+{
+  "data": {
+    "zona": "Meseta de Burgos",
+    "zonaCodigo": "670904",
+    "avisos": [
+      {
+        "fenomeno": "Aviso de temperaturas máximas de nivel verde",
+        "nivel": "verde",
+        "severity": "Minor",
+        "headline": "Aviso de temperaturas máximas de nivel verde. CCAA",
+        "effective": "2026-09-08T23:50:01+02:00",
+        "onset": "2026-09-11T00:00:00+02:00",
+        "expires": "2026-09-11T23:59:59+02:00"
+      }
+    ],
+    "hayAvisosActivos": false,
+    "source": "AEMET OpenData — Avisos de Fenómenos Meteorológicos Adversos"
+  }
+}
+```
+
+`avisos` siempre trae los 9 fenómenos que publica AEMET (temperaturas máx./mín., deshielo, nevadas, nieblas, lluvias, tormentas, vientos, polvo en suspensión) para la zona — la mayoría de días **todos en `"verde"`** (sin riesgo), que es un resultado normal, no un error. `hayAvisosActivos` es `true` si algún fenómeno supera `"verde"`.
 
 ---
 
@@ -607,6 +647,106 @@ Serie horaria de la métrica, filtrada a las últimas `hours` (1-720, por defect
 }
 ```
 
+### `GET /api/v1/rio/embalse`
+
+Embalse de Linares del Arroyo (código `EM511`, SAIH del Duero). **No está en el municipio de Aranda de Duero**: está en Maderuelo (Segovia), en el río Riaza (afluente del Duero) — se incluye por su relevancia a nivel de cuenca, igual que la estación de aforo de `/rio` tampoco está pegada al casco urbano.
+
+A diferencia de `/rio`, **no hay API JSON para este dato**: se extrae de la ficha HTML pública de `saihduero.es` (parser HTML real con `node-html-parser`, no expresiones regulares — el HTML de un tercero puede cambiar de forma que una regex no cubre con fiabilidad). Es la única fuente que publica el `porcentajeLlenado`; la API de terceros que ya usa `/rio` para el nivel del río también responde para este código de estación, pero solo con la cota en metros, no con el porcentaje.
+
+**Respuesta 200 (ejemplo real, 2026-09-09):**
+
+```json
+{
+  "data": {
+    "stationCode": "EM511",
+    "nombre": "Embalse de Linares del Arroyo",
+    "cauce": "Riaza",
+    "municipio": "Maderuelo",
+    "provincia": "Segovia",
+    "capacidadMaximaHm3": 54.4,
+    "nivelMsnm": 907.81,
+    "nivelRelativoM": 20.51,
+    "porcentajeLlenado": 45.4,
+    "volumenEmbalsadoHm3": 24.71,
+    "caudalVertidoM3s": 2.4,
+    "ultimaActualizacion": "09/09/2026 17:30",
+    "source": "SAIH del Duero — Confederación Hidrográfica del Duero (https://www.saihduero.es/ficha-risr?r=EM511)"
+  }
+}
+```
+
+`ultimaActualizacion` se deja tal cual la publica la fuente (`"DD/MM/YYYY HH:mm"`, hora de Madrid) — no se convierte a ISO 8601 porque la fuente no declara si es CET o CEST, y forzar una de las dos podría desviarse una hora en el cambio de horario. Cualquier campo puede ser `null` si esa fila no aparece en la ficha (p. ej. `caudalVertidoM3s` cuando la fuente marca "n/d").
+
+---
+
+## Educación (`/api/v1/educacion`)
+
+Fuente: directorio oficial de centros docentes de la Junta de Castilla y León (mismo proveedor Opendatasoft que `/ambiente`, dataset `directorio-de-centros-docentes`). 27 centros reales confirmados en Aranda de Duero (2026-09-09): colegios públicos y privados, el IES, la Escuela Oficial de Idiomas y la escuela infantil municipal. Caché: `EDUCACION_CACHE_TTL_SECONDS` (24h por defecto — el directorio se publica por curso académico, cambia raras veces).
+
+**Coordenadas no fiables descartadas, no corregidas:** un registro real del dataset (`CINCO SENTIDOS`, dirección "Carretera de Palencia" en Aranda) trae una coordenada a ~67km de distancia, cerca de la ciudad de Palencia — un error de geocodificación del propio dataset de JCyL. En vez de inventar una corrección, `location` se declara `null` para cualquier centro cuya coordenada caiga a más de 20km del centro del municipio.
+
+### `GET /api/v1/educacion/centros`
+
+**Respuesta 200 (ejemplo real, un elemento del array):**
+
+```json
+{
+  "data": [
+    {
+      "codigo": "09000239",
+      "nombre": "CLARET",
+      "tipo": "CENTRO PRIVADO DE EDUCACION INFANTIL PRIMARIA Y SECUNDARIA",
+      "tipoBreve": "Colegio",
+      "naturaleza": "PRIVADO",
+      "direccion": "CALLE AVENIDA PADRE CLARET, S/N, Y PLAZA CORAZÓN DE MARÍA, Nº 1",
+      "codigoPostal": "09400",
+      "telefono": "947511954",
+      "correoElectronico": "09000239@educa.jcyl.es",
+      "web": "http://www.claretaranda.net/",
+      "location": { "latitude": 41.66765, "longitude": -3.68537 },
+      "jornadaContinua": false,
+      "comedor": true,
+      "transporteEscolar": false
+    }
+  ]
+}
+```
+
+`direccion` combina literalmente los campos `via` + `nombre_de_la_via` + `numero` del dataset de origen — algún registro (como el del ejemplo) trae el tipo de vía duplicado dentro de `nombre_de_la_via`; es un dato tal cual lo publica JCyL, no se reescribe.
+
+### `GET /api/v1/educacion/centros/:codigo`
+
+`:codigo` es el código de centro (ver listado). 404 (mensaje genérico) si no existe.
+
+---
+
+## Bibliotecas (`/api/v1/bibliotecas`)
+
+Fuente: JCyL, dataset `bibliotecas-bibliobuses-y-puntos-de-servicio-movil-geolocalizados` (mismo proveedor que `/ambiente` y `/educacion`). Exactamente 1 registro real para Aranda de Duero (2026-09-09). Caché: `BIBLIOTECAS_CACHE_TTL_SECONDS` (24h por defecto).
+
+**No incluye horario de apertura** — el dataset de origen solo trae localización y contacto; el horario habría que extraerlo de la ficha oficial (`enlace`), que no es fácilmente scrapeable.
+
+### `GET /api/v1/bibliotecas`
+
+**Respuesta 200 (ejemplo real):**
+
+```json
+{
+  "data": [
+    {
+      "codigo": "ADUER",
+      "nombre": "Biblioteca Pública Municipal de Aranda de Duero",
+      "tipo": "Biblioteca",
+      "direccion": "Plaza del Trigo 9",
+      "localidad": "Aranda de Duero",
+      "provincia": "Burgos",
+      "location": { "latitude": 41.67191808435801, "longitude": -3.6875009536743164 },
+      "enlace": "https://bibliotecas.jcyl.es/web/jcyl/BibliotecaBurgos/es/Plantilla100Detalle/1284353929655/Institucion/1284222331144/DirectorioPadre"
+    }
+  ]
+}
+```
+
 ---
 
 ## Métricas y transparencia
@@ -680,6 +820,10 @@ Equivalente de `/health/deep` de cara al consumidor externo (§3 ítem 19): mism
       "residuos": { "status": "ok", "detail": "9 tipos de contenedor" },
       "bus": { "status": "ok", "detail": "3 líneas, 44 paradas" },
       "rio": { "status": "ok", "detail": "ok" },
+      "embalse": { "status": "ok", "detail": "ok" },
+      "educacion": { "status": "ok", "detail": "27 centros" },
+      "bibliotecas": { "status": "ok", "detail": "1 bibliotecas" },
+      "avisos": { "status": "ok", "detail": "ok" },
       "eventos": {
         "status": "excluded",
         "detail": "Fuera de alcance de la v1 (decisión del usuario) — ver docs/architecture-proposal.md §6"
@@ -706,6 +850,7 @@ Equivalente de `/health/deep` de cara al consumidor externo (§3 ítem 19): mism
 | `HISTORICAL_DATA_NOT_AVAILABLE`                                | 404    | Ambiente: fecha pasada sin dato histórico publicado                             |
 | `ROUTE_NOT_FOUND`                                              | 404    | Ruta HTTP inexistente                                                           |
 | `UPSTREAM_ERROR` / `*_ERROR` / `*_TIMEOUT` / `*_NETWORK_ERROR` | 502    | Fallo de una fuente externa (Open-Meteo, JCyL) sin caché de respaldo disponible |
+| `AVISOS_NOT_CONFIGURED`                                        | 502    | `GET /weather/avisos` sin `AEMET_API_KEY` configurada                           |
 | `INTERNAL_ERROR`                                               | 500    | Error no controlado — nunca debería filtrar detalles internos                   |
 
 ---

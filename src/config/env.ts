@@ -56,6 +56,52 @@ const envSchema = z.object({
   RIVER_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
   RIVER_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
 
+  // Embalse (Fase 7 — SAIH del Duero, ficha HTML pública, ver docs/architecture-proposal.md §2.2b).
+  // EM511 = Embalse de Linares del Arroyo, verificado en vivo el 2026-09-09.
+  SAIH_DUERO_BASE_URL: z.string().url().default('https://www.saihduero.es'),
+  EMBALSE_STATION_CODE: z.string().default('EM511'),
+  EMBALSE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
+  EMBALSE_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
+
+  // Educación (Fase 7 — JCyL, mismo proveedor Opendatasoft que Ambiente)
+  EDUCACION_DATASET: z.string().default('directorio-de-centros-docentes'),
+  // Este dataset usa el campo "municipio" en mayúsculas (verificado en vivo).
+  EDUCACION_MUNICIPIO: z.string().default('ARANDA DE DUERO'),
+  // TTL largo: el directorio se publica por curso académico, cambia raras veces.
+  EDUCACION_CACHE_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(60 * 60 * 24),
+
+  // Bibliotecas (Fase 7 — JCyL, mismo proveedor Opendatasoft que Ambiente)
+  BIBLIOTECAS_DATASET: z
+    .string()
+    .default('bibliotecas-bibliobuses-y-puntos-de-servicio-movil-geolocalizados'),
+  // Este dataset usa el campo "localidad" en formato mixto (verificado en vivo) — no en mayúsculas.
+  BIBLIOTECAS_LOCALIDAD: z.string().default('Aranda de Duero'),
+  BIBLIOTECAS_CACHE_TTL_SECONDS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(60 * 60 * 24),
+
+  // Avisos meteorológicos (Fase 7 — AEMET OpenData, ver docs/architecture-proposal.md §2.3).
+  // Sin key por defecto: el servicio se degrada con AVISOS_NOT_CONFIGURED en
+  // vez de impedir arrancar el resto de la API — igual que Matomo.
+  // IMPORTANTE: igual que AEMET_API_KEY, las keys sin fecha de expiración
+  // dejan de ser válidas desde el 15-oct-2026.
+  AEMET_API_KEY: z.string().default(''),
+  AEMET_BASE_URL: z.string().url().default('https://opendata.aemet.es/opendata/api'),
+  AEMET_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
+  // 67 = Castilla y León (tabla de códigos del propio spec de AEMET).
+  AEMET_AVISOS_AREA: z.string().default('67'),
+  // 670904 = "Meseta de Burgos", determinado por point-in-polygon contra el
+  // CAP-XML real de AEMET (coordenadas de Aranda de Duero), no asumido.
+  AEMET_AVISOS_ZONA_CODIGO: z.string().default('670904'),
+  AEMET_AVISOS_ZONA_NOMBRE: z.string().default('Meseta de Burgos'),
+  AEMET_AVISOS_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(900),
+
   // Matomo (Fase 6 — tracking best-effort, ver src/services/MatomoService.ts)
   // NOTA: no se usa z.coerce.boolean() a propósito — Boolean("false") es
   // `true` en JS, así que ese coercer trataría cualquier string no vacío

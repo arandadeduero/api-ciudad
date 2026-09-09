@@ -6,6 +6,11 @@ import type { ParkingService } from '../services/ParkingService.js';
 import type { ResiduosService } from '../services/ResiduosService.js';
 import type { BusService } from '../services/BusService.js';
 import type { RioService } from '../services/RioService.js';
+import type { EmbalseService } from '../services/EmbalseService.js';
+import type { EducacionService } from '../services/EducacionService.js';
+import type { BibliotecasService } from '../services/BibliotecasService.js';
+import type { AvisosService } from '../services/AvisosService.js';
+import { UpstreamError } from '../errors/AppError.js';
 
 export interface SourceCheckDeps {
   cache: CacheService;
@@ -16,6 +21,10 @@ export interface SourceCheckDeps {
   residuos: ResiduosService;
   bus: BusService;
   rio: RioService;
+  embalse: EmbalseService;
+  educacion: EducacionService;
+  bibliotecas: BibliotecasService;
+  avisos: AvisosService;
 }
 
 export type CheckStatus = 'ok' | 'degraded' | 'error' | 'excluded';
@@ -128,6 +137,52 @@ export async function runSourceChecks(
     };
   } catch (err) {
     checks.rio = { status: 'error', detail: (err as Error).message };
+  }
+
+  try {
+    const { stale } = await deps.embalse.getSnapshot();
+    checks.embalse = {
+      status: stale ? 'degraded' : 'ok',
+      detail: stale ? 'sirviendo caché obsoleta (SAIH Duero no responde)' : 'ok',
+    };
+  } catch (err) {
+    checks.embalse = { status: 'error', detail: (err as Error).message };
+  }
+
+  try {
+    const { data, stale } = await deps.educacion.listCentros();
+    checks.educacion = {
+      status: stale ? 'degraded' : data.length > 0 ? 'ok' : 'error',
+      detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : `${data.length} centros`,
+    };
+  } catch (err) {
+    checks.educacion = { status: 'error', detail: (err as Error).message };
+  }
+
+  try {
+    const { data, stale } = await deps.bibliotecas.listBibliotecas();
+    checks.bibliotecas = {
+      status: stale ? 'degraded' : data.length > 0 ? 'ok' : 'error',
+      detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : `${data.length} bibliotecas`,
+    };
+  } catch (err) {
+    checks.bibliotecas = { status: 'error', detail: (err as Error).message };
+  }
+
+  try {
+    const { stale } = await deps.avisos.getSnapshot();
+    checks.avisos = {
+      status: stale ? 'degraded' : 'ok',
+      detail: stale ? 'sirviendo caché obsoleta (AEMET no responde)' : 'ok',
+    };
+  } catch (err) {
+    // AVISOS_NOT_CONFIGURED es un estado operativo válido (sin AEMET_API_KEY
+    // configurada), no una fuente caída — se marca "degraded", no "error".
+    const isNotConfigured = err instanceof UpstreamError && err.code === 'AVISOS_NOT_CONFIGURED';
+    checks.avisos = {
+      status: isNotConfigured ? 'degraded' : 'error',
+      detail: (err as Error).message,
+    };
   }
 
   for (const source of EXCLUDED_DEEP_CHECKS) {

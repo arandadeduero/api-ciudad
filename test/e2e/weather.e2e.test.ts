@@ -52,4 +52,36 @@ describe('E2E /api/v1/weather', () => {
     expect(res.statusCode).toBe(400);
     expect(res.json().error.code).toBe('INVALID_DATE');
   });
+
+  // Golpea la red real de AEMET (dos peticiones: metadatos + descarga del
+  // TAR de avisos) — requiere AEMET_API_KEY real. `npm test`/`npm run dev`
+  // cargan `.env` si existe (ver `--env-file-if-exists` en package.json);
+  // sin key configurada (p. ej. en CI), se prueba el camino degradado en su
+  // lugar — nunca se salta la comprobación por completo.
+  it.skipIf(!process.env.AEMET_API_KEY)(
+    'GET /api/v1/weather/avisos devuelve los 9 fenómenos reales para la zona de Aranda',
+    async () => {
+      const res = await app.inject({ method: 'GET', url: '/api/v1/weather/avisos' });
+      expect(res.statusCode).toBe(200);
+      const { data, meta } = res.json();
+      expect(data.zonaCodigo).toBe('670904');
+      expect(data.zona).toBe('Meseta de Burgos');
+      expect(data.avisos.length).toBe(9);
+      for (const aviso of data.avisos) {
+        expect(['verde', 'amarillo', 'naranja', 'rojo']).toContain(aviso.nivel);
+      }
+      expect(typeof data.hayAvisosActivos).toBe('boolean');
+      expect(meta.source).toContain('AEMET');
+    },
+    15_000,
+  );
+
+  it.skipIf(process.env.AEMET_API_KEY)(
+    'GET /api/v1/weather/avisos sin AEMET_API_KEY configurada devuelve un error claro, no un 500',
+    async () => {
+      const res = await app.inject({ method: 'GET', url: '/api/v1/weather/avisos' });
+      expect(res.statusCode).toBe(502);
+      expect(res.json().error.code).toBe('AVISOS_NOT_CONFIGURED');
+    },
+  );
 });

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { RioService } from '../services/RioService.js';
+import type { EmbalseService } from '../services/EmbalseService.js';
 import { responseSchema } from './schemas.js';
 
 function envelope<T>(data: T, stale: boolean) {
@@ -38,11 +39,39 @@ const metricSchemaDef = {
   },
 } as const;
 
+const embalseSchemaDef = {
+  type: 'object',
+  properties: {
+    stationCode: { type: 'string' },
+    nombre: { type: 'string' },
+    cauce: { type: 'string' },
+    municipio: { type: 'string' },
+    provincia: { type: 'string' },
+    capacidadMaximaHm3: { type: 'number', nullable: true },
+    nivelMsnm: {
+      type: 'number',
+      nullable: true,
+      description: 'Cota de la lámina de agua, en metros sobre el nivel del mar.',
+    },
+    nivelRelativoM: { type: 'number', nullable: true },
+    porcentajeLlenado: { type: 'number', nullable: true },
+    volumenEmbalsadoHm3: { type: 'number', nullable: true },
+    caudalVertidoM3s: { type: 'number', nullable: true },
+    ultimaActualizacion: {
+      type: 'string',
+      nullable: true,
+      description:
+        'Tal cual la publica la fuente ("DD/MM/YYYY HH:mm", hora de Madrid) — no es ISO 8601.',
+    },
+    source: { type: 'string' },
+  },
+} as const;
+
 export async function rioRoutes(
   app: FastifyInstance,
-  opts: { service: RioService },
+  opts: { service: RioService; embalse: EmbalseService },
 ): Promise<void> {
-  const { service } = opts;
+  const { service, embalse } = opts;
 
   app.get(
     '/rio',
@@ -122,6 +151,31 @@ export async function rioRoutes(
       const { hours } = request.query as { hours?: number };
       const { data, stale } = await service.getMetric('caudal', hours ?? 24);
       return envelope(data, stale);
+    },
+  );
+
+  app.get(
+    '/rio/embalse',
+    {
+      schema: {
+        tags: ['rio'],
+        summary: 'Embalse de Linares del Arroyo (SAIH del Duero): cota, % de llenado y volumen',
+        description:
+          'No es una fuente propia de Aranda de Duero: el embalse está en Maderuelo (Segovia), en el río Riaza (afluente del Duero) — se incluye por su relevancia a nivel de cuenca, igual que la estación de aforo de /rio no está pegada al casco urbano. A diferencia de /rio, no hay API JSON para este dato: se extrae de la ficha HTML pública de saihduero.es, la única fuente que publica el % de volumen embalsado.',
+        response: responseSchema(embalseSchemaDef),
+      },
+    },
+    async () => {
+      const { data, stale } = await embalse.getSnapshot();
+      return {
+        data,
+        meta: {
+          source: data.source,
+          retrievedAt: new Date().toISOString(),
+          cached: false,
+          ...(stale ? { stale: true } : {}),
+        },
+      };
     },
   );
 }

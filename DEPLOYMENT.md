@@ -34,18 +34,29 @@ faltan o son inválidas):
 
 El resto de variables de fuentes externas están documentadas en
 `.env.example` con sus valores por defecto reales (`OPEN_METEO_BASE_URL`,
-`JCYL_OPENDATA_BASE_URL`, `GTFS_URBANO_REPO`, `RIVER_API_BASE_URL`, etc.) y
-ya se usan en producción desde sus fases respectivas (2-5, ver
-`docs/architecture-proposal.md` §7). Dos excepciones siguen sin consumirse
-por decisión explícita, no por estar pendientes:
+`JCYL_OPENDATA_BASE_URL`, `GTFS_URBANO_REPO`, `RIVER_API_BASE_URL`,
+`SAIH_DUERO_BASE_URL`, `EDUCACION_*`, `BIBLIOTECAS_*`, etc.) y ya se usan en
+producción desde sus fases respectivas (2-7, ver
+`docs/architecture-proposal.md` §7). Una única excepción sigue sin
+consumirse por decisión explícita, no por estar pendiente:
 
-- `AEMET_API_KEY` / `AEMET_BASE_URL` — Open-Meteo cubre `/weather`; AEMET
-  queda como alternativa no activada.
 - `WAZE_*` — el módulo de cortes de calles está fuera de la v1 (§6).
 
-`MATOMO_*` (Fase 6) sí se lee al arrancar, pero es opcional de verdad:
-con `MATOMO_ENABLED=false` (el default) el `MatomoService` no hace ninguna
-llamada de red — la API funciona igual con o sin Matomo configurado.
+**`AEMET_API_KEY`** (Fase 7) sí se consume, para `GET /api/v1/weather/avisos`
+— clave gratuita, pedida por email en https://opendata.aemet.es. Sin ella
+configurada, ese único endpoint responde con el error `AVISOS_NOT_CONFIGURED`
+(no un 500); el resto de la API funciona exactamente igual. **Importante:**
+las keys de AEMET sin fecha de expiración dejan de ser válidas desde el
+15-oct-2026 — pide una nueva si la actual falla después de esa fecha.
+
+`MATOMO_*` (Fase 6) es igual de opcional: con `MATOMO_ENABLED=false` (el
+default) el `MatomoService` no hace ninguna llamada de red.
+
+En local, `npm start`/`npm run dev` cargan `.env` automáticamente si existe
+(flag nativo `--env-file-if-exists` de Node, sin dependencia `dotenv`). En
+Docker/producción esto no aplica — no hay `.env` en la imagen; las variables
+llegan por el entorno real del contenedor (`docker run -e ...`,
+`docker-compose.yml`, o el orquestador que corresponda).
 
 ## Verificar el despliegue
 
@@ -53,6 +64,7 @@ llamada de red — la API funciona igual con o sin Matomo configurado.
 curl http://<host>:3000/health
 curl http://<host>:3000/health/ready
 curl http://<host>:3000/metrics
+curl http://<host>:3000/api/v1/weather/avisos   # 200 con datos, o 502 AVISOS_NOT_CONFIGURED sin AEMET_API_KEY
 BASE_URL=http://<host>:3000 npm run smoke-test
 ```
 

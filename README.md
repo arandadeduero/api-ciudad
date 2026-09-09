@@ -5,17 +5,20 @@ Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
 de guardia, aparcamiento, transporte, río y más, expuestos como una única
 API REST versionada.
 
-> **Estado actual: v1 completa (Fases 1-6).** `/api/v1/farmacia*`,
+> **Estado actual: v1 completa (Fases 1-7).** `/api/v1/farmacia*`,
 > `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*`,
-> `/api/v1/residuos*`, `/api/v1/bus*` y `/api/v1/rio*` funcionan con datos
-> y APIs reales — ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md)
-> para el detalle completo de cada endpoint. `/eventos` y cortes de calles
-> quedan fuera de la v1 por decisión explícita (ver
+> `/api/v1/residuos*`, `/api/v1/bus*`, `/api/v1/rio*`,
+> `/api/v1/educacion*` y `/api/v1/bibliotecas` funcionan con datos y APIs
+> reales — ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) para el
+> detalle completo de cada endpoint. `/eventos` y cortes de calles quedan
+> fuera de la v1 por decisión explícita (ver
 > [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §6).
-> Observabilidad (Fase 6) añadida: métricas Prometheus en `GET /metrics`,
-> tracking best-effort con Matomo, y endpoints de transparencia
-> `GET /api/v1/meta/fuentes` / `GET /api/v1/meta/estado`. Solo queda
-> pendiente la Fase 7 (E2E adicional, CI/CD, hardening).
+> Observabilidad (Fase 6): métricas Prometheus en `GET /metrics`, tracking
+> best-effort con Matomo, y endpoints de transparencia
+> `GET /api/v1/meta/fuentes` / `GET /api/v1/meta/estado`. Fase 7 amplió el
+> catálogo con `GET /api/v1/rio/embalse`, `GET /api/v1/weather/avisos`
+> (AEMET, requiere `AEMET_API_KEY` gratuita) y educación/bibliotecas (JCyL).
+> Solo queda pendiente la Fase 8 (E2E adicional, CI/CD, hardening).
 
 ## Requisitos
 
@@ -55,10 +58,17 @@ docker compose --profile redis up --build
 ## Tests
 
 ```bash
-npm test              # unit + integración + e2e (algunos e2e golpean red real: Open-Meteo, JCyL, GitHub, API del río)
+npm test              # unit + integración + e2e (algunos e2e golpean red real: Open-Meteo, JCyL, GitHub, API del río, AEMET, SAIH Duero)
 npm run test:e2e       # solo e2e
 npm run test:coverage
 ```
+
+`npm test`/`npm run dev`/`npm start` cargan `.env` automáticamente si existe
+(`--env-file-if-exists`, nativo de Node ≥20.12 — sin `.env`, como en
+CI/Docker, no falla, simplemente no hay nada que cargar). El test de
+`GET /api/v1/weather/avisos` necesita `AEMET_API_KEY` real en `.env` para
+probar el camino con datos; sin ella, prueba en su lugar que el endpoint
+responde con el error `AVISOS_NOT_CONFIGURED`, nunca con un 500.
 
 ## Smoke test (contra una instancia real ya arrancada)
 

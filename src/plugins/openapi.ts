@@ -28,12 +28,17 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
       tags: [
         { name: 'health', description: 'Estado y diagnóstico del servicio' },
         { name: 'farmacia', description: 'Farmacias de guardia de Aranda de Duero' },
-        { name: 'weather', description: 'Meteorología (Open-Meteo)' },
+        {
+          name: 'weather',
+          description: 'Meteorología (Open-Meteo) y avisos meteorológicos (AEMET)',
+        },
         { name: 'ambiente', description: 'Calidad del aire (JCyL)' },
         { name: 'parking', description: 'Aparcamientos públicos y zona ORA' },
         { name: 'residuos', description: 'Punto limpio, contenedores y recogida de residuos' },
         { name: 'bus', description: 'Bus urbano (GTFS real, L1/L2/L3)' },
         { name: 'rio', description: 'Nivel y caudal del río (SAIH-CHD, vía API de terceros)' },
+        { name: 'educacion', description: 'Centros educativos de Aranda de Duero (JCyL)' },
+        { name: 'bibliotecas', description: 'Bibliotecas públicas de Aranda de Duero (JCyL)' },
         { name: 'meta', description: 'Transparencia: catálogo de fuentes y estado en vivo' },
         { name: 'metrics', description: 'Métricas Prometheus' },
       ],
