@@ -5,6 +5,9 @@ import { join, dirname } from 'node:path';
 import type { CacheService } from '../cache/CacheService.js';
 import type { FarmaciaService } from '../services/FarmaciaService.js';
 import type { WeatherService } from '../services/WeatherService.js';
+import type { AmbienteService } from '../services/AmbienteService.js';
+import type { ParkingService } from '../services/ParkingService.js';
+import type { ResiduosService } from '../services/ResiduosService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -27,12 +30,19 @@ async function readVersion(): Promise<string> {
  * ocultar que faltan. Eventos y cortes de calles están excluidos de la v1
  * por decisión del usuario, no "pendientes".
  */
-const PENDING_DEEP_CHECKS = ['ambiente', 'parking', 'bus', 'rio'] as const;
+const PENDING_DEEP_CHECKS = ['bus', 'rio'] as const;
 const EXCLUDED_DEEP_CHECKS = ['eventos', 'cortescalles'] as const;
 
 export async function healthRoutes(
   app: FastifyInstance,
-  opts: { cache: CacheService; farmacia: FarmaciaService; weather: WeatherService },
+  opts: {
+    cache: CacheService;
+    farmacia: FarmaciaService;
+    weather: WeatherService;
+    ambiente: AmbienteService;
+    parking: ParkingService;
+    residuos: ResiduosService;
+  },
 ): Promise<void> {
   const version = await readVersion();
   const startedAt = Date.now();
@@ -139,6 +149,37 @@ export async function healthRoutes(
         };
       } catch (err) {
         checks.weather = { status: 'error', detail: (err as Error).message };
+      }
+
+      try {
+        const { stale } = await opts.ambiente.getToday();
+        checks.ambiente = {
+          status: stale ? 'degraded' : 'ok',
+          detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : 'ok',
+        };
+      } catch (err) {
+        checks.ambiente = { status: 'error', detail: (err as Error).message };
+      }
+
+      try {
+        const parkings = await opts.parking.listPublicParkings();
+        const ora = await opts.parking.getOraInfo();
+        checks.parking = {
+          status: parkings.length > 0 && ora.districts.length > 0 ? 'ok' : 'error',
+          detail: `${parkings.length} aparcamientos, ${ora.districts.length} distritos ORA`,
+        };
+      } catch (err) {
+        checks.parking = { status: 'error', detail: (err as Error).message };
+      }
+
+      try {
+        const contenedores = await opts.residuos.listContenedores();
+        checks.residuos = {
+          status: contenedores.length > 0 ? 'ok' : 'error',
+          detail: `${contenedores.length} tipos de contenedor`,
+        };
+      } catch (err) {
+        checks.residuos = { status: 'error', detail: (err as Error).message };
       }
 
       for (const source of PENDING_DEEP_CHECKS) {

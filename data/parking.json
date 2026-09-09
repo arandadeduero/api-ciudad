@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "source": "Ordenanza del Servicio de Ordenación y Regulación de Aparcamiento de Vehículos en la Vía Pública (ORA) — Ayuntamiento de Aranda de Duero",
+    "document": "BOP Burgos núm. 245, 28-dic-2021 (aprobación definitiva, expediente 2021/00002258L)",
+    "url": "https://transparencia.arandadeduero.es/wp-content/uploads/2022/01/Ordenanza-reguladora-del-servicio-ORA.pdf",
+    "license": "Texto normativo público — de libre reutilización como fuente de derecho",
+    "retrievedAt": "2026-09-09",
+    "note": "El listado de calles por distrito y las excepciones de horario están citados literalmente del texto de la ordenanza. Corrige una investigación previa (2026-09-08) que citaba un horario incorrecto (9-14h en vez de 10-14h) tomado de fuentes secundarias no oficiales."
+  },
+  "ora": {
+    "schedule": {
+      "mondayToFriday": [
+        { "from": "10:00", "to": "14:00" },
+        { "from": "16:00", "to": "20:00" }
+      ],
+      "saturday": [{ "from": "10:00", "to": "14:00" }],
+      "sunday": [],
+      "exception": {
+        "location": "Aparcamiento de Ambulatorio Sur",
+        "mondayToSaturday": [{ "from": "10:00", "to": "14:00" }]
+      }
+    },
+    "exemptPeriods": [
+      { "description": "5 de enero por la tarde (noche de Reyes)" },
+      { "description": "Mañana del primer sábado de las fiestas patronales", "dynamic": true },
+      { "description": "24 de diciembre por la tarde (Nochebuena)" },
+      { "description": "31 de diciembre por la tarde (Nochevieja)" }
+    ],
+    "duration": {
+      "residents": "sin límite, solo en el distrito de su residencia autorizada",
+      "nonResidentsDefault": { "zone": "azul", "maxMinutes": 120 },
+      "greenZone": {
+        "maxMinutes": 240,
+        "streets": [
+          "Calle San Lázaro",
+          "Avenida El Ferial (desde el cruce con calle Dos de Mayo hasta su finalización, sentido Eras de Santa Catalina)",
+          "Avenida Castilla",
+          "Calle Burgo de Osma",
+          "Calle San Esteban"
+        ]
+      }
+    },
+    "exemptVehicles": [
+      "Vehículos autorizados en zonas de carga y descarga en horario establecido",
+      "Autotaxis con el conductor presente, en prestación de servicio o alquiler",
+      "Vehículos de servicio oficial (Estado, Comunidad Autónoma o Entidades Locales) en prestación de servicio",
+      "Representaciones diplomáticas acreditadas, con reciprocidad",
+      "Vehículos de asistencia sanitaria y ambulancias acreditadas",
+      "Servicios funerarios en prestación de su actividad",
+      "Vehículos con tarjeta de persona con movilidad reducida",
+      "Vehículos con tarjeta de \"vehículo autorizado\" del Ayuntamiento"
+    ],
+    "districts": [
+      {
+        "id": "A",
+        "streets": [
+          "Calle Miranda do Douro",
+          "Plaza Corazón de María",
+          "Calle Corazón de María",
+          "Pasaje Primo de Rivera",
+          "Calle Bajada al Molino (de plaza Jardines de Don Diego a pasaje Primo de Rivera)"
+        ]
+      },
+      {
+        "id": "B",
+        "streets": [
+          "Calle San Gregorio",
+          "Plaza Jardines de Don Diego",
+          "Calle Bajada al Molino (resto de números no incluidos en zona A)",
+          "Plaza de la Virgencilla",
+          "Calle Sol de las Moreras"
+        ]
+      },
+      {
+        "id": "C",
+        "note": "Zona Centro. Actualmente excluida del estacionamiento ORA, excepto en lugares habilitados únicamente para residentes.",
+        "streets": ["Calle Santa Ana", "Calle Ricaposada", "Calle Puerta Nueva"]
+      },
+      {
+        "id": "D",
+        "streets": [
+          "Calle San Antonio",
+          "Avenida del Ferial",
+          "Calle San Francisco (desde plaza Arco Isilla hasta su cruce con calle El Carro)",
+          "Calle El Carro",
+          "Calle Carrequemada (desde el número 1 hasta plaza Santiago)",
+          "Calle Don Silverio Velasco (desde calle Pedrote hasta calle Carrequemada)"
+        ]
+      },
+      {
+        "id": "E",
+        "streets": [
+          "Plaza de la Ribera",
+          "Avenida de Castilla (desde su inicio hasta calle del Cid)",
+          "Avenida de Ruperta Baraya",
+          "Calle San Juan de Dios",
+          "Calle San Lázaro (desde su inicio hasta calle Cervantes)"
+        ]
+      },
+      {
+        "id": "F",
+        "streets": [
+          "Calle Burgo de Osma (desde su inicio hasta el número 68)",
+          "Calle San Ginés",
+          "Calle San Esteban",
+          "Calle Mesoneros Eugenio y Seri",
+          "Calle Antonio y Manuel Cebas",
+          "Calle Sulidiza",
+          "Aparcamiento de Ambulatorio Sur",
+          "Ctra. La Estación (desde su inicio hasta gta. Rosales)",
+          "Calle Cervantes"
+        ]
+      }
+    ]
+  },
+  "publicParkings": [
+    {
+      "id": "sol-de-las-moreras",
+      "name": "Sol de las Moreras",
+      "type": "public",
+      "address": "Calle Sol de las Moreras, 30",
+      "postalCode": "09400",
+      "city": "Aranda de Duero",
+      "location": { "latitude": 41.6698519, "longitude": -3.6843645 },
+      "hours": "24 horas (desde julio de 2026)",
+      "capacity": null,
+      "availableSpaces": null,
+      "availabilityStatus": "NOT_AVAILABLE",
+      "phone": "947509023"
+    }
+  ]
+}

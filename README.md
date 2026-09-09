@@ -5,12 +5,13 @@ Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
 de guardia, aparcamiento, transporte, eventos y más, expuestos como una
 única API REST versionada.
 
-> **Estado actual: Fase 2 completada.** `/api/v1/farmacia*` y
-> `/api/v1/weather*` funcionan con datos y APIs reales (ver
-> [`API.md`](API.md)). El resto de módulos (`/ambiente`, `/parking`,
-> `/bus`, `/rio`) están planificados y desbloqueados — ver el plan de
-> fases en [`docs/architecture-proposal.md`](docs/architecture-proposal.md)
-> §7. `/eventos` y cortes de calles quedan fuera de la v1 por decisión
+> **Estado actual: Fase 3 completada.** `/api/v1/farmacia*`,
+> `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*` y
+> `/api/v1/residuos*` funcionan con datos y APIs reales (ver
+> [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) para el detalle completo
+> de cada endpoint). Quedan `/bus` y `/rio` — ver el plan de fases en
+> [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §7.
+> `/eventos` y cortes de calles quedan fuera de la v1 por decisión
 > explícita (§6).
 
 ## Requisitos
@@ -77,4 +78,5 @@ BASE_URL=http://localhost:3000 npm run smoke-test
 - [`DATA-SOURCES.md`](DATA-SOURCES.md) — catálogo de fuentes externas y su estado.
 - [`DEVELOPMENT.md`](DEVELOPMENT.md) — guía de desarrollo local.
 - [`DEPLOYMENT.md`](DEPLOYMENT.md) — despliegue y variables de entorno.
-- [`API.md`](API.md) — endpoints implementados.
+- [`API.md`](API.md) — endpoints implementados, resumen de una línea.
+- [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) — referencia completa de cada endpoint (parámetros, ejemplos reales, todos los códigos de error). Documento interno autoritativo, se actualiza en el mismo commit que cualquier cambio de API.

@@ -23,6 +23,9 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
         { name: 'health', description: 'Estado y diagnóstico del servicio' },
         { name: 'farmacia', description: 'Farmacias de guardia de Aranda de Duero' },
         { name: 'weather', description: 'Meteorología (Open-Meteo)' },
+        { name: 'ambiente', description: 'Calidad del aire (JCyL)' },
+        { name: 'parking', description: 'Aparcamientos públicos y zona ORA' },
+        { name: 'residuos', description: 'Punto limpio, contenedores y recogida de residuos' },
       ],
     },
   });

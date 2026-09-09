@@ -29,6 +29,21 @@ const envSchema = z.object({
   // Coordenadas por defecto: Plaza Mayor de Aranda de Duero (ver data/farmacias.json geocode).
   ARANDA_LATITUDE: z.coerce.number().default(41.6701895),
   ARANDA_LONGITUDE: z.coerce.number().default(-3.6885626),
+
+  // Ambiente (Fase 3 — JCyL Opendatasoft)
+  JCYL_OPENDATA_BASE_URL: z
+    .string()
+    .url()
+    .default('https://analisis.datosabiertos.jcyl.es/api/explore/v2.1'),
+  JCYL_TIMEOUT_MS: z.coerce.number().int().positive().default(5000),
+  JCYL_AIR_QUALITY_DATASET_TODAY: z.string().default('calidad-del-aire-del-dia-en-curso'),
+  JCYL_AIR_QUALITY_DATASET_HISTORICAL: z
+    .string()
+    .default('calidad-del-aire-datos-historicos-diarios'),
+  JCYL_AIR_QUALITY_STATION: z.string().default('Aranda de Duero 2'),
+  JCYL_AIR_QUALITY_STATION_ID: z.coerce.number().int().positive().default(82),
+  JCYL_AIR_QUALITY_PROVINCE: z.string().default('Burgos'),
+  AMBIENTE_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
 });
 
 export type Env = z.infer<typeof envSchema>;

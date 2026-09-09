@@ -55,6 +55,25 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/services/WeatherService.ts` — cache 10 min, fallback a caché obsoleta si Open-Meteo falla (`meta.stale: true`), valida rango hoy..+7 días.
 - `src/routes/weather.ts` — `/api/v1/weather*`.
 
+## Módulos de dominio (Fase 3)
+
+**Ambiente** (JCyL, real — dos datasets distintos detrás de un mismo servicio):
+
+- `src/domain/ambiente.ts` — tipos (`AirQualitySnapshot`, `HourlyAirQuality`, `PollutantReading`).
+- `src/clients/JcylClient.ts` — HTTP genérico para la API Opendatasoft de JCyL, con paginación por `offset`; expone la interfaz `JcylProvider`.
+- `src/adapters/jcylAirQualityAdapter.ts` — dos pivotes distintos: `toHourlySnapshot` (formato largo del dataset "día en curso" → horas agrupadas) y `toDailySnapshot` (formato ancho del histórico diario → lista de contaminantes).
+- `src/services/AmbienteService.ts` — enruta hoy → dataset horario, fecha pasada → histórico diario; cache 10 min (hoy) / 24h (histórico, no cambia retroactivamente).
+- `src/routes/ambiente.ts` — `/api/v1/ambiente*`.
+
+**Parking** (Ordenanza ORA, BOP Burgos 245/2021, dataset estático real):
+
+- `src/domain/parking.ts`, `src/repositories/ParkingRepository.ts`, `src/services/ParkingService.ts`, `src/routes/parking.ts` — `/api/v1/parking*`.
+- Sin cliente HTTP: es un dataset local, igual que farmacia. Nunca inventa disponibilidad (`availabilityStatus: "NOT_AVAILABLE"` siempre en `capacity`/`availableSpaces`).
+
+**Residuos** (2 PDF oficiales del Ayuntamiento, dataset estático real):
+
+- `src/domain/residuos.ts`, `src/repositories/ResiduosRepository.ts`, `src/services/ResiduosService.ts`, `src/routes/residuos.ts` — `/api/v1/residuos*`.
+
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe

@@ -18,7 +18,7 @@ Se ha hecho una investigación real (no asumida) de las fuentes de datos abierta
 | Cortes de calles | Integrar Waze si hay acceso autorizado | ⚠️ Waze for Cities requiere alta institucional del Ayuntamiento, no es autoservicio | **Resuelto (decisión del usuario, 2026-09-09): no disponible por ahora.** Se documenta el adapter como no implementado, sin trámite en curso |
 | Río | "Yo proporcionaré el API real" | ✅ **Resuelto (2026-09-09):** el usuario aportó una API real (`saih-chd-api-9d034ff9d037.herokuapp.com`), probada en vivo — nivel y caudal por estación. Ver §2.2b | Resuelto |
 | Farmacias | Dataset ficticio inicial | ✅ **Resuelto (2026-09-09):** el usuario aportó el calendario real de guardias 2026 (extraído del PDF oficial del Colegio de Farmacéuticos de Burgos) y el catálogo de las 12 farmacias, geocodificadas vía Nominatim. Ver §2.1 | Resuelto — datos reales, no fixture |
-| Parking / ORA | Zonas ORA reales | ✅ Confirmadas: distritos A, B y C con calles concretas, horario L–V 9–14h y 16–20h, máx. 4h | Resuelto — dataset estático |
+| Parking / ORA | Zonas ORA reales | ✅ **Corrección (2026-09-09):** el horario real, según el texto legal de la ordenanza (BOP Burgos 245/2021), es L–V 10–14h y 16–20h (no 9–14h como decía esta primera investigación, tomada de fuentes secundarias). 6 distritos (A-F), no 3; duración 2h en zona azul / 4h en calles concretas de zona verde, no "4h" genérico. Ver §2.1 actualizado | Resuelto — dataset estático, implementado en Fase 3 |
 | Meteorología | Open-Meteo | ✅ Confirmado: sin API key, JSON, 10.000 llamadas/día gratis (uso no comercial) | Resuelto |
 | Residuos | No contemplado en el prompt original | ✅ **Añadido (2026-09-09):** el usuario aportó 2 PDF oficiales del Ayuntamiento (díptico de separación + guía de contenedores) con horarios de depósito por tipo de contenedor, punto limpio, recogida de enseres y contacto de Valoriza. Ver §2.1c | Resuelto — dataset estático |
 
@@ -52,16 +52,16 @@ Esto confirma que la arquitectura de **adapters desacoplados + degradación expl
 
 | Campo | Farmacias de guardia | ORA / aparcamiento regulado | Parking Sol de las Moreras |
 |---|---|---|---|
-| URL | Fuente original: cofburgos.es. **Datos ya extraídos y en el repo**: `data/farmacias.json` (catálogo) + `data/farmacias-guardia-2026.json` (calendario) | arandadeduero.es/tema/aparcamiento-regulado/ | Calle Sol de las Moreras 30 (gestión municipal) |
-| Tipo de API | Ninguna — PDF oficial ya descargado y extraído por el usuario | Ninguna (página informativa) | Ninguna |
-| Formato | PDF de origen → JSON normalizado en el repo | HTML | — |
+| URL | Fuente original: cofburgos.es. **Datos ya extraídos y en el repo**: `data/farmacias.json` (catálogo) + `data/farmacias-guardia-2026.json` (calendario) | **Texto legal oficial**: BOP Burgos núm. 245, 28-dic-2021 (transparencia.arandadeduero.es), no la página informativa del Ayuntamiento (que no tiene el detalle) | Calle Sol de las Moreras 30 (gestión municipal) |
+| Tipo de API | Ninguna — PDF oficial ya descargado y extraído por el usuario | Ninguna — ordenanza en PDF, ya extraída y en `data/parking.json` | Ninguna |
+| Formato | PDF de origen → JSON normalizado en el repo | PDF de origen (BOP) → JSON normalizado en el repo | — |
 | Autenticación | — | — | — |
-| Frecuencia de actualización | Anual (calendario 2026 completo, 365 días) | Estática (ordenanza) | — |
-| Licencia | No especificada por la fuente — uso informativo, verificar antes de redistribución comercial | No especificada | — |
-| Fiabilidad | Alta como fuente (Colegio Oficial de Farmacéuticos), **con matiz**: la extracción automática del PDF (día-de-mes verificado programáticamente 1..365 sin huecos; farmacia-del-día verificada solo por co-ubicación espacial en el PDF, no contrastada con una segunda fuente) — ver caveat en `data/farmacias-guardia-2026.json.meta.caveat` | Alta (ordenanza vigente) | Media |
-| Datos disponibles | 12 farmacias (nombre, dirección, teléfono, zona, geocodificadas con Nominatim — 9 con precisión de portal exacto, 3 a nivel de calle) + calendario de guardia día a día para todo 2026 | Calles y distritos A/B/C, horario L–V 9–14h y 16–20h, máx. 4h, exención movilidad reducida | 24h desde jul-2026, gestión de tickets, sin plazas libres en tiempo real |
+| Frecuencia de actualización | Anual (calendario 2026 completo, 365 días) | Estática (ordenanza vigente desde 2021) | — |
+| Licencia | No especificada por la fuente — uso informativo, verificar antes de redistribución comercial | Texto normativo público — de libre reutilización como fuente de derecho | — |
+| Fiabilidad | Alta como fuente (Colegio Oficial de Farmacéuticos). Re-verificado el 9-sept-2026 directamente contra el PDF original (no solo una derivación de terceros): corrigió 33 fechas de la primera extracción; quedan 14 fechas de confianza más baja en 4 bloques — ver `data/farmacias-guardia-2026.json.meta.caveat` | Alta — texto legal oficial, no una fuente secundaria | Media |
+| Datos disponibles | 12 farmacias (nombre, dirección, teléfono, zona, geocodificadas con Nominatim — 9 con precisión de portal exacto, 3 a nivel de calle) + calendario de guardia día a día para todo 2026 | **6 distritos (A-F)**, no 3, con el listado literal de calles de cada uno; horario real **L-V 10-14h y 16-20h**, sábados 10-14h (corrige el "9-14h" que decía la versión anterior de este documento, tomado de fuentes secundarias); duración 2h no residentes en zona azul, **4h solo en 5 calles concretas de zona verde** (no "4h" genérico); residentes sin límite; 8 categorías de vehículo exentas; 4 periodos sin regulación (Reyes, fiestas patronales, Nochebuena, Nochevieja) | 24h desde jul-2026, gestión de tickets, sin plazas libres en tiempo real |
 | Limitaciones | Ver caveat de extracción arriba; no hay forma de detectar cambios de última hora (bajas/vacaciones) sin re-consultar la fuente original | No hay API de ocupación | No hay API de ocupación |
-| ¿Automatizable? | Ya ingerido para 2026; para 2027 habrá que repetir la extracción del nuevo PDF anual (o negociar un feed con el Colegio) | Sí, como dataset estático versionado a mano (no cambia a menudo) | No hay nada que automatizar salvo datos estáticos |
+| ¿Automatizable? | Ya ingerido para 2026; para 2027 habrá que repetir la extracción del nuevo PDF anual (o negociar un feed con el Colegio) | Ya ingerido; solo cambiaría si el Ayuntamiento modifica la ordenanza (poco frecuente) | No hay nada que automatizar salvo datos estáticos |
 
 ### 2.1c Residuos (añadido 2026-09-09, aportado por el usuario)
 
@@ -297,7 +297,7 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 |---|---|---|
 | 1 | Core: Node, TS, Fastify, config, logging, errores, OpenAPI, health, Docker | ✅ Completada |
 | 2 | Farmacia (datos reales: `data/farmacias.json` + `data/farmacias-guardia-2026.json`) + Weather (Open-Meteo) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y API.md. AEMET (avisos) queda pendiente para cuando se necesite, no bloquea nada |
-| 3 | Ambiente (JCyL, dataset `calidad-del-aire-del-dia-en-curso`, estación "Aranda de Duero 2") + Parking/ORA (datos estáticos verificados) + Residuos (`data/residuos.json`) | Desbloqueada por completo |
+| 3 | Ambiente (JCyL) + Parking/ORA + Residuos | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. El horario y las calles ORA se verificaron contra el texto legal de la ordenanza (BOP Burgos 245/2021): el horario real es 10-14h y 16-20h, corrigiendo el "9-14h" que decía la investigación inicial (§0, tomado de fuentes secundarias no oficiales) |
 | 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`) como fuente principal; GTFS interurbano del NAP como fuente secundaria | Desbloqueada por completo |
 | 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | Río desbloqueado; cortes de calles excluido de la v1 |
 | 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | Sin cambios |

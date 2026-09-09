@@ -51,6 +51,30 @@ const CHECKS = [
     expectStatus: 200,
     validate: (body) => typeof body?.data?.current?.temperature === 'number',
   },
+  {
+    name: 'ambiente',
+    path: '/api/v1/ambiente',
+    expectStatus: 200,
+    validate: (body) => body?.data?.station?.name === 'Aranda de Duero 2',
+  },
+  {
+    name: 'parking',
+    path: '/api/v1/parking',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.length > 0,
+  },
+  {
+    name: 'parking/ora',
+    path: '/api/v1/parking/ora',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data?.districts) && body.data.districts.length === 6,
+  },
+  {
+    name: 'residuos/puntolimpio',
+    path: '/api/v1/residuos/puntolimpio',
+    expectStatus: 200,
+    validate: (body) => typeof body?.data?.direccion === 'string',
+  },
 ];
 
 async function fetchWithTimeout(url) {
