@@ -1,0 +1,76 @@
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_65ebaff235f2b3 30
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_270e6fc3958858 49
+src/routes/rio.ts
+  s_10638ab73c2825::t_7c1855ec17451c 1-40,45-109
+  s_10638ab73c2825::t_f518e799c7a414 41-44
+test/e2e/rio.e2e.test.ts
+  s_10638ab73c2825::t_f518e799c7a414 18-27,29-36,38-42
+  s_10638ab73c2825::t_adac3b10eddcae 1-17,28,37,43-48
+src/clients/RioClient.ts
+  s_10638ab73c2825::t_18e47cf9730219 1-53,58-73
+  s_10638ab73c2825::t_f518e799c7a414 54-57
+src/services/RioService.ts
+  s_10638ab73c2825::t_27ed49799367eb 2
+  s_10638ab73c2825::t_e25f93ab9666f8 1,3-36,39-52,56-78,80-84,93-111,114-119
+  s_10638ab73c2825::t_1a50c260dc1c13 79,85-92,112-113
+  s_10638ab73c2825::t_f518e799c7a414 37-38,53-55
+src/domain/rio.ts
+  s_10638ab73c2825::t_6f3eb2d332638a 8,13-15,21-22
+  s_10638ab73c2825::t_59865ab0a38642 1-7,9-12,16-20,23-24
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_c6568ee379f9cc 84-89
+API.md
+  s_10638ab73c2825::t_ea34a523b416f2 10
+  s_10638ab73c2825::t_f76bacb03f03b3 19
+  s_10638ab73c2825::t_f1a325a43f5f32 14-18,20-21,96-100
+  s_10638ab73c2825::t_45a77aa8abb509 92-95,101
+  s_10638ab73c2825::t_3519e16a24d7a7 121,123-126
+DATA-SOURCES.md
+  s_10638ab73c2825::t_ba1c2d0095885f 21-23
+  s_10638ab73c2825::t_f1a325a43f5f32 16
+test/unit/RioService.test.ts
+  s_10638ab73c2825::t_f43bb75056e26b 1-10,15-57,61-100
+  s_10638ab73c2825::t_f518e799c7a414 11-14,58-60
+README.md
+  s_10638ab73c2825::t_c7f60ea15700f3 5-6,8,10-16
+  s_10638ab73c2825::t_ad3069d94972db 56
+ARCHITECTURE.md
+  s_10638ab73c2825::t_da5edb03d8122d 91-99
+src/routes/health.ts
+  s_10638ab73c2825::t_8882f9e34b812e 30-31
+  s_10638ab73c2825::t_0ece6569e2f04d 200-204,206-207
+  s_10638ab73c2825::t_2bedcb66043b8f 45
+  s_10638ab73c2825::t_c01f34005054de 12
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_b3b79a41343af1 51,65-66,76
+  s_10638ab73c2825::t_37af470da52c22 532-544,546-548,550,567-569,571,573-577,579,588-591
+  s_10638ab73c2825::t_7dd55315b59a71 12
+  s_10638ab73c2825::t_f1a325a43f5f32 545,549,551-566,570,572,578,580-587
+src/config/env.ts
+  s_10638ab73c2825::t_bd4ebfa4daa75a 52-57
+src/app.ts
+  s_10638ab73c2825::t_f518e799c7a414 100-105,118
+  s_10638ab73c2825::t_df28c7c2372a62 15,30-31,99,106,130
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_8e6951f9f1091f 294
+  s_10638ab73c2825::t_262673e7d4c896 302
+  s_10638ab73c2825::t_533ce91152073e 308-309
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3263bf403f15b3d0dcd9c18b20de1e268ff00662",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
