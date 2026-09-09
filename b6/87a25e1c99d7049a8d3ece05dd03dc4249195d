@@ -1,0 +1,182 @@
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_9409cc4f5cd614 40-41
+  s_10638ab73c2825::t_12c133831fa5b6 31-34
+src/domain/embalse.ts
+  s_10638ab73c2825::t_a4df857a1d4b6a 20-25
+  s_10638ab73c2825::t_cc6b3b8bb54cdc 1-19,26-28
+src/app.ts
+  s_10638ab73c2825::t_dce7c570de4fc7 42-43
+  s_10638ab73c2825::t_1e96853e3eb3b6 36-37
+  s_10638ab73c2825::t_e57e525f0707a4 128-135
+  s_10638ab73c2825::t_189ce874ccffce 136-152
+  s_10638ab73c2825::t_69f45c943dd135 153-168
+  s_10638ab73c2825::t_48a898b23ae643 38-41
+  s_10638ab73c2825::t_ae40afb86606d0 191
+  s_10638ab73c2825::t_fbb060700d33de 196
+  s_10638ab73c2825::t_93f63ad46eb788 197-198
+  s_10638ab73c2825::t_d46ea66d96bf60 208-211
+  s_10638ab73c2825::t_6156ccf3630184 181-184
+test/unit/SaihDueroEmbalseClient.test.ts
+  s_10638ab73c2825::t_12c133831fa5b6 51,80-82
+  s_10638ab73c2825::t_85e91619fcdf87 1-50,52-79,83-87
+src/clients/AemetAvisosClient.ts
+  s_10638ab73c2825::t_861872bafe438a 1-84,89-106
+  s_10638ab73c2825::t_12c133831fa5b6 85-88
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_7fb39c6cff7c04 50-53
+src/adapters/avisosAdapter.ts
+  s_10638ab73c2825::t_a3a8a3250cdbaa 1-29,34-128
+  s_10638ab73c2825::t_12c133831fa5b6 30-33
+src/domain/avisos.ts
+  s_10638ab73c2825::t_f79af14f8bf282 1-19
+test/unit/tar.test.ts
+  s_10638ab73c2825::t_cd03492a41799d 1-69
+.env.example
+  s_10638ab73c2825::t_175c56543e7bee 31-33,37-45,47-51,63-75,85-86,92,98,101-111,113
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_6c4f2a0c042ef6 294,304-305,309
+src/config/env.ts
+  s_10638ab73c2825::t_8757c3a9ffddef 68-69,81-82
+  s_10638ab73c2825::t_d74fc16b88612c 66-67,70,76-80,88
+  s_10638ab73c2825::t_f41348d16c6fd8 59-65
+  s_10638ab73c2825::t_6dd10486d62e33 89-104
+  s_10638ab73c2825::t_12c133831fa5b6 71-75,83-87
+src/services/EmbalseService.ts
+  s_10638ab73c2825::t_155a64c2c0f839 1-36
+test/e2e/bibliotecas.e2e.test.ts
+  s_10638ab73c2825::t_1b41df792e9f8e 1-28
+test/e2e/rio.e2e.test.ts
+  s_10638ab73c2825::t_29f888533b75b3 65-80
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_699a8963a9f22c 136-147
+  s_10638ab73c2825::t_56c372e8bc2340 244-257
+  s_10638ab73c2825::t_f39f9258f7ff99 96-113
+  s_10638ab73c2825::t_c961d93b4f2f24 135
+src/routes/rio.ts
+  s_10638ab73c2825::t_5b3b5e6a6fd262 156-180
+  s_10638ab73c2825::t_5909b5c195d22e 42-50,56-62,65-69,74
+  s_10638ab73c2825::t_df91278e148b3a 3
+  s_10638ab73c2825::t_12c133831fa5b6 51-55,63-64
+  s_10638ab73c2825::t_9ca89d6499c96b 72
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_5e1458bf2502c0 823-826
+  s_10638ab73c2825::t_ec0e580c316f05 68-71,81
+  s_10638ab73c2825::t_7ea6841b7cca20 650-749
+  s_10638ab73c2825::t_ad6c674dfc83f1 237-270
+  s_10638ab73c2825::t_28581bd857cdb1 853
+  s_10638ab73c2825::t_2ba1049db4edb6 12
+  s_10638ab73c2825::t_1d1e6c36abf0aa 82
+test/unit/BibliotecasService.test.ts
+  s_10638ab73c2825::t_12c133831fa5b6 32-38,60-66,77-83
+  s_10638ab73c2825::t_0bf1bf5382f01b 1-31,39-59,67-76,84-86
+src/utils/tar.ts
+  s_10638ab73c2825::t_aa88b514e49d49 1-63
+ARCHITECTURE.md
+  s_10638ab73c2825::t_e7f13e1e446292 197-206
+  s_10638ab73c2825::t_607349fa2ba7a4 109-138
+test/e2e/meta.e2e.test.ts
+  s_10638ab73c2825::t_4115e37d58e8a3 31-36,48-52
+src/domain/educacion.ts
+  s_10638ab73c2825::t_8f00dbee51dd05 1-21
+src/adapters/bibliotecasAdapter.ts
+  s_10638ab73c2825::t_58642deeb3ca7b 1-39
+src/routes/bibliotecas.ts
+  s_10638ab73c2825::t_12c133831fa5b6 9-10,35-36
+  s_10638ab73c2825::t_7a6ea4fd22192e 1-8,11-34,37-63
+DATA-SOURCES.md
+  s_10638ab73c2825::t_28581bd857cdb1 17-18,20
+  s_10638ab73c2825::t_5730bcf48f8b97 19,25
+DEPLOYMENT.md
+  s_10638ab73c2825::t_e9b095f5331cde 67
+  s_10638ab73c2825::t_22db91f8c09fbd 37-41,45-59
+src/routes/educacion.ts
+  s_10638ab73c2825::t_afe7d241d8bbad 1-74,79-91
+  s_10638ab73c2825::t_12c133831fa5b6 75-78
+test/unit/EducacionService.test.ts
+  s_10638ab73c2825::t_0f040d2cf514d6 1-42,51-59,68-73,82-89,98-101,110-117
+  s_10638ab73c2825::t_12c133831fa5b6 43-50,60-67,74-81,90-97,102-109
+package.json
+  s_10638ab73c2825::t_2709012c1c15bd 12,14
+  s_10638ab73c2825::t_cfba760561315b 20-23
+  s_10638ab73c2825::t_a014af33780d22 33,38
+src/adapters/educacionAdapter.ts
+  s_10638ab73c2825::t_9128b0d8a443f6 1-80
+src/services/AvisosService.ts
+  s_10638ab73c2825::t_583c25a3989cd2 1-46,51-53
+  s_10638ab73c2825::t_12c133831fa5b6 47-50
+src/diagnostics/sourceChecks.ts
+  s_10638ab73c2825::t_d05384322a6292 142-187
+  s_10638ab73c2825::t_d94bae47ed72e1 9-13,24-27
+.claude/CLAUDE.md
+  s_10638ab73c2825::t_e6b8063f7af8ae 117,126-132
+  s_10638ab73c2825::t_5410263f9b0b82 20-23,27-37
+  s_10638ab73c2825::t_4d60af8d9b24fc 118-125
+src/services/EducacionService.ts
+  s_10638ab73c2825::t_207ad6edf0bc92 1-37,42-57
+  s_10638ab73c2825::t_12c133831fa5b6 38-41
+src/domain/bibliotecas.ts
+  s_10638ab73c2825::t_69477a55657d99 1-11
+src/routes/weather.ts
+  s_10638ab73c2825::t_f41e0204d86de2 59-61,66-74,77,79
+  s_10638ab73c2825::t_1126eed831d748 164-178,183-189,191-192
+  s_10638ab73c2825::t_622a5a65809523 190
+  s_10638ab73c2825::t_e66a195f4c8769 3
+  s_10638ab73c2825::t_d6a90b337f5222 18-29
+  s_10638ab73c2825::t_12c133831fa5b6 62-65,179-182
+src/telemetry/sources.ts
+  s_10638ab73c2825::t_74bc0a03445327 110-130,133-154,157-160
+  s_10638ab73c2825::t_28581bd857cdb1 131-132,155-156
+src/services/BibliotecasService.ts
+  s_10638ab73c2825::t_a03571aa2a5cc3 1-36,41-43
+  s_10638ab73c2825::t_12c133831fa5b6 37-40
+test/unit/avisosAdapter.test.ts
+  s_10638ab73c2825::t_12c133831fa5b6 88-92,96-100,106-110
+  s_10638ab73c2825::t_019b81126726a2 1-87,93-95,101-105,111-114
+test/unit/educacionAdapter.test.ts
+  s_10638ab73c2825::t_12c133831fa5b6 47-51,58-61,68-71
+  s_10638ab73c2825::t_c75effedb811a2 1-46,52-57,62-67,72-80
+src/clients/SaihDueroEmbalseClient.ts
+  s_10638ab73c2825::t_12c133831fa5b6 59-62,69-72,112-113
+  s_10638ab73c2825::t_9263f6e4d2616f 1-11,18-21,25-58,63-68,73-105,107-111,114-138
+  s_10638ab73c2825::t_5d97b7d8618d42 12-17,22-24
+  s_10638ab73c2825::t_85aca1c80d3b03 106
+test/e2e/weather.e2e.test.ts
+  s_10638ab73c2825::t_92e75985d72c6e 55-86
+test/unit/AvisosService.test.ts
+  s_10638ab73c2825::t_7a01baaaacf484 1-66
+DEVELOPMENT.md
+  s_10638ab73c2825::t_c8a5740ab89a2c 11-14
+test/e2e/educacion.e2e.test.ts
+  s_10638ab73c2825::t_cd9edbe37a8d51 1-49
+test/unit/AemetAvisosClient.test.ts
+  s_10638ab73c2825::t_c49a5f24674187 1-51,57-76,82-92
+  s_10638ab73c2825::t_12c133831fa5b6 52-56,77-81
+README.md
+  s_10638ab73c2825::t_6465519b0d98ef 8,10-14,16-21
+  s_10638ab73c2825::t_529b897ac8dc95 61,66-71
+  s_10638ab73c2825::t_dd78de4a5fa517 72
+API.md
+  s_10638ab73c2825::t_a43c73d0f7f308 105-109,114-118,121
+  s_10638ab73c2825::t_0c055683e6fad7 10
+  s_10638ab73c2825::t_ec5b568d3d97ec 38,45
+  s_10638ab73c2825::t_28581bd857cdb1 40-44,104,110-113,119-120
+  s_10638ab73c2825::t_f408f8fee5fe99 153
+package-lock.json
+  s_10638ab73c2825::t_cf08cb9cc68d4e 18,23,1113-1124,2224-2235,2307-2312,2435-2462,2525-2591,2601-2612,2988-3026,3353-3364,3977-3998,4116-4130,4606-4620,5091-5105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b687a25e1c99d7049a8d3ece05dd03dc4249195d",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
