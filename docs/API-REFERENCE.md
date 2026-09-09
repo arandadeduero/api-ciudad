@@ -9,7 +9,7 @@ Relación con el resto de la documentación:
 - `/docs` (Swagger UI, generado desde el código) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (Fase 3: ambiente, parking, residuos).
+**Última actualización:** 2026-09-09 (Fase 4: bus).
 
 ---
 
@@ -433,6 +433,102 @@ Corrige una investigación previa que citaba erróneamente "Urbaser" como operad
 ```
 
 **Único dato de todo el proyecto marcado explícitamente como fuente secundaria** (nota de prensa, no el PDF oficial) — verificar antes de tomarlo como definitivo.
+
+---
+
+## Bus (`/api/v1/bus`)
+
+Fuente: feed GTFS real del bus urbano de Aranda de Duero ([`arandadeduero/gtfs-busurbano`](https://github.com/arandadeduero/gtfs-busurbano), 3 líneas L1/L2/L3, operador UTE Clemente-Davila). Se descarga el asset `latest.zip` del último release de GitHub en memoria (sin escribir el zip a disco — `fflate` evita así cualquier vector de path-traversal/symlinks al descomprimir un zip de terceros) y se persiste una copia de los `.txt` extraídos en `GTFS_URBANO_CACHE_DIR` como resiliencia: si GitHub Releases falla, se sirve esa copia (`meta.stale: true`). Licencia AGPL-3.0 declarada en el repo — pendiente confirmar su alcance real con el mantenedor antes de basar un uso comercial en este endpoint (ver `docs/architecture-proposal.md` §2.1b).
+
+Sin caché HTTP con TTL: el feed se descarga una vez por arranque del proceso y se mantiene en memoria (es estático — solo cambia cuando el operador publica un nuevo release, algo infrecuente).
+
+### `GET /api/v1/bus`
+
+Resumen: líneas + número total de paradas.
+
+```json
+{
+  "data": {
+    "lines": [{ "id": "1", "shortName": "L1", "longName": "Aranda (Circular)", "color": "F31212" }],
+    "stopCount": 44
+  }
+}
+```
+
+### `GET /api/v1/bus/lines`
+
+Array de las 3 líneas (`id`, `shortName`, `longName`, `color`).
+
+### `GET /api/v1/bus/lines/:line`
+
+`:line` es el `route_id` del feed (`1`, `2` o `3`, no el nombre corto `L1`/`L2`/`L3`). 404 (con la lista de ids disponibles) si no existe.
+
+### `GET /api/v1/bus/stops`
+
+Array de las 44 paradas reales (`id`, `name`, `location`, `wheelchairAccessible`).
+
+### `GET /api/v1/bus/stops/:id`
+
+404 si el id no existe.
+
+### `GET /api/v1/bus/nearest?lat=&lon=`
+
+Parada más cercana a unas coordenadas (distancia Haversine), con las líneas que pasan por ella.
+
+**Respuesta 200 (ejemplo real, coordenadas de la Plaza Mayor):**
+
+```json
+{
+  "data": {
+    "stop": {
+      "id": "8",
+      "name": "Plaza Mayor (Calle Postas)",
+      "location": { "latitude": 41.6699, "longitude": -3.6884 },
+      "wheelchairAccessible": true
+    },
+    "distanceMeters": 33,
+    "lines": [
+      { "id": "1", "shortName": "L1" },
+      { "id": "2", "shortName": "L2" },
+      { "id": "3", "shortName": "L3" }
+    ]
+  }
+}
+```
+
+400 (mensaje genérico, sin `error.code` específico) si falta `lat` o `lon`, o no son numéricos.
+
+### `GET /api/v1/bus/stop/:id/next?count=N`
+
+Los próximos `N` autobuses (por defecto 2, máx. 10) en una parada, calculados en tiempo real contra el calendario GTFS (día de la semana + excepciones de `calendar_dates.txt`, zona horaria Europe/Madrid, con soporte para servicios que cruzan medianoche — horas `>=24:00:00` del propio estándar GTFS).
+
+**Respuesta 200 (ejemplo real, consultado un miércoles a las 10:46):**
+
+```json
+{
+  "data": {
+    "stop": { "id": "8", "name": "Plaza Mayor (Calle Postas)", "...": "..." },
+    "nextBuses": [
+      {
+        "line": "L1",
+        "destination": "Aranda (Plz. Mediterráneo)",
+        "scheduledTime": "10:52",
+        "minutesUntil": 6
+      },
+      {
+        "line": "L1",
+        "destination": "Aranda (Amb. Norte)",
+        "scheduledTime": "11:10",
+        "minutesUntil": 24
+      }
+    ]
+  }
+}
+```
+
+`nextBuses` puede tener menos de `count` elementos si no quedan más servicios activos hoy en esa parada (p. ej. tras la última salida del día). 404 si la parada no existe.
+
+**Nota sobre domingos:** el feed no tiene ningún `service_id` con el flag `sunday=1` — no hay servicio los domingos, `nextBuses` devolverá un array vacío ese día, lo cual es correcto (no un fallo).
 
 ---
 

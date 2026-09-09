@@ -44,6 +44,11 @@ const envSchema = z.object({
   JCYL_AIR_QUALITY_STATION_ID: z.coerce.number().int().positive().default(82),
   JCYL_AIR_QUALITY_PROVINCE: z.string().default('Burgos'),
   AMBIENTE_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
+
+  // Bus urbano (Fase 4 — GTFS real vía GitHub Releases)
+  GTFS_URBANO_REPO: z.string().default('arandadeduero/gtfs-busurbano'),
+  GTFS_URBANO_CACHE_DIR: z.string().default('./data/gtfs-urbano'),
+  GTFS_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
 });
 
 export type Env = z.infer<typeof envSchema>;

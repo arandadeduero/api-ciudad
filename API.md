@@ -7,7 +7,7 @@ autoritativo, se actualiza en el mismo commit que cualquier cambio de API.
 `/docs` (Swagger UI) es la fuente ejecutable/interactiva generada desde el
 código.
 
-## Estado: Fase 3
+## Estado: Fase 4
 
 ### Infraestructura (Fase 1)
 
@@ -75,6 +75,20 @@ Fuente: 2 PDF oficiales del Ayuntamiento (Medio Ambiente / Aseo Urbano).
 | GET    | `/api/v1/residuos/enseres`            | Recogida de muebles (Valoriza)       |
 | GET    | `/api/v1/residuos/comercio-carton`    | Recogida de cartón comercial         |
 
+### Bus (`/api/v1/bus`) — Fase 4
+
+Fuente: GTFS real del bus urbano (github.com/arandadeduero/gtfs-busurbano).
+
+| Método | Ruta                               | Descripción                                                               |
+| ------ | ---------------------------------- | ------------------------------------------------------------------------- |
+| GET    | `/api/v1/bus`                      | Resumen: líneas + número de paradas                                       |
+| GET    | `/api/v1/bus/lines`                | Las 3 líneas (L1, L2, L3)                                                 |
+| GET    | `/api/v1/bus/lines/:line`          | Detalle de una línea                                                      |
+| GET    | `/api/v1/bus/stops`                | Las 44 paradas reales                                                     |
+| GET    | `/api/v1/bus/stops/:id`            | Detalle de una parada                                                     |
+| GET    | `/api/v1/bus/nearest?lat=&lon=`    | Parada más cercana a unas coordenadas                                     |
+| GET    | `/api/v1/bus/stop/:id/next?count=` | Próximos autobuses en una parada (cálculo real contra el calendario GTFS) |
+
 ## Formato de respuesta
 
 Éxito:
@@ -94,7 +108,7 @@ Error:
 (Los endpoints de `/health` no siguen el envoltorio `data`/`meta` por
 convención estándar de health checks; sí siguen el formato de error común.)
 
-## Pendiente (fases 4-6)
+## Pendiente (fases 5-6)
 
-`bus`, `rio` — ver plan de fases en `docs/architecture-proposal.md` §7.
+`rio` — ver plan de fases en `docs/architecture-proposal.md` §7.
 `eventos` y `cortescalles` quedan excluidos de la v1 por decisión del usuario.

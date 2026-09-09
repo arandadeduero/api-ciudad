@@ -37,3 +37,29 @@ export function addDays(isoDate: string, days: number): string {
   const date = new Date(Date.UTC(y!, m! - 1, d! + days));
   return date.toISOString().slice(0, 10);
 }
+
+/** YYYY-MM-DD -> YYYYMMDD (formato de fecha que usa GTFS calendar.txt). */
+export function toGtfsDate(isoDate: string): string {
+  return isoDate.replaceAll('-', '');
+}
+
+/** Hora/minuto/segundo y fecha actuales en Europe/Madrid, para cálculos de "próximo bus". */
+export function nowPartsInMadrid(): { isoDate: string; secondsSinceMidnight: number } {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+
+  const get = (type: string): string => parts.find((p) => p.type === type)?.value ?? '00';
+  const isoDate = `${get('year')}-${get('month')}-${get('day')}`;
+  const secondsSinceMidnight =
+    Number(get('hour')) * 3600 + Number(get('minute')) * 60 + Number(get('second'));
+
+  return { isoDate, secondsSinceMidnight };
+}

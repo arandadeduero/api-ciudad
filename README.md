@@ -5,11 +5,11 @@ Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
 de guardia, aparcamiento, transporte, eventos y más, expuestos como una
 única API REST versionada.
 
-> **Estado actual: Fase 3 completada.** `/api/v1/farmacia*`,
-> `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*` y
-> `/api/v1/residuos*` funcionan con datos y APIs reales (ver
-> [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) para el detalle completo
-> de cada endpoint). Quedan `/bus` y `/rio` — ver el plan de fases en
+> **Estado actual: Fase 4 completada.** `/api/v1/farmacia*`,
+> `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*`,
+> `/api/v1/residuos*` y `/api/v1/bus*` funcionan con datos y APIs reales
+> (ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) para el detalle
+> completo de cada endpoint). Queda `/rio` — ver el plan de fases en
 > [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §7.
 > `/eventos` y cortes de calles quedan fuera de la v1 por decisión
 > explícita (§6).
@@ -52,7 +52,7 @@ docker compose --profile redis up --build
 ## Tests
 
 ```bash
-npm test              # unit + e2e (fastify.inject, sin red real)
+npm test              # unit + integración + e2e (algunos e2e golpean red real: Open-Meteo, JCyL, GitHub)
 npm run test:e2e       # solo e2e
 npm run test:coverage
 ```

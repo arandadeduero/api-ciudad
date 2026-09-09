@@ -27,7 +27,9 @@ COPY --from=build /app/dist ./dist
 COPY package.json ./
 # Datasets estáticos reales que leen los repositorios (ver ARCHITECTURE.md);
 # no son fixtures de desarrollo, la API los necesita en producción.
-COPY data ./data
+# --chown es necesario: GtfsRepository escribe su caché de disco en
+# data/gtfs-urbano/ en tiempo de ejecución como usuario no root.
+COPY --chown=apiciudad:nodejs data ./data
 
 USER apiciudad
 

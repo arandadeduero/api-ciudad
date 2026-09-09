@@ -75,6 +75,12 @@ const CHECKS = [
     expectStatus: 200,
     validate: (body) => typeof body?.data?.direccion === 'string',
   },
+  {
+    name: 'bus/lines',
+    path: '/api/v1/bus/lines',
+    expectStatus: 200,
+    validate: (body) => Array.isArray(body?.data) && body.data.length === 3,
+  },
 ];
 
 async function fetchWithTimeout(url) {

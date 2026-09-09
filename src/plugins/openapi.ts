@@ -26,6 +26,7 @@ export default fp(async function openapiPlugin(app: FastifyInstance) {
         { name: 'ambiente', description: 'Calidad del aire (JCyL)' },
         { name: 'parking', description: 'Aparcamientos públicos y zona ORA' },
         { name: 'residuos', description: 'Punto limpio, contenedores y recogida de residuos' },
+        { name: 'bus', description: 'Bus urbano (GTFS real, L1/L2/L3)' },
       ],
     },
   });

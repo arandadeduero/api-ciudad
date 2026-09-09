@@ -74,6 +74,20 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 
 - `src/domain/residuos.ts`, `src/repositories/ResiduosRepository.ts`, `src/services/ResiduosService.ts`, `src/routes/residuos.ts` — `/api/v1/residuos*`.
 
+## Módulos de dominio (Fase 4)
+
+**Bus** (GTFS real, `arandadeduero/gtfs-busurbano` vía GitHub Releases):
+
+- `src/domain/bus.ts` — tipos (`BusLine`, `BusStop`, `NearestStopResult`, `NextBusEntry`).
+- `src/clients/GtfsClient.ts` — descarga el último release + descomprime el zip **en memoria** con `fflate` (nunca escribe el zip a disco ni extrae directamente al filesystem — evita el vector de path-traversal/symlinks de las librerías que sí lo hacen); expone la interfaz `GtfsProvider`.
+- `src/utils/csv.ts` — parser CSV propio (RFC 4180: comillas, comas y saltos de línea embebidos) para no añadir una dependencia por algo tan acotado.
+- `src/adapters/gtfsAdapter.ts` — parsea los 6 ficheros GTFS a índices (`Map`) por id, y por parada/viaje para `stop_times.txt`.
+- `src/utils/gtfsCalendar.ts` — resuelve si un `service_id` está activo en una fecha combinando `calendar.txt` (patrón semanal + rango) con las excepciones de `calendar_dates.txt` (prioridad siempre a la excepción), spec GTFS estándar.
+- `src/utils/geo.ts` — distancia Haversine, para `/bus/nearest`.
+- `src/repositories/GtfsRepository.ts` — persiste el feed descargado en disco (`GTFS_URBANO_CACHE_DIR`) como fallback "stale" si GitHub Releases falla; expone la interfaz `GtfsDataSource`.
+- `src/services/BusService.ts` — `nextBuses` calcula la hora absoluta de cada `stop_time` para "hoy" y "ayer" (soporta servicios con hora codificada `>=24:00:00`, que cruzan medianoche según el propio estándar GTFS), filtra por `>= ahora` en `Europe/Madrid` y ordena.
+- `src/routes/bus.ts` — `/api/v1/bus*`.
+
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe
@@ -90,4 +104,11 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
    Cualquier ruta que declare uno debe envolver su `data` con
    `responseSchema()` (`src/routes/schemas.ts`) o Fastify descarta en
    silencio el resto de propiedades, incluido `meta` — error real que se
-   coló y detectó un test E2E en la Fase 2.
+   coló (y se detectó de nuevo, dos veces: Fase 2 y Fase 4, esta última en
+   `{ type: 'array', items: { type: 'object' } }` sin `properties`, que
+   vacía cada elemento del array).
+6. **Todo lo que un servicio escriba a disco en tiempo de ejecución** (p.
+   ej. la caché del feed GTFS) necesita que el `Dockerfile` copie ese
+   directorio con `--chown` al usuario no root — si no, falla en silencio
+   dentro del contenedor aunque funcione en local. Detectado verificando
+   el contenedor real, no solo el build.

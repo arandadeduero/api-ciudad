@@ -6,3 +6,6 @@ coverage/
 *.log
 .DS_Store
 .claude/settings.local.json
+
+# Caché en disco del feed GTFS descargado (runtime, no dataset curado por el proyecto)
+/data/gtfs-urbano/

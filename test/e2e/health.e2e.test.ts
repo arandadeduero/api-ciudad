@@ -45,11 +45,11 @@ describe('E2E /health', () => {
     expect(['ok', 'degraded']).toContain(body.checks.ambiente.status); // depende de JCyL real
     expect(body.checks.parking.status).toBe('ok');
     expect(body.checks.residuos.status).toBe('ok');
+    expect(['ok', 'degraded']).toContain(body.checks.bus.status); // depende del GTFS real
     expect(body.checks.rio.status).toBe('not_implemented');
-    expect(body.checks.bus.status).toBe('not_implemented');
     expect(body.checks.eventos.status).toBe('excluded');
     expect(body.checks.cortescalles.status).toBe('excluded');
-  }, 15_000);
+  }, 20_000);
 
   it('GET /docs/json expone un documento OpenAPI válido', async () => {
     const res = await app.inject({ method: 'GET', url: '/docs/json' });

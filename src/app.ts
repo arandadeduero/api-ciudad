@@ -11,6 +11,7 @@ import { weatherRoutes } from './routes/weather.js';
 import { ambienteRoutes } from './routes/ambiente.js';
 import { parkingRoutes } from './routes/parking.js';
 import { residuosRoutes } from './routes/residuos.js';
+import { busRoutes } from './routes/bus.js';
 import { createCacheService, type CacheService } from './cache/index.js';
 import { FarmaciaRepository } from './repositories/FarmaciaRepository.js';
 import { FarmaciaService } from './services/FarmaciaService.js';
@@ -22,6 +23,9 @@ import { ParkingRepository } from './repositories/ParkingRepository.js';
 import { ParkingService } from './services/ParkingService.js';
 import { ResiduosRepository } from './repositories/ResiduosRepository.js';
 import { ResiduosService } from './services/ResiduosService.js';
+import { GtfsClient } from './clients/GtfsClient.js';
+import { GtfsRepository } from './repositories/GtfsRepository.js';
+import { BusService } from './services/BusService.js';
 
 export interface BuildAppOptions {
   cache?: CacheService;
@@ -86,6 +90,9 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const parkingService = new ParkingService(new ParkingRepository());
   const residuosService = new ResiduosService(new ResiduosRepository());
 
+  const gtfsClient = new GtfsClient(env.GTFS_URBANO_REPO, env.GTFS_TIMEOUT_MS);
+  const busService = new BusService(new GtfsRepository(gtfsClient, env.GTFS_URBANO_CACHE_DIR));
+
   // /health vive en la raíz (fuera de /api/v1): es infraestructura del
   // proceso, no un dato de dominio versionado.
   await app.register(async (instance) => {
@@ -96,6 +103,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       ambiente: ambienteService,
       parking: parkingService,
       residuos: residuosService,
+      bus: busService,
     });
   }, {});
 
@@ -106,6 +114,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await ambienteRoutes(instance, { service: ambienteService });
       await parkingRoutes(instance, { service: parkingService });
       await residuosRoutes(instance, { service: residuosService });
+      await busRoutes(instance, { service: busService });
     },
     { prefix: '/api/v1' },
   );

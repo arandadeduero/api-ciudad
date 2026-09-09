@@ -8,6 +8,7 @@ import type { WeatherService } from '../services/WeatherService.js';
 import type { AmbienteService } from '../services/AmbienteService.js';
 import type { ParkingService } from '../services/ParkingService.js';
 import type { ResiduosService } from '../services/ResiduosService.js';
+import type { BusService } from '../services/BusService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -30,7 +31,7 @@ async function readVersion(): Promise<string> {
  * ocultar que faltan. Eventos y cortes de calles están excluidos de la v1
  * por decisión del usuario, no "pendientes".
  */
-const PENDING_DEEP_CHECKS = ['bus', 'rio'] as const;
+const PENDING_DEEP_CHECKS = ['rio'] as const;
 const EXCLUDED_DEEP_CHECKS = ['eventos', 'cortescalles'] as const;
 
 export async function healthRoutes(
@@ -42,6 +43,7 @@ export async function healthRoutes(
     ambiente: AmbienteService;
     parking: ParkingService;
     residuos: ResiduosService;
+    bus: BusService;
   },
 ): Promise<void> {
   const version = await readVersion();
@@ -180,6 +182,20 @@ export async function healthRoutes(
         };
       } catch (err) {
         checks.residuos = { status: 'error', detail: (err as Error).message };
+      }
+
+      try {
+        const lines = await opts.bus.listLines();
+        const stops = await opts.bus.listStops();
+        checks.bus = {
+          status: lines.stale || stops.stale ? 'degraded' : 'ok',
+          detail:
+            lines.stale || stops.stale
+              ? 'sirviendo caché en disco (GTFS de GitHub no responde)'
+              : `${lines.data.length} líneas, ${stops.data.length} paradas`,
+        };
+      } catch (err) {
+        checks.bus = { status: 'error', detail: (err as Error).message };
       }
 
       for (const source of PENDING_DEEP_CHECKS) {
