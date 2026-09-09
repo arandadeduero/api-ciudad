@@ -5,8 +5,8 @@
     "document": "Servicios de Urgencia Z.F. Aranda de Duero 2026 (104724SERVICIOSDEURGENCIAZ.F.ARANDADEDUERO2026.pdf)",
     "license": "No especificada por la fuente — uso informativo, verificar antes de redistribución comercial",
     "retrievedAt": "2026-09-09",
-    "extractionMethod": "Extracción automática del calendario en PDF (pdfminer, análisis de bounding boxes por celda: número de día en fuente pequeña + número de farmacia en fuente grande, ambos en la misma celda del calendario)",
-    "caveat": "La secuencia de días (1..N por mes, sin huecos) fue verificada programáticamente contra los 12 calendarios mensuales. La asignación de farmacia por día se apoya en la co-ubicación espacial de ambos números dentro de la misma celda, pero no se ha verificado con una segunda fuente independiente. Si se detecta una fecha con la farmacia de guardia incorrecta, contrastar con el Colegio Oficial de Farmacéuticos de Burgos (cofburgos.es) antes de confiar en ella para una urgencia.",
+    "extractionMethod": "Re-extraído de forma independiente el 2026-09-09 directamente sobre el PDF original (no sobre una derivación de terceros), anclando cada celda a su día de la semana real de 2026 y cruzando el resultado con dos lecturas independientes del documento (capa de texto e imagen renderizada), ambas coincidentes.",
+    "caveat": "La primera versión de este fichero (2026-09-08) tenía 33 fechas incorrectas respecto al PDF oficial, detectadas al re-verificar contra el documento original: parecía seguir una rotación continua de las 12 farmacias, pero el PDF real tiene bastantes intercambios puntuales de un solo día (habituales en rosters de guardia reales) que esa primera versión no reflejaba. Esta versión sustituye a la anterior con la lectura literal del documento. Quedan 7 fechas de baja confianza porque se apartan de forma sostenida (varios días seguidos) del patrón general, lo que podría ser una asignación especial deliberada (p. ej. semana de Navidad) o un problema de extracción que no se ha podido descartar del todo: 2026-07-24, 2026-07-25, 2026-08-22, 2026-08-23, 2026-08-30, 2026-08-31, y el bloque 2026-12-24 a 2026-12-31. Para esas fechas, antes de confiar en el dato para una urgencia real, contrastar con el Colegio Oficial de Farmacéuticos de Burgos (cofburgos.es).",
     "totalDays": 365,
     "pharmacyCatalog": "data/farmacias.json"
   },
@@ -181,7 +181,7 @@
     },
     {
       "date": "2026-02-12",
-      "pharmacyId": 3
+      "pharmacyId": 1
     },
     {
       "date": "2026-02-13",
@@ -273,7 +273,7 @@
     },
     {
       "date": "2026-03-07",
-      "pharmacyId": 2
+      "pharmacyId": 9
     },
     {
       "date": "2026-03-08",
@@ -301,7 +301,7 @@
     },
     {
       "date": "2026-03-14",
-      "pharmacyId": 9
+      "pharmacyId": 2
     },
     {
       "date": "2026-03-15",
@@ -461,7 +461,7 @@
     },
     {
       "date": "2026-04-23",
-      "pharmacyId": 1
+      "pharmacyId": 7
     },
     {
       "date": "2026-04-24",
@@ -597,7 +597,7 @@
     },
     {
       "date": "2026-05-27",
-      "pharmacyId": 11
+      "pharmacyId": 1
     },
     {
       "date": "2026-05-28",
@@ -789,7 +789,7 @@
     },
     {
       "date": "2026-07-14",
-      "pharmacyId": 11
+      "pharmacyId": 9
     },
     {
       "date": "2026-07-15",
@@ -829,11 +829,11 @@
     },
     {
       "date": "2026-07-24",
-      "pharmacyId": 9
+      "pharmacyId": 11
     },
     {
       "date": "2026-07-25",
-      "pharmacyId": 10
+      "pharmacyId": 2
     },
     {
       "date": "2026-07-26",
@@ -853,7 +853,7 @@
     },
     {
       "date": "2026-07-30",
-      "pharmacyId": 3
+      "pharmacyId": 9
     },
     {
       "date": "2026-07-31",
@@ -877,7 +877,7 @@
     },
     {
       "date": "2026-08-05",
-      "pharmacyId": 9
+      "pharmacyId": 3
     },
     {
       "date": "2026-08-06",
@@ -889,7 +889,7 @@
     },
     {
       "date": "2026-08-08",
-      "pharmacyId": 12
+      "pharmacyId": 10
     },
     {
       "date": "2026-08-09",
@@ -917,7 +917,7 @@
     },
     {
       "date": "2026-08-15",
-      "pharmacyId": 7
+      "pharmacyId": 3
     },
     {
       "date": "2026-08-16",
@@ -945,11 +945,11 @@
     },
     {
       "date": "2026-08-22",
-      "pharmacyId": 2
+      "pharmacyId": 12
     },
     {
       "date": "2026-08-23",
-      "pharmacyId": 3
+      "pharmacyId": 10
     },
     {
       "date": "2026-08-24",
@@ -961,7 +961,7 @@
     },
     {
       "date": "2026-08-26",
-      "pharmacyId": 6
+      "pharmacyId": 2
     },
     {
       "date": "2026-08-27",
@@ -977,11 +977,11 @@
     },
     {
       "date": "2026-08-30",
-      "pharmacyId": 10
+      "pharmacyId": 3
     },
     {
       "date": "2026-08-31",
-      "pharmacyId": 11
+      "pharmacyId": 2
     },
     {
       "date": "2026-09-01",
@@ -993,7 +993,7 @@
     },
     {
       "date": "2026-09-03",
-      "pharmacyId": 2
+      "pharmacyId": 11
     },
     {
       "date": "2026-09-04",
@@ -1041,7 +1041,7 @@
     },
     {
       "date": "2026-09-15",
-      "pharmacyId": 2
+      "pharmacyId": 6
     },
     {
       "date": "2026-09-16",
@@ -1129,7 +1129,7 @@
     },
     {
       "date": "2026-10-07",
-      "pharmacyId": 12
+      "pharmacyId": 5
     },
     {
       "date": "2026-10-08",
@@ -1149,7 +1149,7 @@
     },
     {
       "date": "2026-10-12",
-      "pharmacyId": 5
+      "pharmacyId": 12
     },
     {
       "date": "2026-10-13",
@@ -1217,7 +1217,7 @@
     },
     {
       "date": "2026-10-29",
-      "pharmacyId": 10
+      "pharmacyId": 2
     },
     {
       "date": "2026-10-30",
@@ -1233,7 +1233,7 @@
     },
     {
       "date": "2026-11-02",
-      "pharmacyId": 2
+      "pharmacyId": 10
     },
     {
       "date": "2026-11-03",
@@ -1305,7 +1305,7 @@
     },
     {
       "date": "2026-11-20",
-      "pharmacyId": 8
+      "pharmacyId": 2
     },
     {
       "date": "2026-11-21",
@@ -1377,7 +1377,7 @@
     },
     {
       "date": "2026-12-08",
-      "pharmacyId": 2
+      "pharmacyId": 8
     },
     {
       "date": "2026-12-09",
@@ -1441,35 +1441,35 @@
     },
     {
       "date": "2026-12-24",
-      "pharmacyId": 6
-    },
-    {
-      "date": "2026-12-25",
-      "pharmacyId": 7
-    },
-    {
-      "date": "2026-12-26",
-      "pharmacyId": 8
-    },
-    {
-      "date": "2026-12-27",
-      "pharmacyId": 9
-    },
-    {
-      "date": "2026-12-28",
-      "pharmacyId": 10
-    },
-    {
-      "date": "2026-12-29",
-      "pharmacyId": 11
-    },
-    {
-      "date": "2026-12-30",
       "pharmacyId": 12
     },
     {
+      "date": "2026-12-25",
+      "pharmacyId": 11
+    },
+    {
+      "date": "2026-12-26",
+      "pharmacyId": 2
+    },
+    {
+      "date": "2026-12-27",
+      "pharmacyId": 3
+    },
+    {
+      "date": "2026-12-28",
+      "pharmacyId": 4
+    },
+    {
+      "date": "2026-12-29",
+      "pharmacyId": 5
+    },
+    {
+      "date": "2026-12-30",
+      "pharmacyId": 6
+    },
+    {
       "date": "2026-12-31",
-      "pharmacyId": 1
+      "pharmacyId": 7
     }
   ]
 }
