@@ -9,7 +9,7 @@ Relación con el resto de la documentación:
 - `/docs` (Swagger UI, generado desde el código) — sigue siendo la fuente ejecutable/interactiva. Este documento es el complemento legible sin arrancar el servidor, y el que registra el _porqué_ de cada decisión (qué error devuelve y cuándo, qué hace el caché) que un schema OpenAPI no siempre deja claro de un vistazo.
 - [`docs/architecture-proposal.md`](architecture-proposal.md) — investigación de fuentes y decisiones de arquitectura. Este documento no repite esa investigación, solo referencia la fuente de cada módulo.
 
-**Última actualización:** 2026-09-09 (Fase 4: bus).
+**Última actualización:** 2026-09-09 (Fase 5: río — última fase de la v1, ver docs/architecture-proposal.md §7).
 
 ---
 
@@ -48,7 +48,7 @@ Readiness probe — comprueba dependencias críticas (hoy: solo la cache).
 
 ### `GET /health/deep`
 
-Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — el gate es `/health/ready`). Cada entrada de `checks` tiene `status` uno de: `ok` | `degraded` (sirviendo caché obsoleta) | `error` | `not_implemented` (módulo aún no construido) | `excluded` (fuera de alcance de la v1 por decisión tomada).
+Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — el gate es `/health/ready`). Cada entrada de `checks` tiene `status` uno de: `ok` | `degraded` (sirviendo caché obsoleta) | `error` | `excluded` (fuera de alcance de la v1 por decisión tomada). Ya no queda ningún módulo `not_implemented` — la Fase 5 (río) fue la última.
 
 **Ejemplo real (2026-09-09):**
 
@@ -62,11 +62,8 @@ Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — e
     "ambiente": { "status": "ok", "detail": "ok" },
     "parking": { "status": "ok", "detail": "1 aparcamientos, 6 distritos ORA" },
     "residuos": { "status": "ok", "detail": "9 tipos de contenedor" },
-    "bus": {
-      "status": "not_implemented",
-      "detail": "Módulo pendiente — ver docs/architecture-proposal.md"
-    },
-    "rio": { "status": "not_implemented", "detail": "..." },
+    "bus": { "status": "ok", "detail": "3 líneas, 44 paradas" },
+    "rio": { "status": "ok", "detail": "ok" },
     "eventos": {
       "status": "excluded",
       "detail": "Fuera de alcance de la v1 (decisión del usuario) — ver docs/architecture-proposal.md §6"
@@ -76,7 +73,7 @@ Diagnóstico por módulo. Siempre devuelve 200 (es informativo, no un gate — e
 }
 ```
 
-**Importante:** `/health/deep` para `weather` y `ambiente` hace una llamada real a Open-Meteo/JCyL en cada invocación (no usa solo la caché) — no lo pongas en un monitor de alta frecuencia.
+**Importante:** `/health/deep` hace una llamada real a cada fuente externa en cada invocación (Open-Meteo, JCyL, GitHub Releases, API del río) — no usa solo la caché. No lo pongas en un monitor de alta frecuencia.
 
 ---
 
@@ -529,6 +526,66 @@ Los próximos `N` autobuses (por defecto 2, máx. 10) en una parada, calculados 
 `nextBuses` puede tener menos de `count` elementos si no quedan más servicios activos hoy en esa parada (p. ej. tras la última salida del día). 404 si la parada no existe.
 
 **Nota sobre domingos:** el feed no tiene ningún `service_id` con el flag `sunday=1` — no hay servicio los domingos, `nextBuses` devolverá un array vacío ese día, lo cual es correcto (no un fallo).
+
+---
+
+## Río (`/api/v1/rio`)
+
+Fuente: API real de terceros que envuelve datos del SAIH de la Confederación Hidrográfica del Duero (`saih-chd-api-9d034ff9d037.herokuapp.com`) — **no es la API oficial de la CHD**, que sigue sin exponer ninguna públicamente (ver `docs/architecture-proposal.md` §2.2b). Estación de aforo `EA013` (código fijo, sin catálogo de estaciones expuesto por la API — ver `RIVER_STATION_CODE`).
+
+La API de origen siempre devuelve la ventana móvil completa que tenga cargada (~3 meses de histórico horario, comprobado en vivo: no admite ningún filtro de fecha/paginación, cualquier query param se ignora). El recorte a "últimas N horas" lo hace nuestro Service, no la fuente. Caché: `RIVER_CACHE_TTL_SECONDS` (600s), con fallback a caché obsoleta (`meta.stale: true`) si la fuente falla.
+
+**Unidades:** la API de origen no las especifica en la respuesta. Se documentan como `m` (nivel) y `m³/s` (caudal) por ser la convención estándar de las redes SAIH/ROEA — no confirmadas literalmente por la fuente.
+
+**Sin `/rio/volumen`:** las únicas métricas que la API soporta son `nivel`, `caudal`, `temperatura` y `pluviometria` (confirmado por su propio mensaje de error 400); para la estación `EA013` (de aforo) solo `nivel` y `caudal` devuelven datos. No existe "volumen" — no se ha construido ese endpoint para no inventar un dato que la fuente no ofrece.
+
+**Tendencia (`trend`):** se calcula comparando el último valor con el de ~3 horas antes; un cambio relativo menor al 2% se considera `"estable"`, si no `"subiendo"` o `"bajando"`.
+
+### `GET /api/v1/rio`
+
+Resumen: último valor + tendencia de nivel y caudal (sin la serie completa).
+
+**Respuesta 200 (ejemplo real):**
+
+```json
+{
+  "data": {
+    "stationCode": "EA013",
+    "nivel": {
+      "unit": "m",
+      "latest": { "timestamp": "2026-09-09T08:00:00.000Z", "value": 1.08 },
+      "trend": "bajando"
+    },
+    "caudal": {
+      "unit": "m³/s",
+      "latest": { "timestamp": "2026-09-09T08:00:00.000Z", "value": 7.05 },
+      "trend": "bajando"
+    },
+    "source": "API de terceros sobre datos SAIH — Confederación Hidrográfica del Duero (no es la API oficial de la CHD)"
+  }
+}
+```
+
+### `GET /api/v1/rio/nivel?hours=N`
+
+### `GET /api/v1/rio/caudal?hours=N`
+
+Serie horaria de la métrica, filtrada a las últimas `hours` (1-720, por defecto 24). `latest` y `trend` siempre se calculan sobre la serie completa de la fuente, no sobre la ventana filtrada — filtrar a 1 hora no cambia la tendencia calculada.
+
+400 (validación del propio JSON Schema de Fastify, sin pasar por el Service) si `hours` está fuera de `[1, 720]`.
+
+**Respuesta 200 (ejemplo real, `/rio/caudal?hours=6`):**
+
+```json
+{
+  "data": {
+    "unit": "m³/s",
+    "latest": { "timestamp": "2026-09-09T08:00:00.000Z", "value": 7.05 },
+    "trend": "bajando",
+    "series": [{ "timestamp": "...", "value": 7.3 }]
+  }
+}
+```
 
 ---
 

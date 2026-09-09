@@ -81,6 +81,12 @@ const CHECKS = [
     expectStatus: 200,
     validate: (body) => Array.isArray(body?.data) && body.data.length === 3,
   },
+  {
+    name: 'rio',
+    path: '/api/v1/rio',
+    expectStatus: 200,
+    validate: (body) => body?.data?.stationCode === 'EA013',
+  },
 ];
 
 async function fetchWithTimeout(url) {

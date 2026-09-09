@@ -46,7 +46,7 @@ describe('E2E /health', () => {
     expect(body.checks.parking.status).toBe('ok');
     expect(body.checks.residuos.status).toBe('ok');
     expect(['ok', 'degraded']).toContain(body.checks.bus.status); // depende del GTFS real
-    expect(body.checks.rio.status).toBe('not_implemented');
+    expect(['ok', 'degraded']).toContain(body.checks.rio.status); // depende de la API del río real
     expect(body.checks.eventos.status).toBe('excluded');
     expect(body.checks.cortescalles.status).toBe('excluded');
   }, 20_000);

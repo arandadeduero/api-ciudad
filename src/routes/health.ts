@@ -9,6 +9,7 @@ import type { AmbienteService } from '../services/AmbienteService.js';
 import type { ParkingService } from '../services/ParkingService.js';
 import type { ResiduosService } from '../services/ResiduosService.js';
 import type { BusService } from '../services/BusService.js';
+import type { RioService } from '../services/RioService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -26,12 +27,9 @@ async function readVersion(): Promise<string> {
 }
 
 /**
- * Fuentes de datos aún sin construir (ver docs/architecture-proposal.md) —
- * se listan explícitamente como "not_implemented" en vez de omitirlas u
- * ocultar que faltan. Eventos y cortes de calles están excluidos de la v1
- * por decisión del usuario, no "pendientes".
+ * Módulos excluidos de la v1 por decisión tomada (no "pendientes de
+ * construir" — ver docs/architecture-proposal.md §6).
  */
-const PENDING_DEEP_CHECKS = ['rio'] as const;
 const EXCLUDED_DEEP_CHECKS = ['eventos', 'cortescalles'] as const;
 
 export async function healthRoutes(
@@ -44,6 +42,7 @@ export async function healthRoutes(
     parking: ParkingService;
     residuos: ResiduosService;
     bus: BusService;
+    rio: RioService;
   },
 ): Promise<void> {
   const version = await readVersion();
@@ -198,11 +197,14 @@ export async function healthRoutes(
         checks.bus = { status: 'error', detail: (err as Error).message };
       }
 
-      for (const source of PENDING_DEEP_CHECKS) {
-        checks[source] = {
-          status: 'not_implemented',
-          detail: 'Módulo pendiente — ver docs/architecture-proposal.md',
+      try {
+        const { stale } = await opts.rio.getSnapshot();
+        checks.rio = {
+          status: stale ? 'degraded' : 'ok',
+          detail: stale ? 'sirviendo caché obsoleta (API del río no responde)' : 'ok',
         };
+      } catch (err) {
+        checks.rio = { status: 'error', detail: (err as Error).message };
       }
 
       for (const source of EXCLUDED_DEEP_CHECKS) {

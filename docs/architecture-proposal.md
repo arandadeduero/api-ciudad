@@ -291,7 +291,7 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 
 ---
 
-## 7. Plan de fases (actualizado 2026-09-09 — todo desbloqueado salvo lo explícitamente excluido)
+## 7. Plan de fases (actualizado 2026-09-09 — Fases 1-5 completadas, v1 de módulos de datos cerrada)
 
 | Fase | Contenido | Estado |
 |---|---|---|
@@ -299,11 +299,13 @@ Añadido fuera de la lista original: **farmacias** (§2.1, datos reales del Cole
 | 2 | Farmacia (datos reales: `data/farmacias.json` + `data/farmacias-guardia-2026.json`) + Weather (Open-Meteo) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y API.md. AEMET (avisos) queda pendiente para cuando se necesite, no bloquea nada |
 | 3 | Ambiente (JCyL) + Parking/ORA + Residuos | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. El horario y las calles ORA se verificaron contra el texto legal de la ordenanza (BOP Burgos 245/2021): el horario real es 10-14h y 16-20h, corrigiendo el "9-14h" que decía la investigación inicial (§0, tomado de fuentes secundarias no oficiales) |
 | 4 | Bus: `GtfsRepository` sobre el GTFS urbano real (`arandadeduero/gtfs-busurbano`) | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. El GTFS interurbano del NAP queda descartado del alcance actual (no aporta valor adicional suficiente sobre el urbano real) |
-| 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | Río desbloqueado; cortes de calles excluido de la v1 |
+| 5 | Río: `RioClient` real contra la API SAIH-CHD aportada (§2.2b). Cortes de calles: **no se implementa** (Waze no disponible por ahora) — módulo omitido de la v1, no solo "stub" | ✅ Completada (2026-09-09) — ver ARCHITECTURE.md y docs/API-REFERENCE.md. Sin `/rio/volumen`: la fuente solo soporta nivel y caudal para la estación de aforo |
 | 6 | Matomo + Prometheus + endpoints de transparencia (`/meta/fuentes`, `/meta/estado`) | Sin cambios |
 | 7 | E2E, smoke tests, CI/CD, hardening | Sin cambios |
 
 **Eventos y cortes de calles/Waze quedan explícitamente fuera de la v1** — no aparecen como módulos "pendientes", sino como decisión tomada de no implementarlos por ahora.
+
+**Con la Fase 5 completada, todos los módulos de datos previstos para la v1 están implementados.** La Fase 6 (observabilidad) no añade endpoints de dominio nuevos, y la Fase 7 (E2E/CI/CD/hardening) ya viene cubierta en gran medida por la práctica seguida en cada fase (tests E2E reales, `docker build && docker run && smoke-test` antes de cada commit, CI en `.github/workflows/ci.yml`).
 
 ---
 

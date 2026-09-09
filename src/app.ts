@@ -12,6 +12,7 @@ import { ambienteRoutes } from './routes/ambiente.js';
 import { parkingRoutes } from './routes/parking.js';
 import { residuosRoutes } from './routes/residuos.js';
 import { busRoutes } from './routes/bus.js';
+import { rioRoutes } from './routes/rio.js';
 import { createCacheService, type CacheService } from './cache/index.js';
 import { FarmaciaRepository } from './repositories/FarmaciaRepository.js';
 import { FarmaciaService } from './services/FarmaciaService.js';
@@ -26,6 +27,8 @@ import { ResiduosService } from './services/ResiduosService.js';
 import { GtfsClient } from './clients/GtfsClient.js';
 import { GtfsRepository } from './repositories/GtfsRepository.js';
 import { BusService } from './services/BusService.js';
+import { RioClient } from './clients/RioClient.js';
+import { RioService } from './services/RioService.js';
 
 export interface BuildAppOptions {
   cache?: CacheService;
@@ -93,6 +96,14 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const gtfsClient = new GtfsClient(env.GTFS_URBANO_REPO, env.GTFS_TIMEOUT_MS);
   const busService = new BusService(new GtfsRepository(gtfsClient, env.GTFS_URBANO_CACHE_DIR));
 
+  const rioClient = new RioClient(env.RIVER_API_BASE_URL, env.RIVER_TIMEOUT_MS);
+  const rioService = new RioService(
+    rioClient,
+    cache,
+    env.RIVER_STATION_CODE,
+    env.RIVER_CACHE_TTL_SECONDS,
+  );
+
   // /health vive en la raíz (fuera de /api/v1): es infraestructura del
   // proceso, no un dato de dominio versionado.
   await app.register(async (instance) => {
@@ -104,6 +115,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       parking: parkingService,
       residuos: residuosService,
       bus: busService,
+      rio: rioService,
     });
   }, {});
 
@@ -115,6 +127,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await parkingRoutes(instance, { service: parkingService });
       await residuosRoutes(instance, { service: residuosService });
       await busRoutes(instance, { service: busService });
+      await rioRoutes(instance, { service: rioService });
     },
     { prefix: '/api/v1' },
   );

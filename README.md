@@ -2,17 +2,18 @@
 
 Capa de agregación de datos abiertos municipales, regionales y estatales de
 Aranda de Duero (Burgos, España): meteorología, calidad del aire, farmacias
-de guardia, aparcamiento, transporte, eventos y más, expuestos como una
-única API REST versionada.
+de guardia, aparcamiento, transporte, río y más, expuestos como una única
+API REST versionada.
 
-> **Estado actual: Fase 4 completada.** `/api/v1/farmacia*`,
+> **Estado actual: v1 completa (Fases 1-5).** `/api/v1/farmacia*`,
 > `/api/v1/weather*`, `/api/v1/ambiente*`, `/api/v1/parking*`,
-> `/api/v1/residuos*` y `/api/v1/bus*` funcionan con datos y APIs reales
-> (ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) para el detalle
-> completo de cada endpoint). Queda `/rio` — ver el plan de fases en
-> [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §7.
-> `/eventos` y cortes de calles quedan fuera de la v1 por decisión
-> explícita (§6).
+> `/api/v1/residuos*`, `/api/v1/bus*` y `/api/v1/rio*` funcionan con datos
+> y APIs reales — ver [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md)
+> para el detalle completo de cada endpoint. `/eventos` y cortes de calles
+> quedan fuera de la v1 por decisión explícita (ver
+> [`docs/architecture-proposal.md`](docs/architecture-proposal.md) §6).
+> Solo queda pendiente la Fase 6 (observabilidad: Matomo + Prometheus +
+> endpoints de transparencia), que no añade módulos de dominio nuevos.
 
 ## Requisitos
 
@@ -52,7 +53,7 @@ docker compose --profile redis up --build
 ## Tests
 
 ```bash
-npm test              # unit + integración + e2e (algunos e2e golpean red real: Open-Meteo, JCyL, GitHub)
+npm test              # unit + integración + e2e (algunos e2e golpean red real: Open-Meteo, JCyL, GitHub, API del río)
 npm run test:e2e       # solo e2e
 npm run test:coverage
 ```

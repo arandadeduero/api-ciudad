@@ -88,6 +88,15 @@ rol arquitectónico, nombre distinto porque no hay red de por medio.
 - `src/services/BusService.ts` — `nextBuses` calcula la hora absoluta de cada `stop_time` para "hoy" y "ayer" (soporta servicios con hora codificada `>=24:00:00`, que cruzan medianoche según el propio estándar GTFS), filtra por `>= ahora` en `Europe/Madrid` y ordena.
 - `src/routes/bus.ts` — `/api/v1/bus*`.
 
+## Módulos de dominio (Fase 5 — última fase de módulos de datos de la v1)
+
+**Río** (API real de terceros sobre datos SAIH-CHD):
+
+- `src/domain/rio.ts` — tipos (`RiverSnapshot`, `RiverMetric`, `RiverMetricSummary`, `RiverTrend`).
+- `src/clients/RioClient.ts` — HTTP puro contra `saih-chd-api-*.herokuapp.com`; expone la interfaz `RioProvider`. La fuente no admite filtros de fecha (comprobado en vivo: cualquier query param se ignora) — siempre devuelve la ventana móvil completa (~3 meses horarios).
+- `src/services/RioService.ts` — calcula la tendencia (tramo de ±3h, umbral 2%) y recorta la serie a "últimas N horas" en nuestro lado, ya que la fuente no lo hace. Cache 10 min, fallback a caché obsoleta.
+- `src/routes/rio.ts` — `/api/v1/rio*`. Sin `/rio/volumen`: la fuente no ofrece esa métrica para la estación de aforo (`nivel`/`caudal` solamente) — no se inventa el endpoint.
+
 ## Principios que sigue el código
 
 1. **Ningún endpoint de datos inventa información.** Si una fuente no existe
