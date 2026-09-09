@@ -1,0 +1,57 @@
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_668349e2c61f6a 12
+  s_10638ab73c2825::t_54baedb583bf41 9
+  s_10638ab73c2825::t_70c259b854797f 23
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_e3def9427be3d4 83-98,105-106
+  s_10638ab73c2825::t_a383b1124b4c59 99-104
+src/plugins/security.ts
+  s_10638ab73c2825::t_dfc25f8cfbd4af 3
+  s_10638ab73c2825::t_77f5bf09586f18 17-18,20-30,32-34
+  s_10638ab73c2825::t_74fd3558ea4b3c 31
+  s_10638ab73c2825::t_935ab41504c3c4 4-5
+  s_10638ab73c2825::t_5c164adf370f89 15,19
+ARCHITECTURE.md
+  s_10638ab73c2825::t_494ee04d2e692b 34-35
+  s_10638ab73c2825::t_8c41ccf0400ba1 152-163,165-166
+  s_10638ab73c2825::t_768679c40a08c9 164
+  s_10638ab73c2825::t_723ef929302996 113,115
+  s_10638ab73c2825::t_96b8fb3646abea 118-121
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_2ef4d0e358efb7 200-213
+  s_10638ab73c2825::t_e7a61d984b1b70 117-134
+package.json
+  s_10638ab73c2825::t_12e87066f967b4 36
+  s_10638ab73c2825::t_213016b1561ea4 32
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_0c8b9ee4e2b448 4,10-15
+  s_10638ab73c2825::t_46ca8a7ad0d26d 43,45-50
+README.md
+  s_10638ab73c2825::t_2b79abf5fe0a3a 40
+.claude/CLAUDE.md
+  s_10638ab73c2825::t_72efc9d30f7c93 22
+  s_10638ab73c2825::t_5b282b4c58087e 99-104,106-108
+  s_10638ab73c2825::t_066a8257f50d8d 118
+  s_10638ab73c2825::t_538834543fb7ee 105
+API.md
+  s_10638ab73c2825::t_538834543fb7ee 21
+  s_10638ab73c2825::t_2b79abf5fe0a3a 7
+package-lock.json
+  s_10638ab73c2825::t_7f649011bc9924 17,21,1433-1678,3020-3024,3914-3918,4392-4403,4541-4555
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "b4663a6cb5b6791975e08884af3a4af139cf71bf",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
