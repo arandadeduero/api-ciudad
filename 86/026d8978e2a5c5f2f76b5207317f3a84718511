@@ -1,0 +1,106 @@
+src/app.ts
+  s_10638ab73c2825::t_31b640ebec581d 144-153
+  s_10638ab73c2825::t_d50e52fe4f1e77 70-78
+  s_10638ab73c2825::t_afbc9fed5d380a 8-9,18-19
+DEPLOYMENT.md
+  s_10638ab73c2825::t_f5f634ff8ca58f 35-48
+  s_10638ab73c2825::t_dfea109a28e0d4 55
+DATA-SOURCES.md
+  s_10638ab73c2825::t_ed8bb5990a5f2d 21
+src/services/MatomoService.ts
+  s_10638ab73c2825::t_027319830c4f14 1-55
+src/plugins/openapi.ts
+  s_10638ab73c2825::t_385126f0dbef66 31-32
+src/plugins/matomo.ts
+  s_10638ab73c2825::t_f3e4cb853eff1d 1-11,16-23
+  s_10638ab73c2825::t_1af59db64b3059 12-15
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_ee84d190defeb4 303,308
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_c52910de1ecb55 592-599,608-662,667-674
+  s_10638ab73c2825::t_1af59db64b3059 600-607,663-666
+  s_10638ab73c2825::t_a6d78e53f598d0 12
+package.json
+  s_10638ab73c2825::t_3691e00b2c9454 37
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_38f3025cc6a1a9 163-176
+  s_10638ab73c2825::t_ce067e03636e13 90-101,104-109
+  s_10638ab73c2825::t_4a8305118a35ce 110
+src/clients/OpenMeteoClient.ts
+  s_10638ab73c2825::t_14b0539cc0ec55 56-59
+  s_10638ab73c2825::t_9094039dc80e35 2-4
+src/errors/error-handler.ts
+  s_10638ab73c2825::t_cef9a3500b588e 3,18,28,43,45-46,56
+src/config/env.ts
+  s_10638ab73c2825::t_f03a09809fe0f1 60-66
+  s_10638ab73c2825::t_7b98a967f62ee4 58-59,67-69
+src/routes/health.ts
+  s_10638ab73c2825::t_fa8d1480f117d5 5,22,97
+  s_10638ab73c2825::t_aa0c382eeba46a 74
+test/e2e/meta.e2e.test.ts
+  s_10638ab73c2825::t_596200ce1cc83c 1-43
+src/cache/InMemoryCache.ts
+  s_10638ab73c2825::t_c13eec97ffba15 19,21-25
+  s_10638ab73c2825::t_35a155eb50985a 2
+test/e2e/metrics.e2e.test.ts
+  s_10638ab73c2825::t_d8633890adac90 1-44
+README.md
+  s_10638ab73c2825::t_06e033d905850d 8,15-18
+src/plugins/metrics.ts
+  s_10638ab73c2825::t_ec1daa4734501b 1-44
+ARCHITECTURE.md
+  s_10638ab73c2825::t_a743a0208eb9b2 100-108
+  s_10638ab73c2825::t_a3a76e50987558 133-138
+src/clients/RioClient.ts
+  s_10638ab73c2825::t_e704d883ac43fe 2-4
+  s_10638ab73c2825::t_1af59db64b3059 37-40
+  s_10638ab73c2825::t_beb2ee6e4ff671 34-36
+src/diagnostics/sourceChecks.ts
+  s_10638ab73c2825::t_7a357f061a4f93 1-45,51-135,138-142
+  s_10638ab73c2825::t_edbd4809b15a71 46-50
+  s_10638ab73c2825::t_1af59db64b3059 136-137
+src/clients/GtfsClient.ts
+  s_10638ab73c2825::t_cd578922597aea 3-5
+  s_10638ab73c2825::t_c3b0098eee59dc 108-111
+API.md
+  s_10638ab73c2825::t_74efe67a2f7715 103-106,111
+  s_10638ab73c2825::t_ae8ea87e0a04c3 133-136
+  s_10638ab73c2825::t_1757a485b3cae7 10,12,20
+  s_10638ab73c2825::t_1af59db64b3059 107-110
+src/clients/JcylClient.ts
+  s_10638ab73c2825::t_24a8c7efa3e413 2-4
+  s_10638ab73c2825::t_1af59db64b3059 52-54
+  s_10638ab73c2825::t_7948c837cb99a7 55-60
+  s_10638ab73c2825::t_a90345356594fd 51
+test/unit/MatomoService.test.ts
+  s_10638ab73c2825::t_1af59db64b3059 14-19,51,53-58
+  s_10638ab73c2825::t_fec459c47ad9bf 40-41
+  s_10638ab73c2825::t_7ed7a7ea8dcc36 1-13,20-39,42-50,52,59-62
+src/telemetry/sources.ts
+  s_10638ab73c2825::t_1af59db64b3059 60-61,96-97,119-120
+  s_10638ab73c2825::t_19ddcefd41d962 1-59,62-95,98-118,121-134
+src/telemetry/metrics.ts
+  s_10638ab73c2825::t_2f30c201589b31 1-68,73-89
+  s_10638ab73c2825::t_1af59db64b3059 69-72
+src/routes/meta.ts
+  s_10638ab73c2825::t_1af59db64b3059 4-8,76-80
+  s_10638ab73c2825::t_6657632230c092 1-3,9-75,81-92
+package-lock.json
+  s_10638ab73c2825::t_8918a714448bd5 22,1229-1237,2147-2152,4064-4077,4370-4378
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "86026d8978e2a5c5f2f76b5207317f3a84718511",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
