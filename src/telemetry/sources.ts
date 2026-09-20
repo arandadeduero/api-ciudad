@@ -100,7 +100,7 @@ export const SOURCE_CATALOG: SourceMetadata[] = [
     id: 'rio',
     module: 'Río (nivel y caudal)',
     provider: 'API de terceros sobre datos SAIH — Confederación Hidrográfica del Duero',
-    sourceUrl: 'https://saih-chd-api-9d034ff9d037.herokuapp.com',
+    sourceUrl: 'https://chd-api.arandadeduero.dev',
     license: 'No especificada — no es la API oficial de la CHD',
     updateFrequency: 'Casi tiempo real (ventana móvil de ~3 meses de histórico horario)',
     reliability: 'Media — servicio de terceros, sin SLA conocido',

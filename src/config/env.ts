@@ -51,7 +51,7 @@ const envSchema = z.object({
   GTFS_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
 
   // Río (Fase 5 — API de terceros sobre datos SAIH-CHD, ver docs/architecture-proposal.md §2.2b)
-  RIVER_API_BASE_URL: z.string().url().default('https://saih-chd-api-9d034ff9d037.herokuapp.com'),
+  RIVER_API_BASE_URL: z.string().url().default('https://chd-api.arandadeduero.dev'),
   RIVER_STATION_CODE: z.string().default('EA013'),
   RIVER_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
   RIVER_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),

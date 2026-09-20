@@ -119,7 +119,7 @@ Esto confirma que la arquitectura de **adapters desacoplados + degradación expl
 
 | Campo | Detalle |
 |---|---|
-| Fuente | `https://saih-chd-api-9d034ff9d037.herokuapp.com` — servicio de terceros/comunitario (Heroku) que envuelve datos del SAIH de la Confederación Hidrográfica del Duero, **no es la API oficial de la CHD** (que sigue sin exponer una públicamente, ver saihduero.es) |
+| Fuente | `https://chd-api.arandadeduero.dev` — servicio de terceros/comunitario que envuelve datos del SAIH de la Confederación Hidrográfica del Duero, **no es la API oficial de la CHD** (que sigue sin exponer una públicamente, ver saihduero.es). Migrado desde `saih-chd-api-9d034ff9d037.herokuapp.com` (2026-09-20): la URL de Heroku dejó de responder (503) tal y como este mismo documento anticipaba como riesgo del plan gratuito — mismo contrato de API, verificado en vivo antes de cambiar el default. |
 | URL / patrón | `GET /station/aforo/{codigoEstacion}/{metrica}` — probado en vivo con `EA013` |
 | Tipo de API | REST JSON, sin discovery endpoint (`/`, `/stations`, `/station`, `/docs` devuelven 404) |
 | Formato | JSON: array de `{ "d": "dd/mm/aaaa HH:MM", "v": number, "@timestamp": ISO8601 }` |
@@ -128,7 +128,7 @@ Esto confirma que la arquitectura de **adapters desacoplados + degradación expl
 | Frecuencia de actualización | Datos hasta la hora actual menos ~2h (verificado: último registro a 2 horas del momento de la consulta) — prácticamente tiempo real |
 | Ventana de datos | Ventana móvil de ~3 meses (2066 registros horarios ≈ 86 días) — no parece ser un archivo histórico completo, sino los datos recientes |
 | Licencia | No especificada — servicio de terceros, sin términos de uso publicados. **Documentar la fuente real (CHD/SAIH) como origen del dato subyacente y este servicio como el medio técnico de acceso** |
-| Fiabilidad | Alta como dato en sí (consistente con "datos provisionales sujetos a revisión" del SAIH oficial); **media como servicio** — es una app de terceros en Heroku (plan gratuito de Heroku puede dormir o desaparecer), no infraestructura oficial del organismo de cuenca |
+| Fiabilidad | Alta como dato en sí (consistente con "datos provisionales sujetos a revisión" del SAIH oficial); **media como servicio** — es una app de terceros (ya no en Heroku tras la migración de 2026-09-20, que confirmó exactamente el riesgo de desaparición que este documento ya señalaba), no infraestructura oficial del organismo de cuenca |
 | Datos disponibles | Nivel (m, sin confirmar unidad exacta en la respuesta) y caudal (m³/s, sin confirmar unidad exacta) por hora, estación EA013 |
 | Limitaciones | Sin endpoint de catálogo de estaciones — el código de estación (`EA013`) debe conocerse de antemano; un código inválido devuelve `200 []` en vez de 404, así que el adapter no puede distinguir "estación inexistente" de "sin datos" solo por el status code |
 | ¿Automatizable? | Sí, directamente. `RioClient` ya puede implementarse contra esta URL real en vez de quedar en modo stub |

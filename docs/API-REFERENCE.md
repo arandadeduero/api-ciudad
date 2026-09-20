@@ -591,7 +591,7 @@ Los próximos `N` autobuses (por defecto 2, máx. 10) en una parada, calculados 
 
 ## Río (`/api/v1/rio`)
 
-Fuente: API real de terceros que envuelve datos del SAIH de la Confederación Hidrográfica del Duero (`saih-chd-api-9d034ff9d037.herokuapp.com`) — **no es la API oficial de la CHD**, que sigue sin exponer ninguna públicamente (ver `docs/architecture-proposal.md` §2.2b). Estación de aforo `EA013` (código fijo, sin catálogo de estaciones expuesto por la API — ver `RIVER_STATION_CODE`).
+Fuente: API real de terceros que envuelve datos del SAIH de la Confederación Hidrográfica del Duero (`chd-api.arandadeduero.dev`, migrada desde `saih-chd-api-9d034ff9d037.herokuapp.com` el 2026-09-20) — **no es la API oficial de la CHD**, que sigue sin exponer ninguna públicamente (ver `docs/architecture-proposal.md` §2.2b). Estación de aforo `EA013` (código fijo, sin catálogo de estaciones expuesto por la API — ver `RIVER_STATION_CODE`).
 
 La API de origen siempre devuelve la ventana móvil completa que tenga cargada (~3 meses de histórico horario, comprobado en vivo: no admite ningún filtro de fecha/paginación, cualquier query param se ignora). El recorte a "últimas N horas" lo hace nuestro Service, no la fuente. Caché: `RIVER_CACHE_TTL_SECONDS` (600s), con fallback a caché obsoleta (`meta.stale: true`) si la fuente falla.
 
@@ -788,7 +788,7 @@ Catálogo de todas las fuentes de datos que consume la API: procedencia, licenci
       "id": "rio",
       "module": "Río (nivel y caudal)",
       "provider": "API de terceros sobre datos SAIH — Confederación Hidrográfica del Duero",
-      "sourceUrl": "https://saih-chd-api-9d034ff9d037.herokuapp.com",
+      "sourceUrl": "https://chd-api.arandadeduero.dev",
       "license": "No especificada — no es la API oficial de la CHD",
       "updateFrequency": "Casi tiempo real (ventana móvil de ~3 meses de histórico horario)",
       "reliability": "Media — servicio de terceros, sin SLA conocido",
