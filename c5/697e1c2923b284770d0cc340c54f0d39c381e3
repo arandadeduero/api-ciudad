@@ -1,0 +1,37 @@
+test/e2e/rio.e2e.test.ts
+  s_10638ab73c2825::t_a361f0c70078b0 64
+  s_10638ab73c2825::t_cd8447e42d0ebb 80
+  s_10638ab73c2825::t_9ccb7f1d850a24 27
+  s_10638ab73c2825::t_948de40ea3b2ae 36,42
+test/e2e/bus.e2e.test.ts
+  s_10638ab73c2825::t_d7fe03a79237f8 12,24,31,36,42,53,78,90,107,112,117,125
+test/e2e/weather.e2e.test.ts
+  s_10638ab73c2825::t_87ce448b75ddad 76
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_1f1837b45ce0d8 56
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_551ed3d938d891 215
+  s_10638ab73c2825::t_b3d8ca2bc143d6 182,184
+  s_10638ab73c2825::t_a647ac43dfd93b 16-25,28,33-38
+  s_10638ab73c2825::t_440de6f4898f44 139
+src/diagnostics/sourceChecks.ts
+  s_10638ab73c2825::t_127561a99a403f 43,52,54,56,58,61,66,68,70,73,78,80,82,85,90,92,94,98,103,105,107,110,115,117,119,123,131,133,135,138,143,145,147,150,155,157,159,162,167,169,171,174,179,181,183,186,194,199-261
+test/e2e/meta.e2e.test.ts
+  s_10638ab73c2825::t_c2fea8f40e2a84 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c5697e1c2923b284770d0cc340c54f0d39c381e3",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
