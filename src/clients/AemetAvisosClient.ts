@@ -1,5 +1,6 @@
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 import { readTarEntries } from '../utils/tar.js';
 
 const METRIC_SOURCE = 'aemet-avisos';
@@ -79,6 +80,13 @@ export class AemetAvisosClient implements AvisosProvider {
   }
 
   private async fetchWithTimeout(url: string, headers?: Record<string, string>): Promise<Response> {
+    return withSingleRetry(() => this.doFetchWithTimeout(url, headers));
+  }
+
+  private async doFetchWithTimeout(
+    url: string,
+    headers?: Record<string, string>,
+  ): Promise<Response> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     try {

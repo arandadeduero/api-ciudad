@@ -1,5 +1,6 @@
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 
 const METRIC_SOURCE = 'jcyl';
 
@@ -50,7 +51,7 @@ export class JcylClient implements JcylProvider {
     offset: number,
   ): Promise<OpendatasoftRecordsResponse> {
     return withExternalRequestMetrics(METRIC_SOURCE, () =>
-      this.doFetchPage(dataset, refine, offset),
+      withSingleRetry(() => this.doFetchPage(dataset, refine, offset)),
     );
   }
 

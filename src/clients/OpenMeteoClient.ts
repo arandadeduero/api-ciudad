@@ -1,5 +1,6 @@
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 
 const METRIC_SOURCE = 'open-meteo';
 
@@ -53,7 +54,9 @@ export class OpenMeteoClient implements WeatherProvider {
   ) {}
 
   async fetchForecast(options: OpenMeteoRequestOptions): Promise<unknown> {
-    return withExternalRequestMetrics(METRIC_SOURCE, () => this.doFetch(options));
+    return withExternalRequestMetrics(METRIC_SOURCE, () =>
+      withSingleRetry(() => this.doFetch(options)),
+    );
   }
 
   private async doFetch(options: OpenMeteoRequestOptions): Promise<unknown> {

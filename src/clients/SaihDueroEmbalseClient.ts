@@ -1,6 +1,7 @@
 import { parse } from 'node-html-parser';
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 import type { EmbalseSnapshot } from '../domain/embalse.js';
 
 const METRIC_SOURCE = 'saih-duero-embalse';
@@ -45,7 +46,9 @@ export class SaihDueroEmbalseClient implements EmbalseProvider {
   ) {}
 
   async fetchEmbalse(stationCode: string): Promise<EmbalseSnapshot> {
-    return withExternalRequestMetrics(METRIC_SOURCE, () => this.doFetchEmbalse(stationCode));
+    return withExternalRequestMetrics(METRIC_SOURCE, () =>
+      withSingleRetry(() => this.doFetchEmbalse(stationCode)),
+    );
   }
 
   private async doFetchEmbalse(stationCode: string): Promise<EmbalseSnapshot> {

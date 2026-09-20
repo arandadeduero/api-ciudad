@@ -159,8 +159,18 @@ Pasada dedicada a cerrar huecos encontrados al auditar cada ruta contra su propi
 2. **Fail fast en configuración**, nunca en tiempo de request.
 3. **Errores tipados** (`AppError` y subclases) en toda la capa de servicio;
    la ruta nunca construye la respuesta de error a mano.
-4. **Cache y resiliencia son responsabilidad del Service**, nunca de la
-   Route ni del Client/Repository.
+4. **Cache y resiliencia de negocio (TTL, fallback a caché obsoleta) son
+   responsabilidad del Service**, nunca de la Route ni del Client/Repository.
+   El Client sí resuelve la mecánica HTTP pura contra el proveedor concreto:
+   timeout con `AbortController` (todos los Client) y, desde
+   `src/utils/httpRetry.ts` (`withSingleRetry`), un único reintento
+   automático cuando el fallo es transitorio (códigos `*_TIMEOUT` /
+   `*_NETWORK_ERROR`) — nunca ante un fallo de negocio real (4xx/5xx del
+   proveedor, formato inesperado), porque repetirlo no lo arregla. Añadido
+   tras detectar que `educacion` fallaba de forma intermitente en el test
+   `meta/estado` solo bajo la carga concurrente de la suite completa, nunca
+   en aislado ni contra la API real directamente — confirmado como un fallo
+   transitorio de red, no del proveedor ni del código.
 5. **El `response` schema de una ruta es una whitelist de serialización.**
    Cualquier ruta que declare uno debe envolver su `data` con
    `responseSchema()` (`src/routes/schemas.ts`) o Fastify descarta en

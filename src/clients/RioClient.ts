@@ -1,5 +1,6 @@
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 
 const METRIC_SOURCE = 'rio-saih';
 
@@ -31,7 +32,9 @@ export class RioClient implements RioProvider {
   ) {}
 
   async fetchSeries(stationCode: string, metric: RioMetricName): Promise<RioRawReading[]> {
-    return withExternalRequestMetrics(METRIC_SOURCE, () => this.doFetchSeries(stationCode, metric));
+    return withExternalRequestMetrics(METRIC_SOURCE, () =>
+      withSingleRetry(() => this.doFetchSeries(stationCode, metric)),
+    );
   }
 
   private async doFetchSeries(

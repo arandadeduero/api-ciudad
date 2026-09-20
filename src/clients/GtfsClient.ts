@@ -1,6 +1,7 @@
 import { unzipSync } from 'fflate';
 import { UpstreamError } from '../errors/AppError.js';
 import { withExternalRequestMetrics } from '../telemetry/metrics.js';
+import { withSingleRetry } from '../utils/httpRetry.js';
 
 const METRIC_SOURCE = 'github-gtfs';
 
@@ -105,7 +106,9 @@ export class GtfsClient implements GtfsProvider {
   }
 
   private async fetchWithTimeout(url: string): Promise<Response> {
-    return withExternalRequestMetrics(METRIC_SOURCE, () => this.doFetchWithTimeout(url));
+    return withExternalRequestMetrics(METRIC_SOURCE, () =>
+      withSingleRetry(() => this.doFetchWithTimeout(url)),
+    );
   }
 
   private async doFetchWithTimeout(url: string): Promise<Response> {
