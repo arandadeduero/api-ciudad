@@ -1,0 +1,37 @@
+test/e2e/meta.e2e.test.ts
+  s_10638ab73c2825::t_d82ae210d06d6a 53
+scripts/smoke-test.mjs
+  s_10638ab73c2825::t_0cccced0816436 110,117
+  s_10638ab73c2825::t_bd89daa78b90b2 17-24,26
+  s_10638ab73c2825::t_903255298acb9f 142
+  s_10638ab73c2825::t_2956e3822a5877 38
+src/config/env.ts
+  s_10638ab73c2825::t_2608f48bd10440 56
+  s_10638ab73c2825::t_14d5f64666363a 63
+.env.example
+  s_10638ab73c2825::t_8b8bb06730bcc3 101
+  s_10638ab73c2825::t_f19ca8a978d8e7 110
+test/e2e/rio.e2e.test.ts
+  s_10638ab73c2825::t_55fc5ee6ccf9b0 27
+  s_10638ab73c2825::t_d0005e6cdc0558 64
+  s_10638ab73c2825::t_5fb9a7b9039ade 80
+  s_10638ab73c2825::t_01afb9eb7879cf 36,42
+test/e2e/health.e2e.test.ts
+  s_10638ab73c2825::t_8182431e5c78c3 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f5e848387fd5e185b1ab9d3b7d0f72ee7468f750",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
