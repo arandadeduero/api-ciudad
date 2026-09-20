@@ -1,0 +1,26 @@
+README.md
+  s_10638ab73c2825::t_0c59f0421f4560 85-90
+docker-compose.example.yml
+  s_10638ab73c2825::t_b3fbd151fac03a 1-34
+DEPLOYMENT.md
+  s_10638ab73c2825::t_03c050d49faa51 19-36
+  s_10638ab73c2825::t_a73d7e80e6876f 94-107
+.github/workflows/ci.yml
+  s_10638ab73c2825::t_935b960aa1ba87 46-84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7796a944d9d020ca539edc4d7ec2d41d88f18e10",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
