@@ -20,6 +20,26 @@ API REST versionada.
 > (AEMET, requiere `AEMET_API_KEY` gratuita) y educación/bibliotecas (JCyL).
 > Solo queda pendiente la Fase 8 (E2E adicional, CI/CD, hardening).
 
+## Módulos
+
+| Módulo                  | Base                            | Fuente                                          |
+| ----------------------- | ------------------------------- | ----------------------------------------------- |
+| Farmacias de guardia    | `/api/v1/farmacia*`             | Colegio Of. Farmacéuticos de Burgos             |
+| Meteorología + avisos   | `/api/v1/weather*`              | Open-Meteo + AEMET (`avisos`, requiere API key) |
+| Calidad del aire        | `/api/v1/ambiente*`             | JCyL — Datos Abiertos                           |
+| Aparcamiento / ORA      | `/api/v1/parking*`              | Ordenanza municipal (BOP Burgos 245/2021)       |
+| Residuos y punto limpio | `/api/v1/residuos*`             | Ayuntamiento de Aranda de Duero                 |
+| Bus urbano              | `/api/v1/bus*`                  | GTFS real (`arandadeduero/gtfs-busurbano`)      |
+| Río + embalse           | `/api/v1/rio*`                  | SAIH-CHD (API de terceros) + SAIH del Duero     |
+| Educación               | `/api/v1/educacion*`            | JCyL — directorio de centros docentes           |
+| Bibliotecas             | `/api/v1/bibliotecas`           | JCyL — directorio de bibliotecas                |
+| Transparencia           | `/api/v1/meta/*`                | Interno (catálogo de fuentes + estado en vivo)  |
+| Infraestructura         | `/health*`, `/metrics`, `/docs` | Interno                                         |
+
+Detalle completo de parámetros, ejemplos reales y códigos de error en
+[`docs/API-REFERENCE.md`](docs/API-REFERENCE.md); resumen de una línea por
+endpoint en [`API.md`](API.md).
+
 ## Requisitos
 
 - Node.js **24 LTS** (`engines` en `package.json`). Es la LTS activa a fecha
@@ -36,6 +56,13 @@ npm install
 cp .env.example .env
 npm run dev
 ```
+
+Todos los módulos funcionan con la configuración por defecto salvo
+`GET /api/v1/weather/avisos` (AEMET): pide una `AEMET_API_KEY` gratuita en
+https://opendata.aemet.es y añádela a tu `.env` — sin ella, ese endpoint
+responde con un error claro (`AVISOS_NOT_CONFIGURED`) en vez de romper el
+arranque del resto de la API. `npm run dev` carga `.env` automáticamente
+si existe (ver [Tests](#tests) más abajo).
 
 La API queda disponible en:
 
