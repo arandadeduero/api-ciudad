@@ -53,7 +53,7 @@ describe('E2E /health', () => {
     expect(['ok', 'degraded']).toContain(body.checks.avisos.status); // depende de AEMET real (o AVISOS_NOT_CONFIGURED sin key)
     expect(body.checks.eventos.status).toBe('excluded');
     expect(body.checks.cortescalles.status).toBe('excluded');
-  }, 25_000);
+  }, 125_000);
 
   it('GET /docs/json expone un documento OpenAPI válido con todos los módulos documentados', async () => {
     const res = await app.inject({ method: 'GET', url: '/docs/json' });

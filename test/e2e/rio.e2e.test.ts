@@ -24,7 +24,7 @@ describe('E2E /api/v1/rio', () => {
     expect(typeof body.data.caudal.latest.value).toBe('number');
     expect(['subiendo', 'bajando', 'estable']).toContain(body.data.nivel.trend);
     expect(body.meta.source).toContain('SAIH');
-  }, 20_000);
+  }, 125_000);
 
   it('GET /api/v1/rio/nivel devuelve la serie real de las últimas 24h por defecto', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/v1/rio/nivel' });
@@ -33,13 +33,13 @@ describe('E2E /api/v1/rio', () => {
     expect(body.data.unit).toBe('m');
     expect(Array.isArray(body.data.series)).toBe(true);
     expect(body.data.series.length).toBeGreaterThan(0);
-  }, 20_000);
+  }, 125_000);
 
   it('GET /api/v1/rio/caudal admite el parámetro hours', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/v1/rio/caudal?hours=6' });
     expect(res.statusCode).toBe(200);
     expect(res.json().data.unit).toBe('m³/s');
-  }, 20_000);
+  }, 125_000);
 
   it('GET /api/v1/rio/nivel rechaza un hours fuera de rango (por debajo)', async () => {
     const res = await app.inject({ method: 'GET', url: '/api/v1/rio/nivel?hours=0' });
@@ -61,7 +61,7 @@ describe('E2E /api/v1/rio', () => {
       expect(metric.latest).toHaveProperty('value');
       expect(metric).toHaveProperty('trend');
     }
-  }, 20_000);
+  }, 125_000);
 
   // Golpea la red real de saihduero.es (HTML, no API — ver docs/API-REFERENCE.md).
   it('GET /api/v1/rio/embalse devuelve el estado real del embalse de Linares del Arroyo', async () => {
@@ -77,5 +77,5 @@ describe('E2E /api/v1/rio', () => {
     expect(data.porcentajeLlenado).toBeGreaterThan(0);
     expect(data.porcentajeLlenado).toBeLessThanOrEqual(100);
     expect(typeof data.capacidadMaximaHm3).toBe('number');
-  }, 20_000);
+  }, 125_000);
 });

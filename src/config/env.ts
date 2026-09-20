@@ -53,14 +53,14 @@ const envSchema = z.object({
   // Río (Fase 5 — API de terceros sobre datos SAIH-CHD, ver docs/architecture-proposal.md §2.2b)
   RIVER_API_BASE_URL: z.string().url().default('https://chd-api.arandadeduero.dev'),
   RIVER_STATION_CODE: z.string().default('EA013'),
-  RIVER_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
+  RIVER_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
   RIVER_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
 
   // Embalse (Fase 7 — SAIH del Duero, ficha HTML pública, ver docs/architecture-proposal.md §2.2b).
   // EM511 = Embalse de Linares del Arroyo, verificado en vivo el 2026-09-09.
   SAIH_DUERO_BASE_URL: z.string().url().default('https://www.saihduero.es'),
   EMBALSE_STATION_CODE: z.string().default('EM511'),
-  EMBALSE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
+  EMBALSE_TIMEOUT_MS: z.coerce.number().int().positive().default(60_000),
   EMBALSE_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(600),
 
   // Educación (Fase 7 — JCyL, mismo proveedor Opendatasoft que Ambiente)

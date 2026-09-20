@@ -50,5 +50,5 @@ describe('E2E /api/v1/meta', () => {
     expect(body.data.sources.bibliotecas.status).toBe('ok');
     // "degraded" cubre tanto una AEMET real caída como AVISOS_NOT_CONFIGURED sin key.
     expect(['ok', 'degraded']).toContain(body.data.sources.avisos.status);
-  }, 25_000);
+  }, 125_000);
 });
