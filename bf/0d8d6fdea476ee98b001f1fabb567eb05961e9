@@ -1,0 +1,31 @@
+docs/architecture-proposal.md
+  s_10638ab73c2825::t_a9fc5a484443fe 131
+  s_10638ab73c2825::t_0b4bc8f3b912a7 122
+src/telemetry/sources.ts
+  s_10638ab73c2825::t_aa4cc9fae20658 103
+DATA-SOURCES.md
+  s_10638ab73c2825::t_ff08e93808bce5 8-23
+src/config/env.ts
+  s_10638ab73c2825::t_f20004a39bd836 54
+.env.example
+  s_10638ab73c2825::t_4b1412ebb20181 99
+docs/API-REFERENCE.md
+  s_10638ab73c2825::t_be7c797d3c02fb 594
+  s_10638ab73c2825::t_40b618dea96006 791
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bf0d8d6fdea476ee98b001f1fabb567eb05961e9",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
