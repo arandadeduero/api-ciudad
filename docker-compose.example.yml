@@ -1,0 +1,34 @@
+# Ejemplo de despliegue usando la imagen ya publicada en GitHub Container
+# Registry — no hace falta clonar el repositorio ni tener Node/npm
+# instalados, solo Docker. Se publica automáticamente en cada push a `main`
+# que pase el CI (.github/workflows/ci.yml), con las etiquetas `latest` y
+# el sha corto del commit.
+#
+# La imagen NUNCA incluye tu .env ni ningún secreto — el Dockerfile no lo
+# copia (ver .dockerignore) y las variables de entorno se inyectan en tiempo
+# de ejecución, no en la imagen. Aun así, no subas tu propio `.env` a ningún
+# sitio: contiene claves reales (p. ej. AEMET_API_KEY) si las has rellenado.
+#
+# Uso:
+#   curl -O https://raw.githubusercontent.com/arandadeduero/api-ciudad/main/.env.example
+#   cp .env.example .env   # opcional: rellena AEMET_API_KEY para avisos reales
+#   docker compose -f docker-compose.example.yml up -d
+services:
+  api:
+    image: ghcr.io/arandadeduero/api-ciudad:latest
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Redis es opcional: solo hace falta si defines CACHE_DRIVER=redis en tu
+  # .env. No se levanta por defecto; actívalo con `--profile redis`.
+  redis:
+    image: redis:7-alpine
+    profiles: ['redis']
+    ports:
+      - '6379:6379'
+    restart: unless-stopped

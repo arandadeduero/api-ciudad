@@ -82,6 +82,12 @@ Redis es opcional (solo necesario si `CACHE_DRIVER=redis`):
 docker compose --profile redis up --build
 ```
 
+También hay una imagen ya publicada en GitHub Container Registry
+(`ghcr.io/arandadeduero/api-ciudad`, actualizada en cada push a `main`) —
+ver [`docker-compose.example.yml`](docker-compose.example.yml) y la sección
+correspondiente de [`DEPLOYMENT.md`](DEPLOYMENT.md#usar-la-imagen-publicada-sin-clonar-el-repo)
+para arrancarla sin clonar el repositorio.
+
 ## Tests
 
 ```bash

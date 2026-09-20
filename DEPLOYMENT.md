@@ -16,6 +16,24 @@ Redis es opcional y no se levanta por defecto:
 docker compose --profile redis up --build -d
 ```
 
+### Usar la imagen publicada (sin clonar el repo)
+
+Cada push a `main` que pase el CI publica la imagen en GitHub Container
+Registry (`ghcr.io/arandadeduero/api-ciudad`, etiquetas `latest` y el sha
+corto del commit — ver [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+[`docker-compose.example.yml`](docker-compose.example.yml) es el ejemplo
+mínimo para arrancarla directamente:
+
+```bash
+cp .env.example .env   # opcional: rellena AEMET_API_KEY para avisos reales
+docker compose -f docker-compose.example.yml up -d
+```
+
+La imagen nunca incluye `.env` ni ningún secreto — el `Dockerfile` no lo
+copia (`.dockerignore`), las variables llegan por el entorno del contenedor
+en tiempo de ejecución. Aun así, **no subas tu propio `.env`** a ningún
+sitio si lo has rellenado con claves reales.
+
 ## Variables de entorno
 
 Ver [`.env.example`](.env.example) para el listado completo y comentado.
@@ -73,3 +91,17 @@ BASE_URL=http://<host>:3000 npm run smoke-test
 `.github/workflows/ci.yml` ejecuta en cada push/PR: install → lint → format
 check → typecheck → tests → build → build de la imagen Docker → smoke test
 contra el contenedor real. Un fallo en cualquier paso bloquea el merge.
+
+Solo en push a `main` (nunca en PRs), y solo si lo anterior pasa, un segundo
+job (`publish`) reconstruye la imagen y la publica en GitHub Container
+Registry con `docker/build-push-action`, usando el `GITHUB_TOKEN` propio del
+workflow (permiso `packages: write`, sin secretos adicionales que
+configurar).
+
+**Importante — visibilidad del paquete:** GHCR crea los paquetes en
+**privado** por defecto, sin importar que el repositorio sea público — no
+hay forma de automatizarlo por API (confirmado contra la documentación
+oficial de GitHub). Tras la primera publicación hace falta un paso manual
+único e irreversible: en la página del paquete
+(`github.com/arandadeduero/api-ciudad/pkgs/container/api-ciudad`) → **Package
+settings** → **Danger Zone** → **Change visibility** → **Public**.
