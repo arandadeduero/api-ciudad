@@ -73,7 +73,7 @@ describe('E2E /api/v1/weather', () => {
       expect(typeof data.hayAvisosActivos).toBe('boolean');
       expect(meta.source).toContain('AEMET');
     },
-    15_000,
+    30_000,
   );
 
   it.skipIf(process.env.AEMET_API_KEY)(

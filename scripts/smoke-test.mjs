@@ -13,14 +13,29 @@
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000';
 const TIMEOUT_MS = 10_000;
+/**
+ * `/health/deep` y `/api/v1/meta/estado` comparten `runSourceChecks`
+ * (src/diagnostics/sourceChecks.ts), que consulta en paralelo ~12 fuentes
+ * reales, cada una con su propio timeout (hasta 10s en AEMET) y, desde que
+ * los Client reintentan una vez ante un fallo transitorio
+ * (`withSingleRetry`), hasta el doble de eso en el peor caso — un único
+ * origen lento no debería hacer fallar el smoke test entero, así que estas
+ * dos rutas usan un timeout propio más generoso que el resto.
+ */
+const DEEP_CHECK_TIMEOUT_MS = 25_000;
 const MAX_WAIT_MS = 30_000;
 
-/** @type {{ name: string, path: string, expectStatus: number, validate?: (body: unknown) => boolean }[]} */
+/** @type {{ name: string, path: string, expectStatus: number, timeoutMs?: number, validate?: (body: unknown) => boolean }[]} */
 const CHECKS = [
   { name: 'health', path: '/health', expectStatus: 200 },
   { name: 'health/live', path: '/health/live', expectStatus: 200 },
   { name: 'health/ready', path: '/health/ready', expectStatus: 200 },
-  { name: 'health/deep', path: '/health/deep', expectStatus: 200 },
+  {
+    name: 'health/deep',
+    path: '/health/deep',
+    expectStatus: 200,
+    timeoutMs: DEEP_CHECK_TIMEOUT_MS,
+  },
   {
     name: 'openapi spec',
     path: '/docs/json',
@@ -121,6 +136,7 @@ const CHECKS = [
     name: 'meta/estado',
     path: '/api/v1/meta/estado',
     expectStatus: 200,
+    timeoutMs: DEEP_CHECK_TIMEOUT_MS,
     validate: (body) => ['ok', 'degraded', 'down'].includes(body?.data?.status),
   },
 ];
@@ -163,9 +179,9 @@ async function checkDocs() {
   );
 }
 
-async function fetchWithTimeout(url) {
+async function fetchWithTimeout(url, timeoutMs = TIMEOUT_MS) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, { signal: controller.signal });
   } finally {
@@ -196,7 +212,7 @@ async function runChecks() {
 
   for (const check of CHECKS) {
     try {
-      const res = await fetchWithTimeout(`${BASE_URL}${check.path}`);
+      const res = await fetchWithTimeout(`${BASE_URL}${check.path}`, check.timeoutMs);
       const body = await res.json().catch(() => undefined);
 
       const statusOk = res.status === check.expectStatus;

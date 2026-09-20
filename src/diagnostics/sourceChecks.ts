@@ -40,17 +40,7 @@ export interface SourceCheckResult {
  */
 export const EXCLUDED_DEEP_CHECKS = ['eventos', 'cortescalles'] as const;
 
-/**
- * Comprueba en vivo el estado de cada fuente de datos. Compartido entre
- * `GET /health/deep` (diagnóstico de operación) y `GET /api/v1/meta/estado`
- * (equivalente de cara al consumidor externo, §3 ítem 19 de
- * docs/architecture-proposal.md) para no duplicar esta lógica en dos sitios.
- */
-export async function runSourceChecks(
-  deps: SourceCheckDeps,
-): Promise<Record<string, SourceCheckResult>> {
-  const checks: Record<string, SourceCheckResult> = {};
-
+async function checkCache(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     // Prefijo "diagnostics:" a propósito: cacheDomainFromKey() en
     // src/telemetry/metrics.ts agrupa las métricas de caché por el segmento
@@ -59,66 +49,78 @@ export async function runSourceChecks(
     const probeKey = 'diagnostics:probe';
     await deps.cache.set(probeKey, true, 5);
     const value = await deps.cache.get<boolean>(probeKey);
-    checks.cache = { status: value === true ? 'ok' : 'error' };
+    return { status: value === true ? 'ok' : 'error' };
   } catch (err) {
-    checks.cache = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkFarmacia(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const pharmacies = await deps.farmacia.listPharmacies();
-    checks.farmacia = {
+    return {
       status: pharmacies.length > 0 ? 'ok' : 'error',
       detail: `${pharmacies.length} farmacias en catálogo`,
     };
   } catch (err) {
-    checks.farmacia = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkWeather(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { stale } = await deps.weather.getCurrent();
-    checks.weather = {
+    return {
       status: stale ? 'degraded' : 'ok',
       detail: stale ? 'sirviendo caché obsoleta (Open-Meteo no responde)' : 'ok',
     };
   } catch (err) {
-    checks.weather = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkAmbiente(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { stale } = await deps.ambiente.getToday();
-    checks.ambiente = {
+    return {
       status: stale ? 'degraded' : 'ok',
       detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : 'ok',
     };
   } catch (err) {
-    checks.ambiente = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkParking(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const parkings = await deps.parking.listPublicParkings();
     const ora = await deps.parking.getOraInfo();
-    checks.parking = {
+    return {
       status: parkings.length > 0 && ora.districts.length > 0 ? 'ok' : 'error',
       detail: `${parkings.length} aparcamientos, ${ora.districts.length} distritos ORA`,
     };
   } catch (err) {
-    checks.parking = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkResiduos(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const contenedores = await deps.residuos.listContenedores();
-    checks.residuos = {
+    return {
       status: contenedores.length > 0 ? 'ok' : 'error',
       detail: `${contenedores.length} tipos de contenedor`,
     };
   } catch (err) {
-    checks.residuos = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkBus(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const lines = await deps.bus.listLines();
     const stops = await deps.bus.listStops();
-    checks.bus = {
+    return {
       status: lines.stale || stops.stale ? 'degraded' : 'ok',
       detail:
         lines.stale || stops.stale
@@ -126,52 +128,62 @@ export async function runSourceChecks(
           : `${lines.data.length} líneas, ${stops.data.length} paradas`,
     };
   } catch (err) {
-    checks.bus = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkRio(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { stale } = await deps.rio.getSnapshot();
-    checks.rio = {
+    return {
       status: stale ? 'degraded' : 'ok',
       detail: stale ? 'sirviendo caché obsoleta (API del río no responde)' : 'ok',
     };
   } catch (err) {
-    checks.rio = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkEmbalse(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { stale } = await deps.embalse.getSnapshot();
-    checks.embalse = {
+    return {
       status: stale ? 'degraded' : 'ok',
       detail: stale ? 'sirviendo caché obsoleta (SAIH Duero no responde)' : 'ok',
     };
   } catch (err) {
-    checks.embalse = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkEducacion(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { data, stale } = await deps.educacion.listCentros();
-    checks.educacion = {
+    return {
       status: stale ? 'degraded' : data.length > 0 ? 'ok' : 'error',
       detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : `${data.length} centros`,
     };
   } catch (err) {
-    checks.educacion = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkBibliotecas(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { data, stale } = await deps.bibliotecas.listBibliotecas();
-    checks.bibliotecas = {
+    return {
       status: stale ? 'degraded' : data.length > 0 ? 'ok' : 'error',
       detail: stale ? 'sirviendo caché obsoleta (JCyL no responde)' : `${data.length} bibliotecas`,
     };
   } catch (err) {
-    checks.bibliotecas = { status: 'error', detail: (err as Error).message };
+    return { status: 'error', detail: (err as Error).message };
   }
+}
 
+async function checkAvisos(deps: SourceCheckDeps): Promise<SourceCheckResult> {
   try {
     const { stale } = await deps.avisos.getSnapshot();
-    checks.avisos = {
+    return {
       status: stale ? 'degraded' : 'ok',
       detail: stale ? 'sirviendo caché obsoleta (AEMET no responde)' : 'ok',
     };
@@ -179,11 +191,74 @@ export async function runSourceChecks(
     // AVISOS_NOT_CONFIGURED es un estado operativo válido (sin AEMET_API_KEY
     // configurada), no una fuente caída — se marca "degraded", no "error".
     const isNotConfigured = err instanceof UpstreamError && err.code === 'AVISOS_NOT_CONFIGURED';
-    checks.avisos = {
+    return {
       status: isNotConfigured ? 'degraded' : 'error',
       detail: (err as Error).message,
     };
   }
+}
+
+/**
+ * Comprueba en vivo el estado de cada fuente de datos. Compartido entre
+ * `GET /health/deep` (diagnóstico de operación) y `GET /api/v1/meta/estado`
+ * (equivalente de cara al consumidor externo, §3 ítem 19 de
+ * docs/architecture-proposal.md) para no duplicar esta lógica en dos sitios.
+ *
+ * Las comprobaciones se lanzan todas en paralelo (cada una ya atrapa su
+ * propio error y nunca rechaza la promesa, así que un simple `Promise.all`
+ * basta). Antes se hacía `await` una a una: con ~10 fuentes externas reales
+ * encadenadas, el tiempo total era la SUMA de cada una — y al añadir
+ * `withSingleRetry` a los Client (ver ARCHITECTURE.md, principio 4), un
+ * único fallo transitorio en cualquiera de ellas podía doblar su coste y
+ * hacer que el total superara el timeout del smoke test (`health/deep
+ * (error: This operation was aborted)` en CI, 2026-09-20). En paralelo el
+ * total queda acotado por la fuente más lenta, no por la suma de todas.
+ */
+export async function runSourceChecks(
+  deps: SourceCheckDeps,
+): Promise<Record<string, SourceCheckResult>> {
+  const [
+    cache,
+    farmacia,
+    weather,
+    ambiente,
+    parking,
+    residuos,
+    bus,
+    rio,
+    embalse,
+    educacion,
+    bibliotecas,
+    avisos,
+  ] = await Promise.all([
+    checkCache(deps),
+    checkFarmacia(deps),
+    checkWeather(deps),
+    checkAmbiente(deps),
+    checkParking(deps),
+    checkResiduos(deps),
+    checkBus(deps),
+    checkRio(deps),
+    checkEmbalse(deps),
+    checkEducacion(deps),
+    checkBibliotecas(deps),
+    checkAvisos(deps),
+  ]);
+
+  const checks: Record<string, SourceCheckResult> = {
+    cache,
+    farmacia,
+    weather,
+    ambiente,
+    parking,
+    residuos,
+    bus,
+    rio,
+    embalse,
+    educacion,
+    bibliotecas,
+    avisos,
+  };
 
   for (const source of EXCLUDED_DEEP_CHECKS) {
     checks[source] = {
