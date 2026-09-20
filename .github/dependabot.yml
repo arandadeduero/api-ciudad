@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Dependencias npm. Minor y patch se agrupan en un único PR semanal
+  # (bajo riesgo, ruido mínimo); cada actualización major sale en su propio
+  # PR, sin agrupar, porque puede traer breaking changes que conviene
+  # revisar de forma aislada.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    groups:
+      npm-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
+
+  # Versiones de las GitHub Actions usadas en .github/workflows/ (ver
+  # ARCHITECTURE.md — hábito de verificar la versión real, no la que
+  # "suena" reciente; esto lo automatiza para el futuro). Mismo criterio:
+  # minor/patch agrupados, major siempre en PR propio.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      actions-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'

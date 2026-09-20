@@ -120,3 +120,13 @@ BASE_URL=http://localhost:3000 npm run smoke-test
 - [`DEPLOYMENT.md`](DEPLOYMENT.md) — despliegue y variables de entorno.
 - [`API.md`](API.md) — endpoints implementados, resumen de una línea.
 - [`docs/API-REFERENCE.md`](docs/API-REFERENCE.md) — referencia completa de cada endpoint (parámetros, ejemplos reales, todos los códigos de error). Documento interno autoritativo, se actualiza en el mismo commit que cualquier cambio de API.
+
+## Licencia
+
+El **código** de este repositorio se publica bajo licencia [MIT](LICENSE).
+
+Esto no afecta a los **datos** que la API agrega: cada fuente conserva su
+propia licencia de origen (algunas sin especificar, otras con restricciones
+de uso comercial) — ver [`DATA-SOURCES.md`](DATA-SOURCES.md) y
+`GET /api/v1/meta/fuentes` para el detalle por fuente antes de redistribuir
+cualquier dato obtenido a través de esta API.

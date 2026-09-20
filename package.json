@@ -4,7 +4,7 @@
   "description": "API Ciudad de Aranda de Duero — capa de agregación de datos abiertos municipales, regionales y estatales",
   "type": "module",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=24 <27"
   },
