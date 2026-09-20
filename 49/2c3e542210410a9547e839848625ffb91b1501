@@ -1,0 +1,42 @@
+src/clients/RioClient.ts
+  s_10638ab73c2825::t_e4d5607206d98a 3
+  s_10638ab73c2825::t_e36e422658366e 35-37
+ARCHITECTURE.md
+  s_10638ab73c2825::t_6baf5806cf06a7 162-173
+src/clients/OpenMeteoClient.ts
+  s_10638ab73c2825::t_1d389be6666ebd 57-59
+  s_10638ab73c2825::t_071e2d34a1ad8c 3
+src/utils/httpRetry.ts
+  s_10638ab73c2825::t_97abc709f47ccf 1-24,29-36
+  s_10638ab73c2825::t_44301e851f6091 25-28
+src/clients/AemetAvisosClient.ts
+  s_10638ab73c2825::t_9a21eb0b472fda 3
+  s_10638ab73c2825::t_8b9b8c489ec384 83-89
+src/clients/GtfsClient.ts
+  s_10638ab73c2825::t_1a9afd0725bea8 4
+  s_10638ab73c2825::t_12f55982a19bdc 109-111
+src/clients/JcylClient.ts
+  s_10638ab73c2825::t_df5d89a53b0655 3
+  s_10638ab73c2825::t_3ac716641b8e8c 54
+src/clients/SaihDueroEmbalseClient.ts
+  s_10638ab73c2825::t_d7320c359b2e4b 4
+  s_10638ab73c2825::t_cde9799e3df74e 49-51
+test/unit/httpRetry.test.ts
+  s_10638ab73c2825::t_a581156f0a1f5f 1-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "492c3e542210410a9547e839848625ffb91b1501",
+  "prompts": {},
+  "sessions": {
+    "s_10638ab73c2825": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "adcc78c9-b399-4416-bcb7-e0d8ec56e31e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
