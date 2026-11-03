@@ -129,7 +129,8 @@ BASE_URL=http://localhost:3000 npm run smoke-test
 
 ## Licencia
 
-El **código** de este repositorio se publica bajo licencia [MIT](LICENSE).
+El **código** de este repositorio se publica bajo la [Licencia Pública de la Unión Europea (EUPL) v1.2](LICENSE),
+© Ayuntamiento de Aranda de Duero. Es la licencia común de todo el software del Ayuntamiento: ver [arandadeduero/licencia](https://github.com/arandadeduero/licencia).
 
 Esto no afecta a los **datos** que la API agrega: cada fuente conserva su
 propia licencia de origen (algunas sin especificar, otras con restricciones
