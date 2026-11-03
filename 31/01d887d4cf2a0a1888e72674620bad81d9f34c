@@ -1,0 +1,25 @@
+LICENSE
+  s_eee5574c85d159::t_10122e29bf9db2 1-292
+README.md
+  s_eee5574c85d159::t_1c74f70dae4e2e 132-133
+package-lock.json
+  s_eee5574c85d159::t_ee8ac1814ed0df 10
+package.json
+  s_eee5574c85d159::t_6cef81f27e9c6b 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3101d887d4cf2a0a1888e72674620bad81d9f34c",
+  "prompts": {},
+  "sessions": {
+    "s_eee5574c85d159": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ed66deb3-aae4-45db-80f7-da4c6a598900",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López Leal <guillermo.lopezleal@vonage.com>"
+    }
+  }
+}
